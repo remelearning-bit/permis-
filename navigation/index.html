@@ -1,0 +1,57 @@
+<!doctype html><html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Parcours permis T</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<style>
+/* une colonne de lecture, la liste des étapes comme les cases du permis */
+:root{--bg:#F1F3F2;--card:#ffffff;--fg:#1C2B3A;--muted:#55616d;--marine:#263C52;--marine-fg:#ffffff;--orange:#E94E1B;--line:#263c5226;
+ --display:"Barlow Condensed","Arial Narrow",system-ui,sans-serif;--body:Barlow,system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#15202b;--card:#1f2d3b;--fg:#eef1f4;--muted:#aab4bf;--marine:#dfe7f0;--marine-fg:#15202b;--line:#dfe7f033;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#15202b;--card:#1f2d3b;--fg:#eef1f4;--muted:#aab4bf;--marine:#dfe7f0;--marine-fg:#15202b;--line:#dfe7f033;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:0}
+main{max-width:720px;margin:0 auto;padding-block:40px 60px}
+.sur{display:inline-block;background:var(--marine);color:var(--marine-fg);font-family:var(--display);font-weight:700;letter-spacing:.14em;text-transform:uppercase;font-size:14px;padding:6px 12px}
+h1{font-family:var(--display);font-size:clamp(40px,7vw,64px);line-height:.95;color:var(--marine);margin:14px 0 12px;font-weight:700;text-wrap:balance}
+p.lead{font-size:17px;line-height:1.5;margin:0 0 30px;max-width:60ch;color:var(--muted)}
+ol{list-style:none;padding:0;margin:0;display:grid;gap:12px}
+li a{display:grid;grid-template-columns:54px 1fr;gap:16px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;text-decoration:none;color:inherit;transition:transform .15s}
+li a:hover,li a:focus-visible{transform:translateY(-2px);outline:2px solid var(--orange);outline-offset:2px}
+li i{display:grid;place-items:center;width:54px;height:54px;border-radius:50%;background:var(--marine);color:var(--marine-fg);font-style:normal;font-family:var(--display);font-weight:700;font-size:26px;font-variant-numeric:tabular-nums}
+li b{display:block;font-family:var(--display);font-size:22px;color:var(--marine);line-height:1.1}
+li span{display:block;font-size:14px;line-height:1.4;color:var(--muted);margin-top:4px;min-width:0}
+li.soon a{opacity:.45;pointer-events:none}
+li small{display:block;margin:4px 0 0 70px;font-size:12px}li small a{display:inline;background:none;border:0;padding:0;color:var(--muted);text-decoration:underline}
+#viewer{position:fixed;inset:0;z-index:20;background:var(--bg);display:flex;flex-direction:column}
+#viewer iframe{flex:1;border:0;width:100%;min-height:0}
+#vload{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--display);font-size:20px;color:var(--marine);text-align:center}
+.note{margin-top:34px;font-size:14px;line-height:1.5;color:var(--muted);max-width:60ch}
+@media (prefers-reduced-motion:reduce){li a{transition:none}}
+</style>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700&family=Barlow:wght@400;600&display=swap">
+<main>
+<span class="sur">Paris-Charles de Gaulle · Autorisation de conduite T</span>
+<h1>Le parcours permis T</h1>
+<p class="lead">Le parcours complet, avec Damienne et Xavier, en navigation libre : cliquez sur une étape, puis utilisez le menu en bas de chaque page pour aller directement à n'importe quel écran, avancer ou revenir en arrière. Le son de votre appareil doit être allumé.</p>
+<ol>
+<li><a href="permis-t-00-preambule-introduction.html" data-page="permis-t-00-preambule-introduction.html"><i>0</i><div><b>Préambule et introduction</b><span>Pourquoi ce permis, le plan du parcours, la plateforme en chiffres.</span></div></a></li>
+<li><a href="permis-t-etape1-reglementation.html" data-page="permis-t-etape1-reglementation.html"><i>1</i><div><b>Étape 1 · La réglementation</b><span>Les trois référentiels, les acteurs, les sanctions, le Bureau Local de Sûreté.</span></div></a></li>
+<li><a href="permis-t-etape2-zonage-plongee.html" data-page="permis-t-etape2-zonage-plongee.html"><i>2</i><div><b>Étape 2 · Le zonage de la plateforme</b><span>La plongée sur Roissy, les zones une à une, colorie la plateforme, au poste.</span></div></a></li>
+<li><a href="permis-t-etape3-acces.html" data-page="permis-t-etape3-acces.html"><i>3</i><div><b>Étape 3 · L'accès au côté piste</b><span>Les titres, la boîte à gants au poste d'accès, les postes d'accès routiers et leurs horaires.</span></div></a></li>
+<li><a href="permis-t-etape4-vehicule.html" data-page="permis-t-etape4-vehicule.html"><i>4</i><div><b>Étape 4 · L'inspection du véhicule</b><span>Le tour du véhicule en trois dimensions, sept points à vérifier.</span></div></a></li>
+<li><a href="permis-t-etape5-circulation.html" data-page="permis-t-etape5-circulation.html"><i>5</i><div><b>Étape 5 · La circulation des véhicules</b><span>Les principes : routes et cheminements, marquage, vitesse, stationnement, feux, double stop, autour de l'avion.</span></div></a></li>
+<li><a href="permis-t-etape5b-risques.html" data-page="permis-t-etape5b-risques.html"><i>5</i><div><b>Étape 5, suite · Les risques sur l'aire de mouvement</b><span>Les règles, la traversée des voies avion, sept situations au volant, les points chauds, les accidents.</span></div></a></li>
+<li><a href="permis-t-etape6-securite.html" data-page="permis-t-etape6-securite.html"><i>6</i><div><b>Étape 6 · La sécurité sur l'aire de mouvement</b><span>Les équipements de protection, le badge, la cabine, les interdictions, les passagers, les piétons.</span></div></a></li>
+<li><a href="permis-t-etape7-avion.html" data-page="permis-t-etape7-avion.html"><i>7</i><div><b>Étape 7 · Autour de l'avion</b><span>Le poste avion en trois dimensions : frontière, coactivité, zone d'évolution contrôlée, cônes, périmètres, passerelle, stationnement.</span></div></a></li>
+<li><a href="permis-t-etape8-manoeuvre.html" data-page="permis-t-etape8-manoeuvre.html"><i>8</i><div><b>Étape 8 · L'aire de manœuvre</b><span>La frontière en trois dimensions : voie avion, ligne de sécurité, bande dégagée d'obstacles, stop.</span></div></a></li>
+<li><a href="permis-t-etape9-urgence.html" data-page="permis-t-etape9-urgence.html"><i>9</i><div><b>Étape 9 · Les procédures d'urgence</b><span>Collision, panne, incendie, objets intrus, drones, conducteur perdu, qui j'appelle.</span></div></a></li>
+<li><a href="permis-t-etape10-amelioration.html" data-page="permis-t-etape10-amelioration.html"><i>10</i><div><b>Étape 10 · L'amélioration continue</b><span>Le système de gestion de la sécurité, les facteurs humains, les notifications, le permis complet.</span></div></a></li>
+</ol>
+<p class="note">Pour la 3D, utilisez Chrome, Edge ou Safari récents.</p>
+</main>
+<script>
+(function(){const main=document.querySelector("main");let v=null;
+ function close(){if(v){v.remove();v=null}main.hidden=false}
+ function open(f){close();main.hidden=true;v=document.createElement("div");v.id="viewer";v.innerHTML='<div id="vload">Chargement de la page…<br><span style="font-size:14px;font-weight:400">quelques secondes sur téléphone</span></div>';
+  const fr=document.createElement("iframe");fr.src=f;fr.allow="autoplay";fr.onload=()=>{const l=document.getElementById("vload");if(l)l.remove()};v.appendChild(fr);document.body.appendChild(v)}
+ document.querySelectorAll("a[data-page]").forEach(a=>a.addEventListener("click",e=>{e.preventDefault();open(a.dataset.page)}));
+ addEventListener("message",e=>{if(e.data==="sommaire")close()});
+})();
+</script></html>
