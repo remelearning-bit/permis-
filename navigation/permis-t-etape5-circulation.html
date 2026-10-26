@@ -1680,6 +1680,29 @@ body.spk .cx .fig:not(.ct) img{animation-play-state:running}
  .cx .pad.two .beats .lay2{padding:22px}
 }
 @media (min-width:761px){.cx .solo .pi b{font-size:36px}.cx .solo .pi span{font-size:22px;line-height:1.4}.cx .solo .pi>em{font-size:44px}.cx .solo .plist{gap:16px 46px}}
+/* zone active / inactive : plus de fonds pastel, des cartes blanches avec un filet de couleur */
+.cx .sg3{background:#fff!important;box-shadow:0 8px 22px rgba(38,60,82,.08),inset 0 5px 0 #8A949E!important}
+.cx .sg3.act{box-shadow:0 8px 22px rgba(38,60,82,.08),inset 0 5px 0 #D6302B!important}
+.cx .sg3.ina{box-shadow:0 8px 22px rgba(38,60,82,.08),inset 0 5px 0 var(--v)!important}
+/* étape 8 · permis sur l'aire de manœuvre : cartes blanches, couleur du permis en bandeau */
+.cx .pq1{background:#fff!important;border:1px solid #E3E7EB;box-shadow:0 8px 22px rgba(38,60,82,.08);padding:20px 12px 16px}
+.cx .pq1:before{content:"";position:absolute;left:0;right:0;top:0;height:8px}
+.cx .pq1.t:before{background:#6DBE45}.cx .pq1.m:before{background:#3D7CC9}.cx .pq1.r:before{background:#8A63C8}.cx .pq1.p:before{background:#E7A325}
+.cx .pq1.no span{color:#C8102E}
+@media (min-width:761px){.cx .pq{gap:14px}.cx .pq1 b{width:66px;height:66px;font-size:44px}.cx .pq1 span{font-size:16px}}
+.cx .sg3.ina b{color:var(--n,#263C52)}
+/* cartes à retourner : grandes, quatre de front, centrées */
+@media (min-width:761px){
+#scene .html:has(>.flips){position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:70px 48px 30px}
+.flips{max-width:1120px!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:24px!important}
+.flip{min-height:300px!important}
+.flip .f{background:var(--m)!important;color:#fff!important;font-size:120px!important;box-shadow:0 18px 40px rgba(38,60,82,.18)!important}
+.flip .k{font-size:36px!important;padding:24px!important;border-top:8px solid var(--m)!important}
+.flip:not(.open):hover .f{transform:translateY(-4px)}
+}
+@media (max-width:760px){.flips{grid-template-columns:1fr 1fr!important}.flip{min-height:130px!important}.flip .f{background:var(--m)!important;color:#fff!important}.flip .k{font-size:20px!important}}
+/* étape 1 · mesures particulières : tient sans réduction */
+@media (min-width:761px){.cx #b2:has(>.mx) .hdv{max-height:380px;aspect-ratio:4/3;width:100%;justify-self:center}.cx #b2 .mx .h svg{max-width:84px}.cx #b2 .mx .h b{font-size:24px}}
 
 </style>
 <style id="skin5">
@@ -2335,7 +2358,7 @@ T.custom=async function(sc,next){tok++;const my=tok;panel(true);clearPanel();cap
  const fit=()=>{let k=d.firstElementChild;if(!k||!d.isConnected)return;const cov=k.classList.contains("cover");if(cov)k=k.querySelector(".txt");k.style.zoom="";k.style.minHeight="";if(innerWidth<=760)return;let z=1;
   /* contenu court : on l'agrandit pour qu'il occupe la page, et il reste centré */
   if((k.classList.contains("pad")||k.classList.contains("foW"))&&!k.querySelector(".beats")){const ch=[...k.children].filter(c=>getComputedStyle(c).position!=="absolute").map(c=>c.getBoundingClientRect()).filter(r=>r.height>0);const h=ch.length?Math.max(...ch.map(r=>r.bottom))-Math.min(...ch.map(r=>r.top))+60:9999,H=d.clientHeight;
-   if(h>0&&h<H*.74){z=Math.min(1.4,H*.88/h);k.style.zoom=z.toFixed(3);
+   if(h>0&&h<H*.8){z=Math.min(1.4,H*.88/h);k.style.zoom=z.toFixed(3);
     {const c2=[...k.children].filter(c=>getComputedStyle(c).position!=="absolute").map(c=>c.getBoundingClientRect()).filter(r=>r.height>0);const h1=c2.length?Math.max(...c2.map(r=>r.bottom))-Math.min(...c2.map(r=>r.top)):0;if(h1>(h-60)*z*1.1){k.style.zoom="";z=1}}
     if(z>1){
     for(let n=0;n<4&&(d.scrollWidth>d.clientWidth+1||d.scrollHeight>d.clientHeight+1);n++){z=Math.max(1,z-.06);k.style.zoom=z.toFixed(3)}
