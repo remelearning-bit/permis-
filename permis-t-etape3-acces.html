@@ -1219,6 +1219,17 @@ body.notxt .scene{transition:height .45s ease}
 .cx .adi{width:calc(100% + 52px);margin:-24px -26px 18px;height:190px;object-fit:cover;border-radius:20px 20px 0 0;display:block}
 .cx .adr .nw{z-index:2}
 @media (max-width:760px){.cx .hdv img{max-height:150px}.cx .thb{height:90px}.cx .adi{height:150px}}
+/* étape 3 · les exceptions */
+.cx .exc2{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:26px;max-width:980px}
+.cx .ex3{position:relative;background:#fff;border-radius:22px;box-shadow:0 10px 26px rgba(38,60,82,.09);padding:24px;display:flex;flex-direction:column;gap:12px;transition:box-shadow .5s,opacity .6s,transform .6s}
+.cx .ex3 .vz{position:relative;height:170px;background:var(--veil);border-radius:16px;display:grid;place-items:center}
+.cx .ex3 .vz svg{position:absolute;inset:16px;width:calc(100% - 32px);height:calc(100% - 32px)}
+.cx .ex3 .vz .vn{width:120px;color:var(--m);position:relative}.cx .ex3 .vz .vn svg{position:static;width:100%;height:auto}
+.cx .ex3 em{position:absolute;right:22px;top:16px;font:700 44px/1 var(--t);font-style:normal;color:var(--p2)}
+.cx .ex3 b{font:700 30px/1.05 var(--t)}
+.cx .exc2>.ex3.cur{box-shadow:0 0 0 3px var(--m),0 14px 30px rgba(38,60,82,.14)}.cx .exc2>.ex3.past{opacity:.55}
+@media (max-width:760px){.cx .exc2{grid-template-columns:1fr;gap:12px}.cx .ex3 .vz{height:120px}.cx .ex3 b{font-size:23px}}
+@media (max-width:760px){.cx .t4v .fig{max-height:140px;overflow:hidden}.cx .t4v .fig img{height:140px;max-height:140px;width:100%;object-fit:cover}.cx .t4v .plist{margin-top:8px!important}}
 
 </style>
 <style id="skin5">
@@ -1851,7 +1862,13 @@ V.parif={html:sc=>`<div class="pad two tw2"><div><div class="kick">${CX.KICK()}<
    r.forEach((x,i)=>{const o=h>=PA[i][1]&&h<PA[i][2];x.classList.toggle("off2",!o);x.querySelector(".st3").textContent=o?"Ouvert":"Fermé"})};
   return say([["a11","d",[[0,()=>rv(g(s,"fg"))],...PA.map((p,i)=>[at("a11",p[4]),()=>{rv(r[i]);spot(r,i)}])]],["a12","x",[[0,()=>{unspot(r);at2(5.5)}]]],["a13","d",[[at("a13","Mais"),()=>at2(23)]]]])}};
 
-CX.map([[0,"cov",{items:["Les points d'accès","Les titres","Ce que le conducteur doit avoir","Les postes d'accès routiers"]}],[1,"acc"],[5,"kit"],[7,"pl"],[8,"parif"]]);
+
+/* 7 · les exceptions : deux visuels nets à la place de la photo floue */
+V.exc={html:sc=>`<div class="pad"><div class="kick">${CX.KICK()}</div><h2>${sc.h2}</h2><p class="lede">Deux exceptions à ce régime.</p>
+ <div class="exc2"><div class="ex3 rv" id="x1"><div class="vz"><svg viewBox="0 0 220 130"><rect x="8" y="8" width="204" height="114" rx="14" fill="none" stroke="#263C52" stroke-width="4" stroke-dasharray="12 9"/></svg><span class="vn">${P.tug}</span></div><em>1</em><b>Les véhicules captifs</b></div>
+  <div class="ex3 rv" id="x2"><div class="vz"><svg viewBox="0 0 220 130"><rect x="20" y="36" width="180" height="58" rx="8" fill="#fff" stroke="#263C52" stroke-width="4"/><rect x="20" y="36" width="26" height="58" rx="8" fill="#263C52"/><rect x="174" y="36" width="26" height="58" rx="8" fill="#263C52"/><path d="M70 65h80" stroke="#B9B2A7" stroke-width="6" stroke-linecap="round" stroke-dasharray="2 14"/></svg></div><em>2</em><b>Les véhicules non immatriculés</b></div></div></div>`,
+ run:async s=>{const x=[g(s,"x1"),g(s,"x2")];const ok=await say([["a10","d",[[at("a10","les véhicules captifs"),()=>{rv(x[0]);spot(x,0)}],[at("a10","et les véhicules non"),()=>{rv(x[1]);spot(x,1)}]]]]);unspot(x);return ok}};
+CX.map([[0,"cov",{items:["Les points d'accès","Les titres","Ce que le conducteur doit avoir","Les postes d'accès routiers"]}],[1,"acc"],[5,"kit"],[7,"exc"],[8,"parif"]]);
 })();
 
 /* ===== Habillage REM · permis T · version 5 : en-tête route, pied « qui parle », projecteur ===== */
