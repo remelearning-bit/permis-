@@ -1479,6 +1479,24 @@ body.spk .cx .fig:not(.ct) img{animation-play-state:running}
 /* suspension et retrait : un peu plus grand */
 @media (min-width:761px){.cx .paper.dec .t b{font-size:30px}}
 
+/* questions sans image : centrées et en grand */
+@media (min-width:761px){
+ .stage.bare:not(.slim) .q .body{align-items:center;text-align:center}
+ .stage.bare:not(.slim) .q .body .who{justify-content:center}
+ .stage.bare:not(.slim) .q .body h2{font-size:48px!important;line-height:1.12;max-width:980px;margin-left:auto;margin-right:auto}
+ .stage.bare:not(.slim) .q .body .opts{justify-content:center}
+ .stage.bare:not(.slim) .q .body .opts button{font-size:28px!important}
+}
+/* étape 3 : points d'accès et équipement du conducteur en grand */
+@media (min-width:761px){
+ .cx .acc{max-width:none;gap:22px;margin-top:34px}
+ .cx .acc .aln{padding:26px 30px}.cx .acc .who4 b{font-size:30px}.cx .acc .dst b{font-size:30px}.cx .acc .dst small{font-size:18px}.cx .acc .dst em{font-size:18px}
+ .cx .acc .who4 svg,.cx .acc .who4 .vn svg{width:56px;height:56px}
+ .cx .chips2 span{font-size:17px;padding:10px 14px}
+ .cx .kit2{gap:30px;margin-top:34px}.cx .kit2 .big2 b{font-size:34px}.cx .kit2 .big2 svg{width:84px;height:84px}
+ .cx .kit2 .grp{padding:30px}
+}
+
 </style>
 <style id="skin5">
 /* ===== Habillage REM · permis T · version 5 (octobre 2026) =====
