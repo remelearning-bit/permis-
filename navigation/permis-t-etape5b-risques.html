@@ -1660,6 +1660,27 @@ body.spk .cx .fig:not(.ct) img{animation-play-state:running}
  .cx .kit2 .grp{padding:30px}
 }
 
+/* écrans 3D avec cartes : les cartes en colonne lisible, plus jamais en colonnes étroites */
+@media (min-width:761px){
+ .scene.split .html .cards{display:grid!important;grid-template-columns:1fr!important;gap:12px!important;width:100%}
+ .scene.split .html .cards.n4,.scene.split .html .cards.n5,.scene.split .html .cards.n6,.scene.split .html .cards.n7,.scene.split .html .cards.n8{grid-template-columns:1fr 1fr!important}
+ .scene.split .html .cards>.card{grid-column:auto!important}
+ .scene.split .html .cards>.card.hd{grid-column:1/-1!important}
+}
+/* zone 30 et routes de service : en grand */
+@media (min-width:761px){
+ .cx .z30l,.cx .zz30{max-width:none}
+}
+@media (min-width:761px){
+ .cx .sgs{display:grid!important;grid-template-columns:1fr 1fr;gap:22px 34px!important;margin-top:30px}
+ .cx .sgs .sgt{padding:18px 20px;border-radius:18px;background:#fff;box-shadow:0 8px 22px rgba(38,60,82,.08)}
+ .cx .sgs .sgt b{font-size:28px}.cx .sgs .sgt small{font-size:17px}
+ .cx .sgs .sgt svg,.cx .sgs .sgt .rsg{width:84px!important;height:84px!important;flex:none}
+ .cx .lay2 .chs span{font-size:17px;padding:9px 14px}.cx .lay2 .vt2{font-size:16px}
+ .cx .pad.two .beats .lay2{padding:22px}
+}
+@media (min-width:761px){.cx .solo .pi b{font-size:36px}.cx .solo .pi span{font-size:22px;line-height:1.4}.cx .solo .pi>em{font-size:44px}.cx .solo .plist{gap:16px 46px}}
+
 </style>
 <style id="skin5">
 /* ===== Habillage REM · permis T · version 5 (octobre 2026) =====
