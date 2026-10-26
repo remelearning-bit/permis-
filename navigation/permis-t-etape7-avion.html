@@ -1728,6 +1728,49 @@ body.spk .cx .fig:not(.ct) img{animation-play-state:running}
 .cx .two .plist .pi b{font-size:25px}.cx .two .plist .pi span{font-size:17.5px}
 @media (max-width:760px){.cx .two .plist .pi b{font-size:20px}.cx .two .plist .pi span{font-size:15.5px}}
 
+/* ===== Étape 1, reprise écran par écran ===== */
+/* mesures particulières : la photo en grand à gauche, le tableau à droite */
+@media (min-width:761px){
+ .cx #b2:has(>.mx):not(.off){display:grid;grid-template-columns:minmax(0,.95fr) minmax(0,1.05fr);grid-template-rows:auto auto;gap:6px 34px;align-items:center}
+ .cx #b2:has(>.mx) .hdv{grid-row:1/3;max-width:none;margin:0;aspect-ratio:1/1;max-height:430px;border-radius:20px}
+ .cx #b2:has(>.mx) .hdv img{max-height:none;height:100%;object-fit:cover;object-position:50% 60%}
+ .cx #b2 .mx{margin-top:0;grid-template-columns:120px repeat(3,minmax(0,1fr))}
+ .cx #b2 .mx .h b{font-size:28px}.cx #b2 .mx .rl{font-size:17px}.cx #b2 .mx .c svg{width:46px;height:46px}.cx #b2 .mx .ex{font-size:16px}.cx #b2 .mx .h svg{max-width:110px}
+ .cx #b2 .excl{margin-top:4px}
+}
+/* qui fait quoi : les deux binômes en grand */
+@media (min-width:761px){
+ .cx .pairs{max-width:none;gap:40px;margin-top:46px}
+ .cx .pr{grid-template-columns:minmax(0,1fr) 300px minmax(0,1fr);gap:18px}
+ .cx .pr .nd2{padding:22px 24px;border-radius:20px;box-shadow:0 10px 26px rgba(38,60,82,.10);background:#fff}
+ .cx .pr .nd2 b{font-size:30px}.cx .pr .nd2 small{font-size:17px}.cx .pr .nd2 svg{width:46px;height:46px}
+ .cx .pr .lk{font-size:20px!important;text-align:center}.cx .pr .lk svg{width:44px;height:44px}
+}
+/* préfet : la carte du personnel du Groupe ADP n'est plus vide */
+.cx .fa4{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+.cx .fa4 figure{margin:0;border-radius:12px;overflow:hidden;background:#fff}
+.cx .fa4 img{display:block;width:100%;height:92px;object-fit:cover}
+.cx .fa4 figcaption{font:600 13px/1.25 var(--b);color:var(--m3);padding:6px 8px 8px}
+.cx .fm.dim .fa4{opacity:.55;filter:grayscale(.4)}
+@media (min-width:761px){.cx .fam{grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);gap:26px}}
+/* d'où vient le dispositif : deux grandes cartes reliées */
+@media (min-width:761px){
+ .cx .orig{grid-template-columns:minmax(0,1fr) 120px minmax(0,1fr);align-items:center;margin-top:40px}
+ .cx .orig .ep{background:#fff;border-radius:22px;padding:28px 30px;box-shadow:0 12px 30px rgba(38,60,82,.10)}
+ .cx .orig .ep b{font-size:40px}.cx .orig .ep span{font-size:19px}.cx .orig .ep small{font-size:16px}
+ .cx .orig .eu{width:96px;height:96px;border-radius:18px}.cx .orig .eu svg{width:100%;height:100%}
+ .cx .orig .obl>div{font-size:18px}
+ .cx .orig .lnk{padding-top:0}
+}
+
+/* plusieurs temps dans un même écran : le temps affiché est centré dans la hauteur */
+@media (min-width:761px){.cx .beats>.beat{align-self:center}}
+@media (max-width:760px){.cx .beats>.beat.off{display:none}}
+/* les autorisations de conduite : la photo et le texte en grand */
+@media (min-width:761px){.cx .tfoc{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:46px}.cx .tfoc .hdp img{max-height:400px;height:400px;object-fit:cover}.cx .tfoc .pi b{font-size:25px;line-height:1.2}.cx .tfoc .seul{font-size:20px}}
+/* suspension et retrait : un peu plus grand */
+@media (min-width:761px){.cx .paper.dec .t b{font-size:30px}}
+
 </style>
 <style id="skin5">
 /* ===== Habillage REM · permis T · version 5 (octobre 2026) =====
@@ -2319,10 +2362,12 @@ T.custom=async function(sc,next){tok++;const my=tok;panel(true);clearPanel();cap
  const d=document.createElement("div");d.className="cx";d.innerHTML=V[sc.view].html(sc);s.appendChild(d);
  const fit=()=>{let k=d.firstElementChild;if(!k||!d.isConnected)return;const cov=k.classList.contains("cover");if(cov)k=k.querySelector(".txt");k.style.zoom="";k.style.minHeight="";if(innerWidth<=760)return;let z=1;
   /* contenu court : on l'agrandit pour qu'il occupe la page, et il reste centré */
-  if(k.classList.contains("pad")||k.classList.contains("foW")){const ch=[...k.children].filter(c=>getComputedStyle(c).position!=="absolute").map(c=>c.getBoundingClientRect()).filter(r=>r.height>0);const h=ch.length?Math.max(...ch.map(r=>r.bottom))-Math.min(...ch.map(r=>r.top))+60:9999,H=d.clientHeight;
+  if((k.classList.contains("pad")||k.classList.contains("foW"))&&!k.querySelector(".beats")){const ch=[...k.children].filter(c=>getComputedStyle(c).position!=="absolute").map(c=>c.getBoundingClientRect()).filter(r=>r.height>0);const h=ch.length?Math.max(...ch.map(r=>r.bottom))-Math.min(...ch.map(r=>r.top))+60:9999,H=d.clientHeight;
    if(h>0&&h<H*.74){z=Math.min(1.4,H*.88/h);k.style.zoom=z.toFixed(3);
+    {const c2=[...k.children].filter(c=>getComputedStyle(c).position!=="absolute").map(c=>c.getBoundingClientRect()).filter(r=>r.height>0);const h1=c2.length?Math.max(...c2.map(r=>r.bottom))-Math.min(...c2.map(r=>r.top)):0;if(h1>(h-60)*z*1.1){k.style.zoom="";z=1}}
+    if(z>1){
     for(let n=0;n<4&&(d.scrollWidth>d.clientWidth+1||d.scrollHeight>d.clientHeight+1);n++){z=Math.max(1,z-.06);k.style.zoom=z.toFixed(3)}
-    if(z>1)return;k.style.zoom="";k.style.minHeight="";z=1}}for(let n=0;n<4;n++){const ov=d.scrollHeight-d.clientHeight;if(ov<=1)break;z=Math.max(.72,z*(d.clientHeight/(d.clientHeight+ov))-.01);k.style.zoom=z.toFixed(3)}};
+    if(z>1)return;k.style.zoom="";k.style.minHeight="";z=1}}}for(let n=0;n<4;n++){const ov=d.scrollHeight-d.clientHeight;if(ov<=1)break;z=Math.max(.72,z*(d.clientHeight/(d.clientHeight+ov))-.01);k.style.zoom=z.toFixed(3)}};
  CX.fit=fit;requestAnimationFrame(fit);setTimeout(fit,350);d.querySelectorAll("img").forEach(im=>{if(!im.complete)im.addEventListener("load",fit,{once:true})});
  const btn=nextButton(sc.btn&&!/cover$/.test(sc.view)?sc.btn:"Suivant");
  const ok=await V[sc.view].run(d,sc);if(!ok||my!==tok)return;
@@ -2538,6 +2583,8 @@ const count=el=>{if(el.dataset.ct)return;const t=el.textContent.trim(),m=NUM.exe
  const f=now=>{const p=Math.min(1,(now-t0)/D),e=1-Math.pow(1-p,3);el.textContent=sep(Math.round(v*e))+(p<1?"":dec)+suf;if(p<1)requestAnimationFrame(f)};requestAnimationFrame(f)};
 new MutationObserver(ms=>{for(const m of ms){const el=m.target;if(!(el instanceof Element)||!el.classList.contains("in")||!el.closest(".cx"))continue;
  [el,...el.querySelectorAll("b,strong")].forEach(x=>{if(x.matches("b,strong")&&!x.children.length)count(x)})}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
+/* quand un écran passe d'un temps à l'autre, on réajuste la taille */
+let rf=0;new MutationObserver(ms=>{if(ms.some(m=>m.target instanceof Element&&m.target.classList.contains("beat"))){clearTimeout(rf);rf=setTimeout(()=>CX.fit&&CX.fit(),60)}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
 /* 6 · sur téléphone, les idées se suivent en cartes qu'on fait glisser ; la carte dont parle la voix vient au centre */
 new MutationObserver(ms=>{if(!phone())return;for(const m of ms){const el=m.target;if(el instanceof Element&&el.classList.contains("cur")&&el.parentNode&&el.parentNode.matches(".plist,.tls3"))el.parentNode.scrollTo({left:el.offsetLeft-16,behavior:"smooth"})}}).observe(document.body,{subtree:true,attributes:true,attributeFilter:["class"]});
 })();
