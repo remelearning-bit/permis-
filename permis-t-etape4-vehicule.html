@@ -1694,6 +1694,41 @@ body.spk .cx .fig:not(.ct) img{animation-play-state:running}
 .cx .mapv .mzd{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
 .cx .mapv .mzd circle{fill:none;stroke:#fff;stroke-width:5;opacity:0;animation:mzdp 1.8s ease-out .8s 3}
 @keyframes mzdp{0%{opacity:.9;transform-box:fill-box;transform-origin:center;transform:scale(.6)}100%{opacity:0;transform-box:fill-box;transform-origin:center;transform:scale(1.8)}}
+/* préambule · survol piloté des aérogares */
+.cx .svl{height:100%;display:flex;flex-direction:column;padding:22px 40px 18px;box-sizing:border-box;animation:cinein 1s ease both}
+.cx .svl .mzt h2{margin:4px 0 12px;transition:opacity .4s}
+.cx .svw{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+.cx .svs{position:relative;overflow:hidden;border-radius:18px;background:#E9ECEF;box-shadow:0 12px 30px rgba(38,60,82,.14),0 0 0 1px rgba(38,60,82,.08);perspective:1500px}
+.cx .svo{position:absolute;inset:0}
+.cx .svp{position:absolute;inset:-6%;transform:rotateX(22deg) scale(1.02);transform-origin:50% 50%;transition:transform 2.2s cubic-bezier(.5,0,.2,1),opacity .9s ease 1.3s;will-change:transform}
+.cx .svp img{width:100%;height:100%;display:block;object-fit:cover}
+.cx .svs.drift .svp{animation:svdr 14s ease-in-out infinite alternate}
+@keyframes svdr{from{transform:rotateX(22deg) scale(1.02) translate(0,0)}to{transform:rotateX(18deg) scale(1.07) translate(-1.5%,1%)}}
+.cx .svs.dive .svp{transform:rotateX(46deg) scale(3.6);opacity:0;animation:none}
+.cx .svs:not(.dive) .svp{opacity:1;transition:transform 2s cubic-bezier(.4,0,.2,1),opacity .8s ease}
+.cx .svb{position:absolute;transform:translate(-50%,-50%) scale(.85);opacity:0;pointer-events:none;border:0;cursor:pointer;background:var(--m);color:#fff;border-radius:14px;padding:10px 18px;box-shadow:0 8px 22px rgba(0,0,0,.35);text-align:left;transition:opacity .6s,transform .6s,box-shadow .3s}
+.cx .svb b{display:block;font:700 28px/1 var(--t)}.cx .svb small{display:block;font:600 15px/1.2 var(--b);opacity:.85;margin-top:3px}
+.cx .svb.in{opacity:1;transform:translate(-50%,-50%);pointer-events:auto}
+.cx .svb.nx{box-shadow:0 0 0 5px #fff,0 10px 26px rgba(0,0,0,.4)}
+.cx .svb.seen{background:#fff;color:var(--m)}
+.cx .svb .svk{display:none}
+.cx .svs.busy .svb{pointer-events:none}
+.cx .svd{position:absolute;inset:0;opacity:0;transform:scale(1.16);transition:opacity 1s ease,transform 1.8s cubic-bezier(.2,.7,.2,1);pointer-events:none;background:#fff}
+.cx .svd.in{opacity:1;transform:none;pointer-events:auto}
+.cx .svd.swap{opacity:0;transition:opacity .5s}
+.cx .svd .ann .hd{display:none}.cx .svd .ann .box{margin:0}.cx .svd .ann .fr{border-radius:0}
+.cx .svd .pad{padding:18px 28px}.cx .svd .pad .kick,.cx .svd .pad>h2{display:none}
+.cx .svup{display:none;align-items:center;gap:10px;height:50px;padding:0 24px 0 18px;border:0;border-radius:25px;background:var(--o);color:#fff;font:700 21px/1 var(--t);box-shadow:0 10px 24px rgba(233,78,27,.3);cursor:pointer;animation:cinein .6s ease both}
+.cx .svup svg{width:22px;height:22px}.cx .svup.in{display:flex}
+.cx .svl2{display:flex;align-items:center;gap:16px}
+.cx .svs.rising .svb{opacity:0!important;transition:none}
+.cx .svn{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-top:12px;font:500 18px/1.3 var(--b);color:var(--g)}
+.cx .svc{display:flex;gap:8px}.cx .svc em{font:700 15px/1 var(--t);font-style:normal;letter-spacing:.06em;text-transform:uppercase;color:var(--g);border:2px solid var(--p2);border-radius:16px;padding:7px 12px}
+.cx .svc em.ok{border-color:var(--m);color:var(--m)}.cx .svc em.ok:before{content:"✓ "}
+@media (max-width:760px){.cx .svl{height:auto;padding:16px 14px 20px}.cx .svs{width:100%;aspect-ratio:16/9;perspective:900px}.cx .svb{padding:6px 10px;border-radius:10px}.cx .svb b{font-size:17px}.cx .svb small{display:none}
+ .cx .svn{flex-direction:column;align-items:flex-start}.cx .svup{height:42px;font-size:17px}.cx .svs.dive .svp{transform:rotateX(40deg) scale(3.2)}}
+.cx .svs.dive .svb{opacity:0!important;transition:opacity .3s}
+.cx .svc em{white-space:nowrap}@media (max-width:760px){.cx .svc{gap:6px;flex-wrap:wrap}.cx .svc em{font-size:13px;padding:6px 9px}}
 
 </style>
 <style id="skin5">
@@ -2454,6 +2489,50 @@ const F={
 const k=Object.keys(F).find(x=>location.pathname.includes("permis-t-"+x));if(!k)return;
 F[k].forEach(([after,h2,f,d,lede,src])=>{const prev=SCREENS[after-1]||{};SCREENS.splice(after,0,{type:"custom",view:"film",h2,when:prev.when,jl:h2,lines:[],cfg:{f,d,lede,src}})});
 const sel=document.getElementById("lsel");if(sel)sel.innerHTML=SCREENS.map((s,i)=>`<option value="${i}">${i+1} · ${(s.h2||s.cap||s.title||s.jl||(s.type==="end"?"Fin de l'étape":s.type)).replace(/<[^>]+>/g,"")}</option>`).join("");
+})();
+
+/* ===== Préambule · survol piloté : la plateforme d'en haut, on descend sur chaque terminal, on remonte ===== */
+(function(){
+if(!/00-preambule/.test(location.pathname)||!/survol/.test(location.search))return;
+const i0=SCREENS.findIndex(s=>s.view==="ann"&&/aérogares/i.test(s.h2||""));if(i0<0)return;
+const pick=re=>SCREENS.find(s=>re.test(s.h2||""));
+const cfg={o:SCREENS[i0],t1:pick(/^Terminal 1$/),t2:pick(/^Terminal 2$/),t2p:pick(/halls/),t3:pick(/^Terminal 3$/)};
+const n=SCREENS.indexOf(cfg.t3)-i0+1;
+SCREENS.splice(i0,n,{type:"custom",view:"survol",h2:"Survol de la plateforme",when:cfg.o.when,jl:"Survol de la plateforme",lines:[],cfg});
+const sel=document.getElementById("lsel");if(sel)sel.innerHTML=SCREENS.map((s,i)=>`<option value="${i}">${i+1} · ${(s.h2||s.cap||s.title||s.jl||(s.type==="end"?"Fin de l'étape":s.type)).replace(/<[^>]+>/g,"")}</option>`).join("");
+const {say,at,hand}=CX,V=CX.V,q=(s,c)=>s.querySelector(c),qa=(s,c)=>[...s.querySelectorAll(c)];
+const T=[["t1","Terminal 1","CDG 1",26.9,27.8,"Charles-de-Gaulle un"],["t2","Terminal 2","CDG 2",58.8,60,"Charles-de-Gaulle deux"],["t3","Terminal 3","CDG 3",41.9,35.6,"Charles-de-Gaulle trois"]];
+const wait=ms=>new Promise(r=>setTimeout(r,ms));
+V.survol={html:sc=>`<div class="cine svl"><div class="mzt"><div class="kick">${CX.KICK()}</div><h2 id="svh">Les aérogares, vues du ciel</h2></div>
+ <div class="svw"><div class="svs"><div class="svo"><div class="svp"><img src="${PH[sc.cfg.o.cfg.ph]}" alt="Vue aérienne de la plateforme et de ses trois aérogares">
+  ${T.map(t=>`<button class="svb" type="button" data-t="${t[0]}" style="left:${t[3]}%;top:${t[4]}%"><b>${t[1]}</b><small>${t[2]}</small><i class="svk"></i></button>`).join("")}</div></div>
+  <div class="svd"></div></div></div>
+ <div class="svn"><span class="svl2"><button class="svup" type="button"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19V5M5 12l7-7 7 7"/></svg>Remonter</button><span id="svt">Trois aérogares, trois logiques de circulation.</span></span><span class="svc">${T.map(t=>`<em data-t="${t[0]}">${t[1]}</em>`).join("")}</span></div></div>`,
+ run:async(s,sc)=>{const c=sc.cfg,w=q(s,".svw"),st=q(s,".svs"),pl=q(s,".svp"),d=q(s,".svd"),up=q(s,".svup"),h2=q(s,"#svh"),tx=q(s,"#svt");
+  const B=qa(s,".svb"),C=qa(s,".svc em");
+  const fit=()=>{if(!w.isConnected)return;if(innerWidth<=760){st.style.cssText="";return}const W=w.clientWidth,H=w.clientHeight,R=16/9;let fw=W,fh=W/R;if(fh>H){fh=H;fw=H*R}st.style.cssText=`width:${fw}px;height:${fh}px`};
+  fit();addEventListener("resize",fit);setTimeout(fit,60);
+  st.classList.add("drift");
+  const ok=await say([["i03","d",T.map((t,i)=>[at("i03",t[5]),()=>B[i].classList.add("in")])]]);if(!ok)return ok;
+  st.classList.remove("drift");
+  const seen=new Set();
+  const next=()=>{const b=B.find(x=>!seen.has(x.dataset.t));B.forEach(x=>x.classList.toggle("nx",x===b));hand(b||null)};
+  const play=async k=>{const list=k==="t2"?[c.t2,c.t2p]:[c[k]];
+   for(let j=0;j<list.length;j++){const S=list[j];if(j){d.classList.add("swap");await wait(600)}
+    d.innerHTML=V[S.view].html(S);d.classList.remove("swap");h2.textContent=S.h2;const r=await V[S.view].run(d,S);if(!r)return false}
+   return true};
+  const visit=async b=>{const k=b.dataset.t,t=T.find(x=>x[0]===k);hand(null);B.forEach(x=>x.classList.remove("nx"));st.classList.add("busy");
+   pl.style.transformOrigin=`${t[3]}% ${t[4]}%`;st.classList.add("dive");tx.textContent=`Descente sur le ${t[1].toLowerCase()}…`;
+   await wait(1900);d.classList.add("in");const r=await play(k);if(!r)return false;
+   tx.textContent="Cliquez sur « Remonter » pour revenir au-dessus de la plateforme.";up.classList.add("in");hand(up);
+   await new Promise(res=>up.onclick=res);hand(null);up.classList.remove("in");d.classList.remove("in");await wait(500);
+   st.classList.add("rising");st.classList.remove("dive");h2.textContent="Les aérogares, vues du ciel";await wait(1900);st.classList.remove("rising");d.innerHTML="";
+   seen.add(k);b.classList.add("seen");C.find(x=>x.dataset.t===k).classList.add("ok");st.classList.remove("busy");return true};
+  tx.textContent="Cliquez sur un terminal pour descendre dessus.";next();
+  while(seen.size<T.length){const b=await new Promise(res=>B.forEach(x=>x.onclick=()=>{if(!st.classList.contains("busy"))res(x)}));
+   const r=await visit(b);if(r===false)return false;if(seen.size<T.length){tx.textContent="Cliquez sur un autre terminal.";next()}}
+  B.forEach(x=>x.onclick=null);tx.textContent="Vous avez fait le tour des trois aérogares.";hand(null);return true}};
+setTimeout(()=>{try{run(i0)}catch(e){}},400);
 })();
 
 /* ===== Mouvement : fondus enchaînés, heure qui défile, caméra lente, compteurs, cartes qu'on fait glisser ===== */
