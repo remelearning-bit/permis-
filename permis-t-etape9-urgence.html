@@ -2431,7 +2431,7 @@ const sel=document.getElementById("lsel");if(sel)sel.innerHTML=SCREENS.map((s,i)
 
 /* ===== Préambule · survol piloté : la plateforme d'en haut, on descend sur chaque terminal, on remonte ===== */
 (function(){
-if(!/00-preambule/.test(location.pathname)||!/survol/.test(location.search))return;
+if(!/00-preambule/.test(location.pathname))return;
 const i0=SCREENS.findIndex(s=>s.view==="ann"&&/aérogares/i.test(s.h2||""));if(i0<0)return;
 const pick=re=>SCREENS.find(s=>re.test(s.h2||""));
 const cfg={o:SCREENS[i0],t1:pick(/^Terminal 1$/),t2:pick(/^Terminal 2$/),t2p:pick(/halls/),t3:pick(/^Terminal 3$/)};
@@ -2470,7 +2470,7 @@ V.survol={html:sc=>`<div class="cine svl"><div class="mzt"><div class="kick">${C
   while(seen.size<T.length){const b=await new Promise(res=>B.forEach(x=>x.onclick=()=>{if(!st.classList.contains("busy"))res(x)}));
    const r=await visit(b);if(r===false)return false;if(seen.size<T.length){tx.textContent="Cliquez sur un autre terminal.";next()}}
   B.forEach(x=>x.onclick=null);tx.textContent="Vous avez fait le tour des trois aérogares.";hand(null);return true}};
-setTimeout(()=>{try{run(i0)}catch(e){}},400);
+if(/survol/.test(location.search))setTimeout(()=>{try{run(i0)}catch(e){}},400);
 })();
 
 /* ===== Mouvement : fondus enchaînés, heure qui défile, caméra lente, compteurs, cartes qu'on fait glisser ===== */
