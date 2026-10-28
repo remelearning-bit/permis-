@@ -89,23 +89,40 @@ body.subs #sub{display:block}
 #cap{position:fixed;right:16px;bottom:calc(58px + env(safe-area-inset-bottom));z-index:6;font-size:13px;line-height:1.2;background:rgba(255,255,255,.92);padding:4px 9px;border-radius:6px;pointer-events:none;opacity:0;transition:opacity .4s}
 #cap.on{opacity:1}
 body.subs #cap{bottom:auto;top:16px}
-/* la main orange qui montre où cliquer */
-#hand{position:fixed;left:0;top:0;z-index:9;width:40px;height:40px;pointer-events:none;opacity:0;transition:opacity .3s}
-#hand.on{opacity:1;animation:hd 1.1s ease-in-out infinite}
-@keyframes hd{0%,100%{translate:0 0}50%{translate:-5px -6px}}
+
 #vid{position:fixed;inset:0;z-index:20;background:rgba(20,30,40,.86);display:none;align-items:center;justify-content:center;flex-direction:column;gap:14px;padding:16px}
 #vid.on{display:flex}
 #vid video{max-width:min(1100px,100%);max-height:calc(100% - 90px);border-radius:10px;background:#000}
 #vid .act{margin-top:0}
 @media (max-width:700px){.lab .lst li{padding-top:1px;padding-bottom:1px}}
+/* la main orange qui montre où cliquer */
+#hand{position:fixed;left:0;top:0;z-index:30;width:40px;height:40px;pointer-events:none;opacity:0;transition:opacity .3s}
+#hand.on{opacity:1;animation:hd 1.1s ease-in-out infinite}
+@keyframes hd{0%,100%{translate:0 0}50%{translate:-5px -6px}}
+/* le journal : chaque décision de la matinée, avec l'heure */
+#jrn{position:fixed;inset:0;z-index:25;display:none;align-items:center;justify-content:center;padding:16px;background:rgba(38,60,82,.28)}
+#jrn.on{display:flex}
+#jrn .box{width:min(560px,100%);max-height:calc(100% - 80px);overflow:auto;background:#fff;border-radius:14px;box-shadow:0 6px 24px rgba(38,60,82,.2);padding:22px 24px}
+#jrn .n{font-weight:600;font-size:var(--B);color:var(--pierre);margin:0 0 6px}
+#jrn .q{font-weight:700;font-size:var(--A);line-height:1.15;margin:0 0 12px}
+.jl{list-style:none;margin:8px 0 0;padding:0 0 0 14px;border-left:4px solid var(--marine)}
+.jl li{font-size:var(--B);line-height:1.4;padding:4px 0}
+.jl li b{font-weight:700;color:var(--marine);margin-right:8px;font-variant-numeric:tabular-nums}
+.jl li.e{color:var(--pierre)}
+#jrn .act{margin-top:16px}
+
+@media (max-width:700px){#bar .st{font-size:14px}#bar{gap:12px}}
 </style></head>
 <body>
 <canvas id="c"></canvas>
 <svg id="lead"></svg>
 <div id="ui"></div>
 <div id="sub"></div>
-<div id="cap"></div>
 <svg id="hand" viewBox="0 0 48 48"><path d="M19 4c2 0 3.5 1.6 3.5 3.6V20l1.6-.4c2-.4 3.8.9 4.1 2.8l.1.6 1.4-.3c1.9-.3 3.6.9 4 2.7l.1.5 1-.2c2-.3 3.8 1.1 4 3.1l.6 7.4c.4 4.6-2.6 8.8-7 10l-3.8 1c-4.2 1.1-8.6-.5-11.1-4L9 33.6c-1-1.5-.7-3.5.7-4.6 1.4-1.1 3.4-.9 4.6.4l1.2 1.3V7.6C15.5 5.6 17 4 19 4z" fill="#E94E1B" stroke="#fff" stroke-width="2.4" stroke-linejoin="round"/></svg>
+<div id="jrn"><div class="box"><p class="n">Votre matinée</p><p class="q">Le journal</p><ul class="jl" id="jlist"></ul><button class="act" id="jclose">Fermer le journal</button></div></div>
+
+<div id="cap"></div>
+
 <div id="vid"><video id="vv" controls playsinline preload="none"></video><button class="act vc" id="vclose">Fermer le film</button></div>
 <div id="bar"><span class="st">Préambule</span><span class="sp"></span><button id="bsub">Sous-titres</button><button id="brep">Réécouter</button></div>
 <div id="prog"></div>
@@ -233,12 +250,30 @@ function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];sub.innerHT
 $('#brep').onclick=()=>{if(curAudio){curAudio.currentTime=0;curAudio.play().catch(()=>{})}};
 
 $('#bsub').onclick=()=>document.body.classList.toggle('subs');
-/* la main orange se pose à côté de ce qu'il faut cliquer */
-const HAND=$('#hand');let handEl=null;
-function hand(el){handEl=el||null;HAND.classList.toggle('on',!!el)}
-function placeHand(){if(!handEl)return;if(!handEl.isConnected){hand(null);return}const r=(handEl.classList.contains('tgt')?handEl:handEl).getBoundingClientRect();
- let x,y;if(handEl.classList.contains('tgt')){x=r.left+r.width*.62;y=r.top+r.height*.62}else{x=r.right-16;y=r.bottom-14}
- x=Math.min(x,innerWidth-44);HAND.style.transform=`translate(${x}px,${y}px)`}
+const ETAPE='p';
+const hand=()=>{};
+/* ---------------- la main orange et le journal, communs à toutes les étapes ---------------- */
+// la main se pose sur ce qu'il faut cliquer, seulement quand il n'y a qu'une seule chose à cliquer :
+// devant un choix, elle ne montre rien, pour ne pas souffler la réponse
+const HAND=document.getElementById('hand');
+const CLICK='.tgt.live:not(.ok):not(.ko),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
+function placeHand(){if(document.getElementById('jrn').classList.contains('on')){HAND.classList.remove('on');return}
+ const W=innerWidth,H=innerHeight;const els=[...document.querySelectorAll(CLICK)].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<H&&r.right>0&&r.left<W&&+getComputedStyle(e).opacity>.5&&(!e.closest('#vid')||e.closest('#vid.on'))});
+ if(els.length!==1){HAND.classList.remove('on');return}
+ const e=els[0],r=e.getBoundingClientRect();let x,y;if(e.classList.contains('tgt')){x=r.left+r.width*.62;y=r.top+r.height*.62}else{x=r.right-16;y=r.bottom-14}
+ x=Math.min(x,W-44);y=Math.min(y,H-44);HAND.style.transform=`translate(${x}px,${y}px)`;HAND.classList.add('on')}
+// le journal : gardé dans le navigateur pour suivre toute la matinée, d'une étape à l'autre
+const JK='permisT-journal',ORD=['p','e1','e2','e3','e4','e5','e5b','e6','e7','e8','e9','e10'];
+const JRN=[];
+function jload(){try{return JSON.parse(localStorage.getItem(JK)||'{}')}catch(e){return {}}}
+function jlog(h,t){JRN.push([h,t]);try{const a=jload();a[ETAPE]=JRN;localStorage.setItem(JK,JSON.stringify(a))}catch(e){}}
+const errTxt=n=>n?` (${n} erreur${n>1?'s':''} corrigée${n>1?'s':''})`:' (sans erreur)';
+function jhtml(all=true){const a=all?jload():{};a[ETAPE]=JRN;const rows=[];ORD.forEach(k=>(a[k]||[]).forEach(e=>rows.push(e)));
+ return rows.length?rows.map(e=>`<li><b>${e[0]}</b>${nb(e[1])}</li>`).join(''):'<li class="e">Rien pour l\'instant : chaque décision de la matinée s\'inscrira ici, avec l\'heure.</li>'}
+(()=>{const b=document.createElement('button');b.id='bjrn';b.textContent='Journal';const bar=document.getElementById('bar');bar.insertBefore(b,document.getElementById('bsub'));
+ b.onclick=()=>{document.getElementById('jlist').innerHTML=jhtml();document.getElementById('jrn').classList.add('on')};
+ document.getElementById('jclose').onclick=()=>document.getElementById('jrn').classList.remove('on')})();
+
 function resize(){R.setSize(innerWidth,innerHeight,false);setFov();if(CUR)Object.assign(V,view({x:V.x,z:V.z}))}
 addEventListener('resize',resize);resize();
 function frame(now){requestAnimationFrame(frame);
@@ -259,13 +294,13 @@ let prog=0;const NSTEP=13;function step(){prog++;$('#prog').style.width=(prog/NS
 /* ---------------- les écrans ---------------- */
 async function cover(){await photo('cov',FAST?10:1200);setCam({zoom:1});
  const L=label([0,0,0],{big:1,lead:false}).title('Permis T · Paris-Charles de Gaulle').card('Autorisation de conduite en zone côté piste','Préambule et introduction.');
- await cont(L,'Commencer');step();
+ await cont(L,'Commencer');step();try{localStorage.removeItem(JK)}catch(e){} // une nouvelle matinée commence
  await sayS('p01',[],{zoom:1.08});await sayS('p02');await sayS('p03');
  L.card('Autorisation de conduite en zone côté piste','La règle est la même pour tout le monde, quel que soit votre métier.');await cont(L);L.kill()}
 async function marche(){step();await photo('aerien');await camTo({zoom:1.02},1800);
  const L=label([0,0,0],{lead:false}).title('Comment ça marche');
  await sayS('p04',[at('p04',.03,()=>L.card('3 h 30','La durée obligatoire de la partie théorique.')),at('p04',.42,()=>L.card("Dix étapes, dans l'ordre","On ne passe à la suivante qu'après avoir terminé la précédente.")),at('p04',.8,()=>L.card('Deux voix','Damienne et Xavier, deux collègues qui échangent.'))],{zoom:1.1,x:-10});
- await sayS('p05',[at('p05',.03,()=>L.card('La main orange','Elle montre où cliquer.')),at('p05',.3,()=>L.card("Des questions d'entraînement","Jamais notées, autant d'essais que vous voulez, et une explication à chaque réponse.")),at('p05',.82,()=>L.card('Le journal',"Il note chaque décision de la matinée, avec l'heure."))],{zoom:1.16,x:-16});
+ await sayS('p05',[at('p05',.03,()=>L.card('La main orange','Elle montre où cliquer.')),at('p05',.3,()=>L.card("Des questions d'entraînement","Jamais notées, autant d'essais que vous voulez, et une explication à chaque réponse.")),at('p05',.82,()=>L.card('Le journal',"Il note chaque décision de la matinée, avec l'heure. Pour le relire, cliquez sur « Journal », en bas de l'écran."))],{zoom:1.16,x:-16});
  await sayS('p06',[at('p06',.03,()=>L.card('REM Formation au téléphone',"01 49 19 81 79 : il y a toujours quelqu'un pour répondre.")),at('p06',.68,()=>L.card("L'évaluation finale",'En ligne, sur votre espace stagiaire, à la fin du parcours.'))],{zoom:1.2,x:-20});
  await cont(L);return L}
 async function obligatoire(prev){step();prev.kill();
@@ -294,12 +329,13 @@ async function vraiFaux(prev){step();prev.kill();await photo('aerien');setCam({z
   ["L'attestation de réussite théorique est valable quarante jours.",'v',"Quarante jours, le temps de la formation pratique avec le référent.","Si, quarante jours : c'est sa durée de validité."],
   ["Absent de la plateforme pendant six mois, je repasse toute la formation.",'f',"Entre trois et douze mois d'absence, c'est une formation pratique qui est exigée, pas toute la formation.","Pas toute la formation : entre trois et douze mois d'absence, c'est une formation pratique qui est exigée."],
   ["Absent de la plateforme pendant quatorze mois, je repasse le permis T en entier.",'v',"Plus de douze mois consécutifs d'absence : le permis T est à repasser dans son intégralité.","Si : au-delà de douze mois consécutifs, le permis T se repasse en entier."]];
- for(let i=0;i<IT.length;i++){const [t,b,okT,koT]=IT[i];L.card(`Affirmation ${i+1} sur ${IT.length}`,t);
+ let nV=0;for(let i=0;i<IT.length;i++){const [t,b,okT,koT]=IT[i];L.card(`Affirmation ${i+1} sur ${IT.length}`,t);
   const w=document.createElement('div');w.style.pointerEvents='auto';w.innerHTML=`<div class="vf"><button class="ans" data-b="v" style="width:auto;margin-top:0">Vrai</button><button class="ans" data-b="f" style="width:auto;margin-top:0">Faux</button></div>`;L.el.appendChild(w);
   const bs=[...w.querySelectorAll('.ans')];hand(bs[0]);const pick=await new Promise(r=>bs.forEach(o=>o.onclick=()=>r(o)));hand(null);
-  const good=pick.dataset.b===b;bs.forEach(o=>{o.classList.add('off');o.onclick=null;if(o.dataset.b===b)o.classList.add('ok');else if(o===pick)o.classList.add('ko')});
+  const good=pick.dataset.b===b;if(good)nV++;bs.forEach(o=>{o.classList.add('off');o.onclick=null;if(o.dataset.b===b)o.classList.add('ok');else if(o===pick)o.classList.add('ko')});
   w.insertAdjacentHTML('beforeend',`<p class="fb ${good?'ok':'ko'}">${nb(good?okT:koT)}</p>`);
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<IT.length-1?'Affirmation suivante':'Continuer';w.appendChild(nx);hand(nx);await new Promise(r=>nx.onclick=r);hand(null);w.remove()}
+ jlog('Préambule',`Vrai ou faux sur le candidat : ${nV} bonne${nV>1?'s':''} réponse${nV>1?'s':''} sur 4`);
  return L}
 async function objectifs(prev){step();prev.kill();await photo('aerien2');setCam({zoom:1.02});
  const L=label([0,0,0],{lead:false}).title('Les objectifs');
@@ -342,26 +378,27 @@ async function survol(prev){step();prev.kill();await photo('terminaux');setCam(S
   L.card(`Descente sur le ${t.n.toLowerCase()}`,'');const p=pt(t.fx,t.fy,'terminaux');await camTo(PORT()?{mode:'contain',zoom:5,x:p[0],z:p[2]}:{x:p[0],z:p[2],zoom:3.2},2000);
   await photo(t.k,800);await camTo({zoom:1},1500);
   if(t.k==='t1')await sayS('i04',[at('i04',.03,()=>L.card('Terminal 1 · CDG 1','Le plus ancien, et le plus contraint pour la circulation.')),at('i04',.25,()=>L.card('Un bâtiment central circulaire',"Couplé à des satellites d'embarquement et de débarquement.",{a:pt(.47,.5)})),at('i04',.5,()=>L.card('Sept niveaux',"Le bâtiment central, dédié à l'accueil des visiteurs et des passagers.",{a:pt(.47,.5)})),at('i04',.74,()=>L.card('De 8 à 16 postes avion','Depuis 2019.',{a:null}))],{zoom:1.12});
-  if(t.k==='t2'){await sayS('i05',[at('i05',.03,()=>L.card('Terminal 2 · CDG 2','Ses halls vont de 2A à 2G, en deux rangées face à face.'))],{zoom:1.1});
+  if(t.k==='t2'){await sayS('i05',[at('i05',.03,()=>L.card('Terminal 2 · CDG 2','Le plus étendu. Ses halls vont de 2A à 2G, en deux rangées face à face.'))],{zoom:1.1});
    await photo('t2plan');{const c=pt(.58,.5);setCam(PORT()?{mode:'contain',zoom:1.35,x:c[0],z:c[2]}:{mode:'contain'})}
    await sayS('i06',[at('i06',.05,()=>L.card('Une rangée','2B, 2D, 2F.',{a:pt(.4,.2)})),at('i06',.45,()=>L.card('En face','2A, 2C, 2E.',{a:pt(.4,.83)})),at('i06',.78,()=>L.card('À part','2G.',{a:pt(.945,.48)}))])}
   if(t.k==='t3')await sayS('i07',[at('i07',.03,()=>L.card('Terminal 3 · CDG 3','Dédié aux vols charter et à bas coût.')),at('i07',.45,()=>L.card('Moins de volume','Mais une forte coactivité sur des surfaces réduites.'))],{zoom:1.12});
   L.card(t.n,'Cliquez sur « Remonter » pour revenir au-dessus de la plateforme.',{a:null});const id='up'+i;L.html(`<button class="act" id="${id}">Remonter</button>`);const up=$('#'+id);hand(up);await new Promise(r=>up.onclick=r);hand(null);up.remove();
   await camTo({zoom:1},800);await photo('terminaux',900);setCam(SV());seen.add(t.k)}
- L.card('Les trois aérogares','Vous en avez fait le tour.');await wait(900);return L}
+ jlog('Introduction','Survol des trois aérogares');L.card('Les trois aérogares','Vous en avez fait le tour.');await wait(900);return L}
 async function quelTerminal(L){L.title('Quel terminal ?');
  await sayS('i08',[at('i08',.03,()=>L.card('À vous','Je vous décris une aérogare : laquelle est-ce ?'))]);
  const IT=[["Un bâtiment circulaire, des satellites tout autour, la circulation la plus contrainte.",'t1',"Le terminal 1, le plus ancien.","Le bâtiment rond avec ses satellites, c'est le terminal 1."],
   ["Des vols charter et à bas coût, peu de volume mais beaucoup de coactivité sur peu de surface.",'t3',"Le terminal 3.","Charter et bas coût sur des surfaces réduites : c'est le terminal 3."],
-  ["Des halls de 2A à 2G, en deux rangées face à face.",'t2',"Le terminal 2.","Les halls de 2A à 2G : c'est le terminal 2."]];
- for(let i=0;i<IT.length;i++){const [t,b,okT,koT]=IT[i];L.card(`Description ${i+1} sur ${IT.length}`,t);
+  ["Des halls de 2A à 2G, en deux rangées face à face.",'t2',"Le terminal 2, le plus étendu.","Les halls de 2A à 2G : c'est le terminal 2."]];
+ let nT=0;for(let i=0;i<IT.length;i++){const [t,b,okT,koT]=IT[i];L.card(`Description ${i+1} sur ${IT.length}`,t);
   const w=document.createElement('div');w.style.pointerEvents='auto';w.innerHTML=TER.map(x=>`<button class="ans" data-b="${x.k}">${x.n}</button>`).join('');L.el.appendChild(w);
   const bs=[...w.querySelectorAll('.ans')];hand(bs[0]);const pick=await new Promise(r=>bs.forEach(o=>o.onclick=()=>r(o)));hand(null);
-  const good=pick.dataset.b===b;bs.forEach(o=>{o.classList.add('off');o.onclick=null;if(o.dataset.b===b)o.classList.add('ok');else if(o===pick)o.classList.add('ko')});
+  const good=pick.dataset.b===b;if(good)nT++;bs.forEach(o=>{o.classList.add('off');o.onclick=null;if(o.dataset.b===b)o.classList.add('ok');else if(o===pick)o.classList.add('ko')});
   w.insertAdjacentHTML('beforeend',`<p class="fb ${good?'ok':'ko'}">${nb(good?okT:koT)}</p>`);
   // la vue montre le terminal de la bonne réponse
   const T=TER.find(x=>x.k===b);const p=pt(T.fx,T.fy,'terminaux');camTo(PORT()?{mode:'contain',zoom:3,x:p[0],z:p[2]}:{x:p[0],z:p[2],zoom:1.8},1500);
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<IT.length-1?'Description suivante':'Continuer';w.appendChild(nx);hand(nx);await new Promise(r=>nx.onclick=r);hand(null);w.remove();await camTo(SV(),1200)}
+ jlog('Introduction',`Quel terminal : ${nT} bonne${nT>1?'s':''} réponse${nT>1?'s':''} sur 3`);
  return L}
 async function terminal4(prev){step();prev.kill();await photo('aerien2');setCam({zoom:1});
  const L=label([0,0,0],{lead:false}).title('Le projet Terminal 4');
@@ -381,7 +418,7 @@ async function pistes(prev){step();prev.kill();await photo('pistes');setCam({zoo
 async function fin(prev){step();prev.kill();await photo('aerien',1100);setCam({zoom:1.02});
  const L=label([0,0,0],{big:1,lead:false}).title('Préambule terminé · 5 h 00');
  await sayS('p17',[at('p17',.03,()=>L.card('Votre permis est encore vide','Première case à cocher : la réglementation.'))],{zoom:1.08});
- L.html(`<a class="act" id="gofin" style="text-decoration:none" href="../navigation/permis-t-etape1-reglementation.html">Étape 1 · La réglementation</a>`);hand($('#gofin'))}
+ L.html(`<p class="s" style="margin-top:14px;font-weight:600">Votre journal</p><ul class="jl">${jhtml(false)}</ul>`);L.html(`<a class="act" id="gofin" style="text-decoration:none" href="../navigation/permis-t-etape1-reglementation.html">Étape 1 · La réglementation</a>`)}
 (async()=>{let L=await cover();L=await marche();L=await obligatoire(L);L=await candidat(L);L=await attestation(L);L=await vraiFaux(L);L=await objectifs(L);L=await plan(L);L=await roissy(L);L=await survol(L);L=await quelTerminal(L);L=await terminal4(L);L=await pistes(L);await fin(L)})();
 window.V2={get here(){return CUR&&CUR.k},tgts};
 </script></body></html>
