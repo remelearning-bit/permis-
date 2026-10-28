@@ -463,6 +463,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last
  if(pumping){BEADS.forEach((b,i)=>{const u=((now/1400)+i/BEADS.length)%1;b.position.copy(H2.getPointAt(u));b.visible=true})}else BEADS.forEach(b=>b.visible=false);
  gyro.visible=!!PASS.flash;gyro.material.color.setHex(Math.floor(now/350)%2===0?0xffc21a:0xb07a10);
  for(const g of HUMANS)if(g.visible){g.userData.mixer.update(dt);poseHuman(g,now)}
+ if(ORB.on&&!move)cam.position.set(camT.x+ORB.r*Math.sin(ORB.a),ORB.h,camT.z+ORB.r*Math.cos(ORB.a));
  cam.lookAt(camT);layoutTags();layoutTgts();R.render(scene,cam)}
 function resize(){R.setSize(innerWidth,innerHeight,false);setFov()}addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 /* ---------------- progression ---------------- */
@@ -489,7 +490,7 @@ async function tour(){await go('tour');step('tour');orbitFrom();ORB.on=true;
  placePlane(1);setPlane({beacon:false,engines:false,cales:true});CONES.forEach(g=>g.visible=true);
  const L=label([0,0,0],{lead:false}).title('Le poste avion');
  await say('z04',[[.03,()=>L.card('Huit repères','Le poste est calé, moteurs arrêtés, feux anticollision éteints. Faites tourner la vue avec la souris ou le doigt, et cliquez sur chaque repère quand il apparaît.')]]);
- const PTS=[[[6,0,-34],'1 · La frontière','z05','La ligne de sécurité',"La ligne blanche continue, derrière le poste. Elle sépare la zone trafic (TRA) de la zone manœuvre (MAN). Avec le permis T, on ne la franchit jamais."],
+ const PTS=[[[6,0,-34],'1 · La frontière','z05','La ligne de sécurité',"La ligne blanche continue, derrière le poste. Elle sépare l'aire de trafic de l'aire de manœuvre. Avec le permis T, on ne la franchit jamais."],
   [[-20,0,29.5],'2 · La coactivité','z06','La coactivité',"Chacun respecte le sens de circulation, surveille son gabarit et ses rétroviseurs. Un écart, c'est une collision."],
   [[21,0,-15],"3 · La zone d'évolution contrôlée",'z07','La limite de zone',"Rouge bordée de blanc, sur les côtés et devant. Ouverte vers la voie avion. 7,50 m ou 4,50 m selon l'envergure."],
   [[17.5,0,-5.5],'4 · Les cônes','z08','Les cônes de sécurisation',"Obligatoires à l'aplomb de chaque aile, recommandés au nez et à l'arrière. À un mètre au maximum des points extrêmes."],
@@ -500,14 +501,15 @@ async function tour(){await go('tour');step('tour');orbitFrom();ORB.on=true;
  for(let i=0;i<PTS.length;i++){const [p,lab,id,t,s]=PTS[i];const T=await target(p,lab);T.kill('ok');
   if(i===2)setZone(1);if(i===4)pscSeg.forEach(g=>g.visible=true);
   const C0=[-4,0,2];let da=Math.atan2(p[0]-C0[0],p[2]-C0[2])-ORB.a;da=Math.atan2(Math.sin(da),Math.cos(da));const a0=ORB.a,t0=camT.clone(),t1=new THREE.Vector3(C0[0]+(p[0]-C0[0])*.45,0,C0[2]+(p[2]-C0[2])*.45);
-  const swing=anim(FAST?50:5200,u=>{const e=ease(u);ORB.a=a0+da*.55*e;camT.lerpVectors(t0,t1,e)});
-  await say(id,[[.03,()=>L.card(t,s,{a:[p[0],.2,p[2]]})]]);await swing;setZone(0);if(i===4)pscSeg.forEach(g=>g.visible=false)}
+  const sD=Math.max(6000,LINES[id].t.length*62),s0=performance.now();let sw=true;
+  const swing=()=>{if(!sw)return;const u=Math.min(1,(performance.now()-s0)/(FAST?50:sD));const e=ease(Math.min(1,u*sD/5200));if(ORB.drag==null){ORB.a=a0+da*.55*e+Math.sign(da||1)*.16*u;camT.lerpVectors(t0,t1,e)}if(u<1)requestAnimationFrame(swing)};swing();
+  await say(id,[[.03,()=>L.card(t,s,{a:[p[0],.2,p[2]]})]]);sw=false;setZone(0);if(i===4)pscSeg.forEach(g=>g.visible=false)}
  ORB.on=false;await say('z13',[[.05,()=>L.card('Vous avez fait le tour',"On reprend chaque notion en détail.",{a:null})]]);
  L.html(`<button class="act" id="goT">Continuer</button>`);await new Promise(r=>$('#goT').onclick=r);
  return L}
 async function frontiere(prev){prev.kill();await go('frontiere');step('frontiere');
- const L=label([8,.2,-34]).title('La frontière');const s1=small([12,0,-29],'Zone trafic (TRA)',{dx:-14,dy:0}),s2=small([12,0,-40],'Zone manœuvre (MAN)',{dx:-14,dy:0});L.sm=[s1,s2];
- await say('z14',[[.05,()=>L.card('La ligne de sécurité',"Elle délimite la zone trafic (TRA) et la zone manœuvre (MAN).")],[.5,()=>L.card('Attention au terminal 1','Les deux zones y sont ambiguës : prudence sur le cheminement véhicule extérieur.')]]);
+ const L=label([8,.2,-34]).title('La frontière');const s1=small([12,0,-29],'Aire de trafic',{dx:-14,dy:0}),s2=small([12,0,-40],'Aire de manœuvre',{dx:-14,dy:0});L.sm=[s1,s2];
+ await say('z14',[[.05,()=>L.card('La ligne de sécurité',"Elle délimite l'aire de trafic et l'aire de manœuvre.")],[.5,()=>L.card('Attention au terminal 1','Les deux zones y sont ambiguës : prudence sur le cheminement véhicule extérieur.')]]);
  return L}
 async function coactivite(prev){await next('Vers le cheminement',[-28,0,22]);prev.kill();prev.sm.forEach(x=>x.kill());CONES.forEach(g=>g.visible=false);camion.visible=true;await go('coactivite');step('coactivite');
  const L=label([-14,1.4,29.5]).title('La coactivité');
