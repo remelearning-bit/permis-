@@ -440,12 +440,17 @@ function layoutTgts(){const W=innerWidth,H=innerHeight,bot=H-BARH(),m=52;const p
 function look(t,D=1400){const t0=camT.clone(),t1=new THREE.Vector3(...t);return anim(D,u=>camT.lerpVectors(t0,t1,ease(u)))}
 /* ---------------- la voix ---------------- */
 let curAudio=null;const sub=$('#sub');
+// une seule voix réutilisée : sur iPhone et iPad, le son n'est autorisé que sur un lecteur déverrouillé par un clic
+const VO=new Audio();VO.preload='auto';let voUnlocked=false;
+let unlockPend=false;
+const unlock=()=>{if(voUnlocked||FAST||MUET)return;voUnlocked=true;unlockPend=true;try{VO.muted=true;VO.src=AUDIO+'z01.mp3';const p=VO.play();const end=()=>{if(unlockPend){VO.pause();unlockPend=false}VO.muted=false};if(p)p.then(end,end);else end()}catch(e){VO.muted=false}};
+addEventListener('pointerdown',unlock,true);addEventListener('click',unlock,true);addEventListener('touchend',unlock,true);
 function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];sub.innerHTML=`<b>${L.w==='X'?'Xavier':'Damienne'}</b> · ${L.t}`;
- const a=new Audio(AUDIO+id+'.mp3');curAudio=a;if(FAST)a.playbackRate=16;a.muted=FAST;const hs=hooks.slice().sort((x,y)=>x[0]-y[0]);let k=0,done=false;
+ const a=FAST?new Audio(AUDIO+id+'.mp3'):VO;if(!FAST){unlockPend=false;a.onended=a.onerror=null;a.pause();a.muted=false;a.src=AUDIO+id+'.mp3';a.playbackRate=1}curAudio=a;if(FAST)a.playbackRate=16;a.muted=FAST;const hs=hooks.slice().sort((x,y)=>x[0]-y[0]);let k=0,done=false;
  const tick=()=>{if(done)return;const d=a.duration||0;const f=d?a.currentTime/d:0;while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}requestAnimationFrame(tick)};
  const fin=()=>{if(done)return;done=true;while(k<hs.length){hs[k][1]();k++}setTimeout(res,FAST?20:350)};
- a.onended=fin;a.onerror=()=>{const ms=Math.max(2500,L.t.length*62);let t0=performance.now();const fake=()=>{const f=(performance.now()-t0)/(FAST?ms/16:ms);while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}if(f>=1)fin();else requestAnimationFrame(fake)};fake()};
- a.play().then(()=>tick()).catch(()=>a.onerror())})}
+ a.onended=fin;a.onerror=()=>{a.onerror=null;if(!MUET&&!FAST)document.body.classList.add('subs');const ms=Math.max(2500,L.t.length*62);let t0=performance.now();const fake=()=>{const f=(performance.now()-t0)/(FAST?ms/16:ms);while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}if(f>=1)fin();else requestAnimationFrame(fake)};fake()};
+ a.play().then(()=>tick()).catch(()=>{if(a.onerror)a.onerror()})})}
 $('#brep').onclick=()=>{if(curAudio){curAudio.currentTime=0;curAudio.play().catch(()=>{})}};
 $('#bsub').onclick=()=>document.body.classList.toggle('subs');
 /* ---------------- animations de la scène ---------------- */
@@ -705,7 +710,7 @@ async function main(){
   label([0,0,-6],{big:1,lead:false}).title('Étape 7 · extrait').card("Fin de l'extrait",'La version complète enchaîne aussi l\'interzec, les cônes, le périmètre de sécurité collision, l\'avitaillement, la passerelle, le stationnement et les questions.');return}
  L=await frontiere(L);L=await coactivite(L);L=await vigie(L);L=await zec(L);L=await classer(L);L=await interzec(L);L=await cones(L);L=await psc(L);L=await entrer(L);L=await perim(L);L=await psiP(L);L=await incidents(L);L=await urgence(L);L=await zep(L);L=await interdit(L);L=await stat(L);
  const sc=await quiz(L);await fin(sc)}
-window.V2={get QS(){return QS},go,P,cam,scene,setPlane,placePlane,tgts,get here(){return here}};
+window.V2={get QS(){return QS},get au(){return curAudio},go,P,cam,scene,setPlane,placePlane,tgts,get here(){return here}};
 main();
 </script>
 </body></html>
