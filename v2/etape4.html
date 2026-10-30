@@ -808,7 +808,7 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
   const g=bks.find(x=>x.dataset.k===it.b);drop(g,it);
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
-  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.ok)}
+  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
@@ -1021,7 +1021,7 @@ async function fin(){step();head('Étape 4 terminée · 6 h 00','Quatrième case
  cur().classList.add('vb');
  await sayS('v16',[at('v16',.02,()=>{const i=$c('#pmn i:nth-of-type(4)');i.classList.add('now');i.innerHTML='✓'})]);
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 5 · La circulation des véhicules</a>`}
-const NEXT='../navigation/permis-t-etape5-circulation.html';
+const NEXT='etape5.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 .n12 ol{list-style:none;margin:0 auto;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;max-width:1080px}
 .n12 li{display:flex;gap:12px;align-items:center;font-size:clamp(17px,1.45vw,22px);font-weight:600;color:var(--marine);line-height:1.25}

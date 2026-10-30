@@ -95,7 +95,7 @@ async function fin(){step();head('Étape 4 terminée · 6 h 00','Quatrième case
  cur().classList.add('vb');
  await sayS('v16',[at('v16',.02,()=>{const i=$c('#pmn i:nth-of-type(4)');i.classList.add('now');i.innerHTML='✓'})]);
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 5 · La circulation des véhicules</a>`}
-const NEXT='../navigation/permis-t-etape5-circulation.html';
+const NEXT='etape5.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 .n12 ol{list-style:none;margin:0 auto;padding:0;display:grid;grid-template-columns:1fr 1fr;gap:8px 28px;max-width:1080px}
 .n12 li{display:flex;gap:12px;align-items:center;font-size:clamp(17px,1.45vw,22px);font-weight:600;color:var(--marine);line-height:1.25}
