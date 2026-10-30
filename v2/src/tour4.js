@@ -70,8 +70,8 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
  host.addEventListener('pointermove',e=>{if(!drag)return;yaw=drag.yaw-(e.clientX-drag.x)*.008;pitch=Math.max(.05,Math.min(.6,drag.pitch+(e.clientY-drag.y)*.004))});
  host.addEventListener('pointerup',()=>drag=null);host.addEventListener('pointercancel',()=>drag=null);
  // les sept points
- const PTS=[{k:'pneus',p:[1.50,.40,1.02],yaw:.75,n:'Les pneumatiques',x:'Leur état, et leur pression.'},
-  {k:'eclairage',p:[2.33,.80,.62],yaw:.25,n:"L'éclairage",x:'Phares, feux, clignotants.'},
+ const PTS=[{k:'pneus',p:[1.50,.40,1.02],yaw:.75,n:'Les pneumatiques',x:'Leur état.'},
+  {k:'eclairage',p:[2.33,.80,.62],yaw:.25,n:"L'éclairage",x:"Le système d'éclairage."},
   {k:'freins',p:[-1.50,.40,1.02],yaw:2.30,n:'Le freinage',x:'On le vérifie avant toute utilisation.'},
   {k:'carburant',p:[-1.80,.95,-1.02],yaw:3.95,n:'Le carburant ou la charge des batteries',x:'Le niveau de carburant, ou la charge des batteries pour un véhicule électrique comme celui-ci.'},
   {k:'urgence',p:[1.55,1.30,.25],yaw:.05,n:"L'arrêt d'urgence",x:"Le fonctionnement du système d'arrêt d'urgence, pour les véhicules qui en sont équipés."},
@@ -86,9 +86,9 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
   PTS.forEach((q,i)=>{v.set(...q.p);cp.copy(cm.position).sub(v);const facing=cp.normalize().dot(new THREE.Vector3(q.p[0],0,q.p[2]).normalize())>-.15||q.k==='urgence';
    v.project(cm);const b=tg[i];b.style.left=((v.x+1)/2*r.width)+'px';b.style.top=((1-v.y)/2*r.height)+'px';b.classList.toggle('back',!facing)})};
  loop();
- const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Faites glisser pour tourner autour du véhicule. Puis cliquez sur chaque point quand il apparaît.',{a:null});
+ const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Le véhicule tourne jusqu\'à chaque point. Cliquez sur le point quand il devient orange. Vous pouvez aussi faire glisser pour tourner autour.',{a:null});
  await sayS('v04');
- for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on','live');
+ for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on');await new Promise(r=>{const w=()=>goal===null?r():requestAnimationFrame(w);w()});b.classList.add('live');
   L.card(`Point ${i+1} sur 7`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
   await new Promise(r=>b.onclick=r);b.onclick=null;b.classList.remove('live');b.classList.add('done');
   L.card(q.n,q.x,{a:null});await sayS('v'+String(5+i).padStart(2,'0'))}

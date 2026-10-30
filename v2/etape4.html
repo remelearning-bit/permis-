@@ -909,8 +909,8 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
  host.addEventListener('pointermove',e=>{if(!drag)return;yaw=drag.yaw-(e.clientX-drag.x)*.008;pitch=Math.max(.05,Math.min(.6,drag.pitch+(e.clientY-drag.y)*.004))});
  host.addEventListener('pointerup',()=>drag=null);host.addEventListener('pointercancel',()=>drag=null);
  // les sept points
- const PTS=[{k:'pneus',p:[1.50,.40,1.02],yaw:.75,n:'Les pneumatiques',x:'Leur état, et leur pression.'},
-  {k:'eclairage',p:[2.33,.80,.62],yaw:.25,n:"L'éclairage",x:'Phares, feux, clignotants.'},
+ const PTS=[{k:'pneus',p:[1.50,.40,1.02],yaw:.75,n:'Les pneumatiques',x:'Leur état.'},
+  {k:'eclairage',p:[2.33,.80,.62],yaw:.25,n:"L'éclairage",x:"Le système d'éclairage."},
   {k:'freins',p:[-1.50,.40,1.02],yaw:2.30,n:'Le freinage',x:'On le vérifie avant toute utilisation.'},
   {k:'carburant',p:[-1.80,.95,-1.02],yaw:3.95,n:'Le carburant ou la charge des batteries',x:'Le niveau de carburant, ou la charge des batteries pour un véhicule électrique comme celui-ci.'},
   {k:'urgence',p:[1.55,1.30,.25],yaw:.05,n:"L'arrêt d'urgence",x:"Le fonctionnement du système d'arrêt d'urgence, pour les véhicules qui en sont équipés."},
@@ -925,9 +925,9 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
   PTS.forEach((q,i)=>{v.set(...q.p);cp.copy(cm.position).sub(v);const facing=cp.normalize().dot(new THREE.Vector3(q.p[0],0,q.p[2]).normalize())>-.15||q.k==='urgence';
    v.project(cm);const b=tg[i];b.style.left=((v.x+1)/2*r.width)+'px';b.style.top=((1-v.y)/2*r.height)+'px';b.classList.toggle('back',!facing)})};
  loop();
- const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Faites glisser pour tourner autour du véhicule. Puis cliquez sur chaque point quand il apparaît.',{a:null});
+ const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Le véhicule tourne jusqu\'à chaque point. Cliquez sur le point quand il devient orange. Vous pouvez aussi faire glisser pour tourner autour.',{a:null});
  await sayS('v04');
- for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on','live');
+ for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on');await new Promise(r=>{const w=()=>goal===null?r():requestAnimationFrame(w);w()});b.classList.add('live');
   L.card(`Point ${i+1} sur 7`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
   await new Promise(r=>b.onclick=r);b.onclick=null;b.classList.remove('live');b.classList.add('done');
   L.card(q.n,q.x,{a:null});await sayS('v'+String(5+i).padStart(2,'0'))}
@@ -980,7 +980,7 @@ async function horsService(){step();head(H4,'Si quelque chose ne va pas');
  await contV();return null}
 
 /* 6. à vous : dans la vérification quotidienne, ou pas ? */
-const V1=[{t:"L'état des pneus.",b:"o",ok:"Il fait partie de la vérification quotidienne : les pneumatiques, leur état et leur pression."},
+const V1=[{t:"L'état des pneus.",b:"o",ok:"Il fait partie de la vérification quotidienne : l'état des pneus."},
  {t:"Le système de freinage.",b:"o",ok:"Il fait partie de la vérification quotidienne, avant chaque utilisation."},
  {t:"Les papiers du véhicule.",b:"n",ok:"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."},
  {t:"Le plan de l'aire de mouvement, à bord.",b:"o",ok:"La consigne n°12 le demande : le plan doit être dans le véhicule."},
@@ -1002,14 +1002,14 @@ async function avant(){step();head(H4+' · 5 h 55','Avant de partir ? À vous');
 async function question(){step();head(H4+' · 5 h 58',"Une question d'entraînement");
  ALT.q4=1;const two=(TRY.q4||0)%2;
  const Z=two?{q:"Pendant le tour du véhicule, vous trouvez un défaut qui le rend hors service. Que faites-vous ?",bk:[4],
-   o:[["Je ne l'utilise pas, je le signale, et il est évacué de la zone côté piste.",1,"La consigne n°12 est claire : un véhicule hors service n'est pas exploité ; il est signalé et évacué de la zone côté piste."],["Je pars quand même, et je le signale en rentrant.",0,""],["Je le gare sur un poste de stationnement libre.",0,""]]}
+   o:[["Je ne l'utilise pas, je le signale, et il est évacué de la zone côté piste.",1,"La consigne n°12 est claire : un véhicule hors service n'est pas exploité ; il est signalé et évacué de la zone côté piste."],["Je pars quand même, et je le signale en rentrant.",0,"Hors service, il n'est pas exploité : il ne part pas."],["Je le gare sur un poste de stationnement libre.",0,"Hors service, il est évacué de la zone côté piste, pas laissé sur un poste."]]}
   :{line:'v15',q:"En tant que conducteur, quels sont les points à vérifier avant d'utiliser un véhicule côté piste ?",fixed:1,bk:[2,3],
-   o:[["L'aspect extérieur du véhicule.",0,"L'aspect extérieur ne suffit pas : il faut aussi l'éclairage, les freins, et le niveau de la batterie ou du réservoir."],["Les papiers du véhicule.",0,"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."],["L'aspect extérieur, l'éclairage, l'état des freins, et le niveau de la batterie ou du réservoir du véhicule.",1,"Le tour complet du véhicule, avant chaque utilisation : aspect extérieur, éclairage, freins, batterie ou réservoir."]]};
+   o:[["L'aspect extérieur du véhicule.",0,"L'aspect extérieur ne suffit pas : il faut aussi l'éclairage, les freins, et le niveau de la batterie ou du réservoir."],["Les papiers du véhicule.",0,"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."],["L'aspect extérieur, l'éclairage, l'état des freins, et le niveau de la batterie ou du réservoir du véhicule.",1,"Le tour du véhicule avant chaque utilisation. Il comprend notamment l'aspect extérieur, l'éclairage, les freins, la batterie ou le réservoir."]]};
  vue(`<div class="qc" id="qq" style="width:min(760px,100%)"><p class="n">Question 1 sur 1</p><p class="q">${nb(Z.q)}</p></div>`);
  if(Z.line)await sayS(Z.line);else await wait(FAST?0:400);
  const qc=$c('#qq');let o=Z.o.map((x,k)=>[String(k),x[0]]);if(!Z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
  const gk=String(Z.o.findIndex(x=>x[1]));const kot={};Z.o.forEach((x,k)=>{if(!x[1]&&x[2])kot[k]=x[2]});
- const E=await pick(null,o,gk,Z.o[+gk][2],kot,'Terminer',{once:true,x:!two,host:qc});
+ const E=await pick(null,o,gk,Z.o[+gk][2],kot,'Terminer',{once:true,x:true,host:qc});
  jlog('5 h 58',`Question d'entraînement${errTxt(E)}`);return gate('q4',E,1,Z.bk,"Question d'entraînement",6)}
 
 /* 8. fin */

@@ -54,7 +54,7 @@ async function horsService(){step();head(H4,'Si quelque chose ne va pas');
  await contV();return null}
 
 /* 6. à vous : dans la vérification quotidienne, ou pas ? */
-const V1=[{t:"L'état des pneus.",b:"o",ok:"Il fait partie de la vérification quotidienne : les pneumatiques, leur état et leur pression."},
+const V1=[{t:"L'état des pneus.",b:"o",ok:"Il fait partie de la vérification quotidienne : l'état des pneus."},
  {t:"Le système de freinage.",b:"o",ok:"Il fait partie de la vérification quotidienne, avant chaque utilisation."},
  {t:"Les papiers du véhicule.",b:"n",ok:"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."},
  {t:"Le plan de l'aire de mouvement, à bord.",b:"o",ok:"La consigne n°12 le demande : le plan doit être dans le véhicule."},
@@ -76,14 +76,14 @@ async function avant(){step();head(H4+' · 5 h 55','Avant de partir ? À vous');
 async function question(){step();head(H4+' · 5 h 58',"Une question d'entraînement");
  ALT.q4=1;const two=(TRY.q4||0)%2;
  const Z=two?{q:"Pendant le tour du véhicule, vous trouvez un défaut qui le rend hors service. Que faites-vous ?",bk:[4],
-   o:[["Je ne l'utilise pas, je le signale, et il est évacué de la zone côté piste.",1,"La consigne n°12 est claire : un véhicule hors service n'est pas exploité ; il est signalé et évacué de la zone côté piste."],["Je pars quand même, et je le signale en rentrant.",0,""],["Je le gare sur un poste de stationnement libre.",0,""]]}
+   o:[["Je ne l'utilise pas, je le signale, et il est évacué de la zone côté piste.",1,"La consigne n°12 est claire : un véhicule hors service n'est pas exploité ; il est signalé et évacué de la zone côté piste."],["Je pars quand même, et je le signale en rentrant.",0,"Hors service, il n'est pas exploité : il ne part pas."],["Je le gare sur un poste de stationnement libre.",0,"Hors service, il est évacué de la zone côté piste, pas laissé sur un poste."]]}
   :{line:'v15',q:"En tant que conducteur, quels sont les points à vérifier avant d'utiliser un véhicule côté piste ?",fixed:1,bk:[2,3],
-   o:[["L'aspect extérieur du véhicule.",0,"L'aspect extérieur ne suffit pas : il faut aussi l'éclairage, les freins, et le niveau de la batterie ou du réservoir."],["Les papiers du véhicule.",0,"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."],["L'aspect extérieur, l'éclairage, l'état des freins, et le niveau de la batterie ou du réservoir du véhicule.",1,"Le tour complet du véhicule, avant chaque utilisation : aspect extérieur, éclairage, freins, batterie ou réservoir."]]};
+   o:[["L'aspect extérieur du véhicule.",0,"L'aspect extérieur ne suffit pas : il faut aussi l'éclairage, les freins, et le niveau de la batterie ou du réservoir."],["Les papiers du véhicule.",0,"Les papiers, c'est pour le poste d'accès. Avant d'utiliser le véhicule, on vérifie son état."],["L'aspect extérieur, l'éclairage, l'état des freins, et le niveau de la batterie ou du réservoir du véhicule.",1,"Le tour du véhicule avant chaque utilisation. Il comprend notamment l'aspect extérieur, l'éclairage, les freins, la batterie ou le réservoir."]]};
  vue(`<div class="qc" id="qq" style="width:min(760px,100%)"><p class="n">Question 1 sur 1</p><p class="q">${nb(Z.q)}</p></div>`);
  if(Z.line)await sayS(Z.line);else await wait(FAST?0:400);
  const qc=$c('#qq');let o=Z.o.map((x,k)=>[String(k),x[0]]);if(!Z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
  const gk=String(Z.o.findIndex(x=>x[1]));const kot={};Z.o.forEach((x,k)=>{if(!x[1]&&x[2])kot[k]=x[2]});
- const E=await pick(null,o,gk,Z.o[+gk][2],kot,'Terminer',{once:true,x:!two,host:qc});
+ const E=await pick(null,o,gk,Z.o[+gk][2],kot,'Terminer',{once:true,x:true,host:qc});
  jlog('5 h 58',`Question d'entraînement${errTxt(E)}`);return gate('q4',E,1,Z.bk,"Question d'entraînement",6)}
 
 /* 8. fin */
