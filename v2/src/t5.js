@@ -9,6 +9,10 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  const scene=new THREE.Scene();const CIEL=0xe7eaea;scene.background=new THREE.Color(CIEL);scene.fog=new THREE.Fog(CIEL,160,650);
  const cam=new THREE.PerspectiveCamera(55,1,.05,1200);scene.add(cam);
  scene.add(new THREE.HemisphereLight(0xffffff,0x9a9e98,1.05));const sun=new THREE.DirectionalLight(0xfff4e6,1.15);sun.position.set(60,100,50);scene.add(sun);
+ { // reflets doux pour la peinture et le métal de l'avion : un ciel clair au-dessus, le sol en dessous
+  const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');const gr=x.createLinearGradient(0,0,0,128);
+  gr.addColorStop(0,'#f4f6f7');gr.addColorStop(.48,'#dfe4e6');gr.addColorStop(.52,'#8f978c');gr.addColorStop(1,'#6f756c');x.fillStyle=gr;x.fillRect(0,0,256,128);
+  const et=new THREE.CanvasTexture(c);et.mapping=THREE.EquirectangularReflectionMapping;et.colorSpace=THREE.SRGBColorSpace;scene.environment=et}
  const MM={};const mat=c=>MM[c]||(MM[c]=new THREE.MeshLambertMaterial({color:c}));
  const box=(w,h,d,c,x=0,y=0,z=0,p)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.position.set(x,y,z);(p||scene).add(m);return m};
  const cyl=(r1,r2,h,c,x=0,y=0,z=0,p,seg=16)=>{const m=new THREE.Mesh(new THREE.CylinderGeometry(r1,r2,h,seg),mat(c));m.position.set(x,y,z);(p||scene).add(m);return m};
@@ -45,16 +49,7 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  cyl(2.6,3.2,44,0xdedcd6,-260,22,-380);cyl(7,5,6,0x7d94a6,-260,47,-380);cyl(7.4,7.4,1.2,0xdedcd6,-260,50.6,-380);
  box(320,16,30,0xe4e2dc,-330,8,160);box(320,5,.4,0x7d94a6,-330,9,144.8);box(200,12,40,0xdcdad4,280,6,-220);box(60,22,260,0xe2e0da,340,11,40);box(.4,6,240,0x7d94a6,309.8,12,40);
  /* l'avion qui roule sur la voie (même modèle que la démonstration de la panne) */
- const avion=new THREE.Group();{const a=avion,W=0xf5f5f3,G=0xc4c9cd;
-  const f=cyl(2,2,34,W,0,3.6,0,a,24);f.rotation.x=Math.PI/2;const n=new THREE.Mesh(new THREE.SphereGeometry(2,20,14),mat(W));n.scale.set(1,1,1.8);n.position.set(0,3.6,17);a.add(n);
-  box(2.6,.5,.9,MARINE,0,4.55,18.4,a).rotation.x=-.5;const q=new THREE.Mesh(new THREE.ConeGeometry(2,9,20),mat(W));q.rotation.x=-Math.PI/2;q.position.set(0,4.4,-21.5);q.scale.set(1,1,.7);a.add(q);
-  const aile=s=>{const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(16.5*s,-8);sh.lineTo(16.5*s,-10.5);sh.lineTo(0,-6);sh.closePath();const m=new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth:.35,bevelEnabled:false}),mat(G));m.rotation.x=-Math.PI/2;m.position.set(0,2.9,4);a.add(m)};aile(1);aile(-1);
-  box(.3,6.5,6,W,0,8,-19,a).rotation.x=.35;box(.32,2.2,3,MARINE,0,9.6,-20.3,a).rotation.x=.35;box(12,.25,3.5,G,0,4.2,-20,a);
-  [5.5,-5.5].forEach(x=>{const e=cyl(1.1,1.2,4,G,x,2,-1.5,a,18);e.rotation.x=Math.PI/2;const d=new THREE.Mesh(new THREE.CircleGeometry(1,18),mat(0x3a4148));d.position.set(x,2,.52);a.add(d)});
-  const train=(x,z)=>{const t=cyl(.55,.55,.9,NOIR,x,.55,z,a,14);t.rotation.z=Math.PI/2;box(.3,2.2,.3,0x8a9096,x,1.6,z,a)};train(-3.4,-1);train(3.4,-1);train(0,12);
-  // feux anticollision rouges (dessus et dessous), qui clignotent : l'avion est en mouvement
-  a.userData.beacons=[[0,5.75,2],[0,1.45,2]].map(p=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));s.scale.set(2.2,2.2,1);s.position.set(...p);a.add(s);return s});
-  blob(10,40,a,0,-2);blob(36,10,a,0,-3);scene.add(a)}
+ const avion=makeAirliner(glowTex);scene.add(avion);blob(9,40,avion,0,-1);blob(36,9,avion,0,2);
  avion.position.set(0,0,-420);let planeV=0,planeOn=false;
  /* notre véhicule : on voit l'intérieur, à la première personne */
  const veh=new THREE.Group();scene.add(veh);veh.position.set(-95,0,0);
@@ -63,7 +58,7 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  const dash=box(.5,.06,1.9,DASH,1.55,.98,0,IN);box(.05,.05,1.9,DASH,1.8,1.18,0,IN);
  const volant=new THREE.Mesh(new THREE.TorusGeometry(.17,.022,8,24),mat(0x3a434c));volant.position.set(1.22,1.0,-.45);volant.rotation.y=Math.PI/2;volant.rotation.x=.25;IN.add(volant);
  /* caméra à hauteur d'yeux */
- const seat=()=>new THREE.Vector3(veh.position.x+.42,1.62,-.45);const camT=new THREE.Vector3(40,.9,-.45);cam.position.copy(seat());
+ let seatOff=null;const seat=()=>seatOff?new THREE.Vector3(seatOff.x,seatOff.y,seatOff.z):new THREE.Vector3(veh.position.x+.42,1.62,-.45);const camT=new THREE.Vector3(40,.9,-.45);cam.position.copy(seat());
  const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;let move=null;
  const look=(t,D=1800)=>new Promise(r=>{move={t0:performance.now(),D:FAST?80:D,a:camT.clone(),b:new THREE.Vector3(...t),r}});
  const anims=new Set();const anim=(D,fn)=>new Promise(r=>anims.add({t0:performance.now(),D:FAST?Math.min(D,100):D,fn,r}));
@@ -109,6 +104,8 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  function fit(){const r=host.getBoundingClientRect();R.setSize(r.width,r.height,false);const a=r.width/r.height;cam.fov=a<1?Math.min(72,2*Math.atan(Math.tan(27*Math.PI/180)/a)*180/Math.PI):55;cam.aspect=a;cam.updateProjectionMatrix();IN.visible=a>=1}
  addEventListener('resize',fit);fit();requestAnimationFrame(frame);camT.set(...ahead());
  const drive=(x1,D)=>{const x0=veh.position.x;return anim(D,t=>{const e=t<.5?2*t*t:1-Math.pow(-2*t+2,2)/2;veh.position.x=x0+(x1-x0)*e;camT.x=veh.position.x+40})};
+ if(Q.has('avion')){ // réglage du modèle : vues fixes
+  avion.position.set(0,0,0);IN.visible=false;window.__view=(px,py,pz,tx,ty,tz)=>{seatOff={x:px,y:py,z:pz};camT.set(tx,ty,tz)};await new Promise(()=>{})}
  /* ======== le déroulé ======== */
  const L=tag([-44.5,.1,0],{dx:-30,dy:-90});L.set('Le cheminement véhicule','Il croise une voie de circulation avion. On y va.');
  await contV('Rouler jusqu\'à la traversée');

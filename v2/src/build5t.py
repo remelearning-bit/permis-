@@ -3,7 +3,7 @@ from PIL import Image
 T=open('/home/claude/permis-/v2/preambule.html',encoding='utf-8').read()
 e1=open('/home/claude/w/e1.js',encoding='utf-8').read()
 common=e1[:e1.index('/* 1. la couverture et les quatre parties */')]
-js=common+open('/home/claude/w/e5t.js',encoding='utf-8').read().replace('/*__T5__*/',open('/home/claude/w/t5.js',encoding='utf-8').read())
+js=common+open('/home/claude/w/e5t.js',encoding='utf-8').read().replace('/*__T5__*/',open('/home/claude/w/avion5.js',encoding='utf-8').read()+open('/home/claude/w/t5.js',encoding='utf-8').read())
 lines=open('/home/claude/w/e5lines.json',encoding='utf-8').read()
 img={};dim={}
 for k in []:
