@@ -777,11 +777,21 @@ function makeAirliner(glowTex){
   // deux matériaux : peinture blanche au-dessus, ventre gris sous la ceinture
   geo.addGroup(0,top.length,0);geo.addGroup(top.length,bot.length,1);
   add(geo,[paint,belly])}
- /* vitres du poste de pilotage : surfaces épousant le nez, légèrement décollées */
- const patch=(z0,z1,t0,t1)=>{const N=8,pos=[],idx=[];for(let i=0;i<=N;i++){const z=z0+(z1-z0)*i/N;const [rx,ry,cy]=prof(z);for(let j=0;j<=N;j++){const t=t0+(t1-t0)*j/N;pos.push(Math.sin(t)*rx*1.012,cy+Math.cos(t)*ry*1.012,z)}}
+ /* vitres du poste de pilotage : un bandeau à hauteur constante autour du nez, découpé en vitres (pare-brise, latérales, arrière) ;
+    chaque point est trouvé en partant de l'axe et en avançant jusqu'à la peau du fuselage */
+ const inside=(x,y,z)=>{if(z>L1||z<L0)return false;const [rx,ry,cy]=prof(z);return rx>0&&ry>0&&(x/rx)**2+((y-cy)/ry)**2<=1};
+ const surf=(y,ph)=>{const dx=Math.sin(ph),dz=Math.cos(ph);let d=0;while(d<8&&inside(dx*d,y,14.2+dz*d))d+=.01;d+=.012;return [dx*d,y,14.2+dz*d]};
+ const glassM=new THREE.MeshStandardMaterial({color:0x0e1720,roughness:.08,metalness:.5,side:THREE.DoubleSide});
+ const frameM=new THREE.MeshStandardMaterial({color:0x2a333c,roughness:.5,side:THREE.DoubleSide});
+ const pane=(y0,y1,p0,p1,m,off=0)=>{const N=10,pos=[],idx=[];for(let i=0;i<=N;i++){const y=y0+(y1-y0)*i/N;for(let j=0;j<=N;j++){const q=surf(y,p0+(p1-p0)*j/N);const k=1+off;pos.push(q[0]*k,q[1],14.2+(q[2]-14.2)*k)}}
   for(let i=0;i<N;i++)for(let j=0;j<N;j++){const a=i*(N+1)+j,b=a+1,c=a+N+1,d=c+1;idx.push(a,c,b,b,c,d)}
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x16202a,roughness:.12,metalness:.3,side:THREE.DoubleSide}));g.add(m)};
- for(const s of [1,-1]){patch(16.75,17.35,s*.07,s*.52);patch(16.6,17.15,s*.62,s*.98);patch(15.95,16.45,s*.72,s*1.02)}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,m))};
+ // cadre sombre continu, puis les vitres posées dessus
+ pane(4.5,5.12,-1.12,1.12,frameM,0);
+ for(const s of [1,-1]){
+  pane(4.56,5.07,s*.03,s*.33,glassM,.002);   // pare-brise
+  pane(4.56,5.07,s*.38,s*.7,glassM,.002);    // vitre latérale (ouvrante)
+  pane(4.62,5.02,s*.76,s*1.06,glassM,.002)}  // vitre arrière
  /* hublots, portes */
  {const wg=new THREE.BoxGeometry(.06,.3,.22);const n=31;const wins=new THREE.InstancedMesh(wg,glass,n*2);let k=0;const M=new THREE.Matrix4();
   for(let i=0;i<n;i++){const z=11.0-i*.53-(i>13?.6:0);for(const s of [1,-1]){M.makeTranslation(s*(R-.005),4.35,z);wins.setMatrixAt(k++,M)}}g.add(wins)}
@@ -844,9 +854,13 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  const host=document.createElement('div');host.id='trav';host.innerHTML='<canvas></canvas><svg class="ld"></svg><div class="ui"></div>';document.body.appendChild(host);
  const cv=host.querySelector('canvas'),ldv=host.querySelector('.ld'),UI=host.querySelector('.ui');
  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,1.75));
- const scene=new THREE.Scene();const CIEL=0xe7eaea;scene.background=new THREE.Color(CIEL);scene.fog=new THREE.Fog(CIEL,160,650);
- const cam=new THREE.PerspectiveCamera(55,1,.05,1200);scene.add(cam);
- scene.add(new THREE.HemisphereLight(0xffffff,0x9a9e98,1.05));const sun=new THREE.DirectionalLight(0xfff4e6,1.15);sun.position.set(60,100,50);scene.add(sun);
+ const scene=new THREE.Scene();const CIEL=0xd3dde3;
+ { // ciel : bleu franc en haut, clair à l'horizon
+  const c=document.createElement('canvas');c.width=4;c.height=256;const x=c.getContext('2d');const gr=x.createLinearGradient(0,0,0,256);gr.addColorStop(0,'#5f8fb8');gr.addColorStop(.42,'#a9c3d6');gr.addColorStop(.5,'#d3dde3');gr.addColorStop(1,'#d3dde3');x.fillStyle=gr;x.fillRect(0,0,4,256);
+  const bt=new THREE.CanvasTexture(c);bt.colorSpace=THREE.SRGBColorSpace;bt.mapping=THREE.EquirectangularReflectionMapping;scene.background=bt}
+ scene.fog=new THREE.Fog(CIEL,220,900);
+ const cam=new THREE.PerspectiveCamera(55,1,.2,1500);scene.add(cam);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x7d8a6a,.85));const sun=new THREE.DirectionalLight(0xfff1dc,1.6);sun.position.set(60,100,50);scene.add(sun);
  { // reflets doux pour la peinture et le métal de l'avion : un ciel clair au-dessus, le sol en dessous
   const c=document.createElement('canvas');c.width=256;c.height=128;const x=c.getContext('2d');const gr=x.createLinearGradient(0,0,0,128);
   gr.addColorStop(0,'#f4f6f7');gr.addColorStop(.48,'#dfe4e6');gr.addColorStop(.52,'#8f978c');gr.addColorStop(1,'#6f756c');x.fillStyle=gr;x.fillRect(0,0,256,128);
@@ -858,25 +872,25 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  const blobTex=(()=>{const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');const r=g.createRadialGradient(64,64,4,64,64,62);r.addColorStop(0,'rgba(30,40,50,.42)');r.addColorStop(1,'rgba(30,40,50,0)');g.fillStyle=r;g.fillRect(0,0,128,128);return new THREE.CanvasTexture(c)})();
  const blobM=new THREE.MeshBasicMaterial({map:blobTex,transparent:true,depthWrite:false});
  const blob=(w,d,p,x=0,z=0)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),blobM);m.rotation.x=-Math.PI/2;m.position.set(x,.035,z);p.add(m);return m};
- const BETON=0xc3c6c2,VOIE=0xb0b3af,BLANC=0xf7f7f4,JAUNE=0xe0b419,MARINE=0x263C52,NOIR=0x1d2329,HERBE=0xa9b59a,ROUGE=0xc8322a;
+ const BETON=0xb4b6b2,VOIE=0x9a9ea0,BLANC=0xffffff,JAUNE=0xf2b200,MARINE=0x263C52,NOIR=0x16191d,HERBE=0x6e9443,ROUGE=0xd3241a;
  /* la voie de circulation avion, du nord au sud ; le cheminement véhicule qui la traverse, d'ouest en est */
- {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600),mat(HERBE));g.rotation.x=-Math.PI/2;scene.add(g)}
- {const t=new THREE.Mesh(new THREE.PlaneGeometry(38,1600),mat(BETON));t.rotation.x=-Math.PI/2;t.position.y=.01;scene.add(t);
-  const v=new THREE.Mesh(new THREE.PlaneGeometry(23,1600),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.y=.015;scene.add(v)}
- strip(0,-800,0,800,.45,JAUNE,.03);strip(-11.6,-800,-11.6,800,.25,JAUNE,.03);strip(11.6,-800,11.6,800,.25,JAUNE,.03);
+ {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600,80,80),mat(HERBE));g.rotation.x=-Math.PI/2;g.position.y=-.15;scene.add(g)}
+ {const t=new THREE.Mesh(new THREE.PlaneGeometry(38,1600,1,80),mat(BETON));t.rotation.x=-Math.PI/2;t.position.y=0;scene.add(t);
+  const v=new THREE.Mesh(new THREE.PlaneGeometry(23,1600,1,80),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.y=.02;scene.add(v)}
+ strip(0,-800,0,800,.45,JAUNE,.06);strip(-11.6,-800,-11.6,800,.25,JAUNE,.06);strip(11.6,-800,11.6,800,.25,JAUNE,.06);
  for(let z=-780;z<=780;z+=30)if(Math.abs(z)>8)[-12.6,12.6].forEach(x=>{cyl(.12,.12,.35,0x6f7a84,x,.18,z,scene,8);const l=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),new THREE.MeshBasicMaterial({color:0x3a6fd0}));l.position.set(x,.42,z);scene.add(l)});
- {const r=new THREE.Mesh(new THREE.PlaneGeometry(1600,7),mat(0xa3a6a2));r.rotation.x=-Math.PI/2;r.position.set(0,.02,0);scene.add(r)}
+ {const r=new THREE.Mesh(new THREE.PlaneGeometry(1600,7,80,1),mat(0x86898c));r.rotation.x=-Math.PI/2;r.position.set(0,.04,0);scene.add(r)}
  // le cheminement hors de la voie : lignes blanches continues
- [[-800,-44.5],[44.5,800]].forEach(([a,b])=>{strip(a,-3.4,b,-3.4,.18,BLANC,.035);strip(a,3.4,b,3.4,.18,BLANC,.035)});
+ [[-800,-44.5],[44.5,800]].forEach(([a,b])=>{strip(a,-3.4,b,-3.4,.18,BLANC,.065);strip(a,3.4,b,3.4,.18,BLANC,.065)});
  // dans la traversée : les tiretets décalés, blancs et noirs (diapo 163)
- for(let x=-44.5,k=0;x<44.5;x+=1.5,k++){strip(x,-3.4,x+1.5,-3.4,.3,k%2?NOIR:BLANC,.036);strip(x,3.4,x+1.5,3.4,.3,k%2?BLANC:NOIR,.036)}
+ for(let x=-44.5,k=0;x<44.5;x+=1.5,k++){strip(x,-3.4,x+1.5,-3.4,.3,k%2?NOIR:BLANC,.07);strip(x,3.4,x+1.5,3.4,.3,k%2?BLANC:NOIR,.07)}
  // la ligne d'effet, et le STOP peint avant elle
- strip(-44.5,-3.4,-44.5,3.4,.35,BLANC,.036);
+ strip(-44.5,-3.4,-44.5,3.4,.35,BLANC,.07);
  {const c=document.createElement('canvas');c.width=512;c.height=256;const g=c.getContext('2d');g.fillStyle=ROUGE_CSS;
   const o=[[150,8],[362,8],[504,70],[504,186],[362,248],[150,248],[8,186],[8,70]];g.beginPath();o.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();
   g.fillStyle='#fbfbf8';g.font='bold 150px Barlow, Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('STOP',256,136);
   const tx=new THREE.CanvasTexture(c);tx.anisotropy=8;const m=new THREE.Mesh(new THREE.PlaneGeometry(5,2.5),new THREE.MeshLambertMaterial({map:tx,transparent:true}));
-  m.rotation.x=-Math.PI/2;m.rotation.z=-Math.PI/2;m.position.set(-48.4,.04,0);scene.add(m)}
+  m.rotation.x=-Math.PI/2;m.rotation.z=-Math.PI/2;m.position.set(-48.4,.075,0);scene.add(m)}
  /* les feux de protection de traversée, encastrés dans la chaussée, sur la ligne d'effet */
  const FEUX=[],glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,30);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
  for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.03,0x8a9096,-44.5,.04,z,scene,20);const d=new THREE.Mesh(new THREE.SphereGeometry(.13,16,8,0,Math.PI*2,0,Math.PI/2),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(-44.5,.05,z);scene.add(d);
@@ -884,8 +898,8 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  let feu='off',feuT=0;const COUL={rouge:0xff2a1a,orange:0xff8c1a};
  const setFeu=f=>{feu=f;feuT=performance.now()};
  // au loin : la tour, des bâtiments
- cyl(2.6,3.2,44,0xdedcd6,-260,22,-380);cyl(7,5,6,0x7d94a6,-260,47,-380);cyl(7.4,7.4,1.2,0xdedcd6,-260,50.6,-380);
- box(320,16,30,0xe4e2dc,-330,8,160);box(320,5,.4,0x7d94a6,-330,9,144.8);box(200,12,40,0xdcdad4,280,6,-220);box(60,22,260,0xe2e0da,340,11,40);box(.4,6,240,0x7d94a6,309.8,12,40);
+ cyl(2.6,3.2,44,0xdedcd6,-260,22,-380);cyl(7,5,6,0x3f6584,-260,47,-380);cyl(7.4,7.4,1.2,0xdedcd6,-260,50.6,-380);
+ box(320,16,30,0xe4e2dc,-330,8,160);box(320,5,.4,0x3f6584,-330,9,144.8);box(200,12,40,0xdcdad4,280,6,-220);box(60,22,260,0xe2e0da,340,11,40);box(.4,6,240,0x3f6584,309.8,12,40);
  /* l'avion qui roule sur la voie (même modèle que la démonstration de la panne) */
  const avion=makeAirliner(glowTex);scene.add(avion);blob(9,40,avion,0,-1);blob(36,9,avion,0,2);
  avion.position.set(0,0,-420);let planeV=0,planeOn=false;
@@ -981,7 +995,7 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  L.dock().set('Traversée faite','Feu rouge : on attend. Orange clignotant : on traverse avec prudence, en cédant le passage. Feux éteints : stop, puis traversée avec vigilance.');
  jlog('5 h 59','Traversée à l\'orange clignotant, entre les tiretets');
  await contV();live=false;L.kill();host.remove();R.dispose();removeEventListener('resize',fit);return null}
-const ROUGE_CSS='#c8322a';
+const ROUGE_CSS='#d3241a';
 document.head.insertAdjacentHTML('beforeend',`<style>
 #trav{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));z-index:1}
 #trav canvas{display:block;width:100%;height:100%;touch-action:none}

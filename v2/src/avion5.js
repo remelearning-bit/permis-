@@ -25,11 +25,21 @@ function makeAirliner(glowTex){
   // deux matériaux : peinture blanche au-dessus, ventre gris sous la ceinture
   geo.addGroup(0,top.length,0);geo.addGroup(top.length,bot.length,1);
   add(geo,[paint,belly])}
- /* vitres du poste de pilotage : surfaces épousant le nez, légèrement décollées */
- const patch=(z0,z1,t0,t1)=>{const N=8,pos=[],idx=[];for(let i=0;i<=N;i++){const z=z0+(z1-z0)*i/N;const [rx,ry,cy]=prof(z);for(let j=0;j<=N;j++){const t=t0+(t1-t0)*j/N;pos.push(Math.sin(t)*rx*1.012,cy+Math.cos(t)*ry*1.012,z)}}
+ /* vitres du poste de pilotage : un bandeau à hauteur constante autour du nez, découpé en vitres (pare-brise, latérales, arrière) ;
+    chaque point est trouvé en partant de l'axe et en avançant jusqu'à la peau du fuselage */
+ const inside=(x,y,z)=>{if(z>L1||z<L0)return false;const [rx,ry,cy]=prof(z);return rx>0&&ry>0&&(x/rx)**2+((y-cy)/ry)**2<=1};
+ const surf=(y,ph)=>{const dx=Math.sin(ph),dz=Math.cos(ph);let d=0;while(d<8&&inside(dx*d,y,14.2+dz*d))d+=.01;d+=.012;return [dx*d,y,14.2+dz*d]};
+ const glassM=new THREE.MeshStandardMaterial({color:0x0e1720,roughness:.08,metalness:.5,side:THREE.DoubleSide});
+ const frameM=new THREE.MeshStandardMaterial({color:0x2a333c,roughness:.5,side:THREE.DoubleSide});
+ const pane=(y0,y1,p0,p1,m,off=0)=>{const N=10,pos=[],idx=[];for(let i=0;i<=N;i++){const y=y0+(y1-y0)*i/N;for(let j=0;j<=N;j++){const q=surf(y,p0+(p1-p0)*j/N);const k=1+off;pos.push(q[0]*k,q[1],14.2+(q[2]-14.2)*k)}}
   for(let i=0;i<N;i++)for(let j=0;j<N;j++){const a=i*(N+1)+j,b=a+1,c=a+N+1,d=c+1;idx.push(a,c,b,b,c,d)}
-  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();const m=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x16202a,roughness:.12,metalness:.3,side:THREE.DoubleSide}));g.add(m)};
- for(const s of [1,-1]){patch(16.75,17.35,s*.07,s*.52);patch(16.6,17.15,s*.62,s*.98);patch(15.95,16.45,s*.72,s*1.02)}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,m))};
+ // cadre sombre continu, puis les vitres posées dessus
+ pane(4.5,5.12,-1.12,1.12,frameM,0);
+ for(const s of [1,-1]){
+  pane(4.56,5.07,s*.03,s*.33,glassM,.002);   // pare-brise
+  pane(4.56,5.07,s*.38,s*.7,glassM,.002);    // vitre latérale (ouvrante)
+  pane(4.62,5.02,s*.76,s*1.06,glassM,.002)}  // vitre arrière
  /* hublots, portes */
  {const wg=new THREE.BoxGeometry(.06,.3,.22);const n=31;const wins=new THREE.InstancedMesh(wg,glass,n*2);let k=0;const M=new THREE.Matrix4();
   for(let i=0;i<n;i++){const z=11.0-i*.53-(i>13?.6:0);for(const s of [1,-1]){M.makeTranslation(s*(R-.005),4.35,z);wins.setMatrixAt(k++,M)}}g.add(wins)}
