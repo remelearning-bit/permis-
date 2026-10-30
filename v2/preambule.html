@@ -61,6 +61,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ciel);font-famil
 .opt.off{cursor:default}.opt.off:not(.ok):not(.ko)::before{border-color:#9aa5ae}
 .fb{font-size:var(--B);line-height:1.38;margin:4px 0 6px 36px;font-weight:700}
 .fb.ok{color:var(--vert)}.fb.ko{color:var(--orange)}
+.xp{color:var(--marine);font-weight:500}
 #bar{position:fixed;left:0;right:0;bottom:0;z-index:6;height:calc(46px + env(safe-area-inset-bottom));padding:0 max(16px,2vw) env(safe-area-inset-bottom);display:flex;align-items:center;gap:22px;pointer-events:none;background:#f7f8f8;border-top:1px solid rgba(38,60,82,.12)}
 #bar .st{font-weight:600;font-size:var(--B)}
 #bar button{pointer-events:auto;background:none;border:0;padding:8px 0;font:600 var(--B) Barlow,system-ui,sans-serif;color:var(--marine);cursor:pointer;text-decoration:underline;text-underline-offset:4px;text-decoration-thickness:1.5px}
@@ -328,7 +329,7 @@ const JK='permisT-journal',ORD=['p','e1','e2','e3','e4','e5','e5b','e6','e7','e8
 const JRN=[];
 function jload(){try{return JSON.parse(localStorage.getItem(JK)||'{}')}catch(e){return {}}}
 function jlog(h,t){JRN.push([h,t]);try{const a=jload();a[ETAPE]=JRN;localStorage.setItem(JK,JSON.stringify(a))}catch(e){}}
-const errTxt=n=>n?` (${n} erreur${n>1?'s':''} corrigée${n>1?'s':''})`:' (sans erreur)';
+const errTxt=n=>n?` (${n} erreur${n>1?'s':''})`:' (sans erreur)';
 function jhtml(all=true){const a=all?jload():{};a[ETAPE]=JRN;const rows=[];ORD.forEach(k=>(a[k]||[]).forEach(e=>rows.push(e)));
  return rows.length?rows.map(e=>`<li><b>${e[0]}</b>${nb(e[1])}</li>`).join(''):'<li class="e">Rien pour l\'instant : chaque décision de la matinée s\'inscrira ici, avec l\'heure.</li>'}
 (()=>{const b=document.createElement('button');b.id='bjrn';b.textContent='Journal';const bar=document.getElementById('bar');bar.insertBefore(b,document.getElementById('bsub'));
@@ -395,9 +396,11 @@ async function pick(L,opts,goodKey,okT,koT,nextTxt,o={}){const w=document.create
  let errs=0;const fb=document.createElement('p');fb.className='fb';w.appendChild(fb);
  for(;;){const p=await new Promise(r=>bs.forEach(x=>{if(!x.classList.contains('off'))x.onclick=()=>r(x)}));const good=p.dataset.b===goodKey;
   if(good||!o.retry){bs.forEach(x=>{x.classList.add('off');x.onclick=null;if(x.dataset.b===goodKey)x.classList.add('ok');else if(x===p)x.classList.add('ko')});
-   if(!good)errs++;fb.className='fb '+(good?'ok':'ko');fb.innerHTML=nb(good?okT:koT);if(o.onDone)o.onDone(good,errs);break}
+   if(!good)errs++;fb.className='fb '+(good?'ok':'ko');
+   fb.innerHTML=good?nb(okT):(o.once?(o.x&&typeof koT==='object'&&koT[p.dataset.b]?`<b>${nb('Réponse attendue : '+lbOf(opts,goodKey)+'.')}</b> <span class="xp">${nb(xclean(koT[p.dataset.b]))}</span>`:xko(lbOf(opts,goodKey),okT)):nb(typeof koT==='object'?(koT[p.dataset.b]||koT._):koT));
+   if(o.onDone)o.onDone(good,errs);break}
   errs++;p.classList.add('off','ko');p.onclick=null;fb.className='fb ko';fb.innerHTML=nb(typeof koT==='object'?(koT[p.dataset.b]||koT._):koT);if(o.onErr)o.onErr(p.dataset.b)}
- const nx=document.createElement('button');nx.className='act';nx.textContent=nextTxt;w.appendChild(nx);await new Promise(r=>nx.onclick=r);w.remove();return o.retry?errs:errs===0}
+ const nx=document.createElement('button');nx.className='act';nx.textContent=nextTxt;w.appendChild(nx);await new Promise(r=>nx.onclick=r);w.remove();return (o.retry||o.once)?errs:errs===0}
 // classer : chaque élément, puis le choix parmi les catégories
 async function sortAct(L,items,buckets,label='Élément'){let n=0;
  for(let i=0;i<items.length;i++){const it=items[i];L.card(`${label} ${i+1} sur ${items.length}`,it.t);
@@ -405,6 +408,20 @@ async function sortAct(L,items,buckets,label='Élément'){let n=0;
  return n}
 const nbr=(n,t)=>`${n} bonne${n>1?'s':''} réponse${n>1?'s':''} sur ${t}`;
 
+/* ---------------- questions intermédiaires (consigne d'exploitation n°3, §5.1.1.2) ----------------
+   Une seule réponse par question, et chaque réponse est expliquée, juste ou fausse.
+   Une série conditionne la suite : sous le seuil, on revoit la partie concernée, puis la série revient, dans un autre ordre. */
+const SEUIL=0.8,TRY={};const needOf=n=>Math.max(1,Math.round(n*SEUIL));
+const lbOf=(opts,k)=>{const o=opts.find(x=>x[0]===k);return o?String(o[1]).replace(/[.\s]+$/,''):''};
+const xclean=t=>String(t||'').replace(/^(Oui|Exactement|Bien vu|C'est ça|Bonne réponse|Juste|Bravo|Vrai|Faux|Pas celui-ci|Pas celle-ci|Pas là|Pas tout à fait)\s*[.,:!]?\s*/i,'').replace(/^./,c=>c.toUpperCase());
+const xko=(lbl,ok)=>`<b>${nb('Réponse attendue : '+lbl+'.')}</b> <span class="xp">${nb(xclean(ok))}</span>`;
+function mix(id,a){if(!TRY[id])return a;const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
+async function gate(id,E,n,back,what){const ok=Math.max(0,n-E),need=needOf(n);TRY[id]=(TRY[id]||0)+1;
+ const h=(JRN[JRN.length-1]||[''])[0];
+ if(ok>=need||Q.has('pass')){jlog(h,`${what} : série validée, ${ok} sur ${n}`);return null}
+ jlog(h,`${what} : ${ok} sur ${n}, il en faut ${need}. Partie revue, puis série reposée`);
+ vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite. Vous revoyez la partie, puis la série revient, dans un autre ordre.`)}</p></div>`);
+ await contV('Revoir la partie');return {goto:back}}
 /* ---------------- navigation libre : ?nav ouvre la liste des écrans, ?nav&s=N démarre à l'écran N ---------------- */
 const NAV=Q.has('nav');let NAVI=0;
 function navUrl(i){const q=new URLSearchParams(location.search);q.set('nav','');q.set('s',i);return location.pathname+'?'+q.toString().replace('nav=&','nav&').replace(/nav=$/,'nav')}
@@ -416,7 +433,7 @@ async function runSeq(seq){let start=0;
   const nx=document.createElement('button');nx.textContent=innerWidth<560?'Suivant ›':'Écran suivant ›';bar.insertBefore(nx,b.nextSibling);nx.onclick=()=>{if(NAVI<seq.length-1)location.href=navUrl(NAVI+1)};
   if(start>0){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Lancer l'écran</button></div>`;document.body.appendChild(g);
    await new Promise(r=>g.querySelector('button').onclick=r);g.remove()}}
- let r=null;for(let i=start;i<seq.length;i++){NAVI=i;r=await seq[i][1](r)}}
+ let r=null;for(let i=start;i<seq.length;i++){NAVI=i;r=await seq[i][1](r);if(r&&r.goto!=null){i=r.goto-1;r=null}}}
 /* ---------------- Préambule et introduction (diapos 1 à 18) ----------------
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
@@ -596,12 +613,12 @@ async function marche(){step();head('Préambule','Comment ça marche');
   W('p04','Xavier et moi',()=>{const a=$c('#pd'),b=$c('#px');if(a&&b){a.classList.remove('talk');b.classList.add('talk');setTimeout(()=>{b.classList.remove('talk');a.classList.add('talk')},FAST?0:900)}})]);
  // la main, les questions, le journal
  vue(`<div class="hero">${bigIc('hand')}<p class="cap">La main orange</p><p class="sub">Elle vous montre où cliquer.</p></div>`);
- const qfr=`<div class="hero">${bigIc('quiz')}<p class="cap">Des questions d'entraînement</p><ul class="chk" style="margin-top:clamp(6px,2vh,18px)"><li id="q1"><b>${CHECK}</b>Jamais notées</li><li id="q2"><b>${CHECK}</b>Autant d'essais que vous voulez</li><li id="q3"><b>${CHECK}</b>Chaque réponse est expliquée</li></ul></div>`;
+ const qfr=`<div class="hero">${bigIc('quiz')}<p class="cap">Des questions d'entraînement</p><ul class="chk" style="margin-top:clamp(6px,2vh,18px)"><li id="q1"><b>${CHECK}</b>Jamais notées</li><li id="q2"><b>${CHECK}</b>${nb("Un seuil à atteindre pour passer à la suite")}</li><li id="q3"><b>${CHECK}</b>Chaque réponse est expliquée</li></ul></div>`;
  await sayS('p05',[W('p05','Tout au long',()=>vue(qfr)),W('p05','Elles ne sont',()=>on('#q1','on')),W('p05','autant',()=>on('#q2','on')),W('p05','et chaque',()=>on('#q3','on')),
   W('p05','Un journal',()=>vue(`<div class="hero">${bigIc('journal')}<p class="cap">Le journal</p><p class="sub">Il note chaque décision de la matinée, avec l'heure.</p></div>`))]);
  // un premier essai, pour de vrai
- vue(`<div class="hero"><div class="qc" id="qe" style="width:min(600px,100%)"><p class="n">À vous d'essayer</p><p class="q">${nb("Sur une question d'entraînement, combien d'essais avez-vous ?")}</p></div></div>`);
- const E0=await pick(null,[['un','Un seul essai'],['tous','Autant que vous voulez'],['trois','Trois essais']],'tous',"Oui : autant d'essais que vous voulez. Et chaque réponse est expliquée, comme celle-ci.","Pas tout à fait. Réessayez : c'est justement ce que vous êtes en train de faire.",'Continuer',{retry:true,host:$c('#qe')});
+ vue(`<div class="hero"><div class="qc" id="qe" style="width:min(600px,100%)"><p class="n">À vous d'essayer</p><p class="q">${nb("Une série de questions n'est pas réussie. Que se passe-t-il ?")}</p></div></div>`);
+ const E0=await pick(null,[['suite','On passe quand même à la suite'],['revoir','On revoit la partie, puis la série revient'],['stop','La formation s\'arrête']],'revoir',"Exactement. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est la règle de la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci.",{_:"Non. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est la règle de la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci."},'Continuer',{once:true,host:$c('#qe')});
  jlog('4 h 45',`Premier essai de question${errTxt(E0)}`);
  // l'apprenant ouvre lui-même le journal
  vue(`<div class="hero">${bigIc('journal')}<p class="cap">Votre réponse est inscrite au journal</p><p class="sub it in" id="jc" style="font-weight:700;color:var(--marine)">${nb("Cliquez sur « Journal », en bas de l'écran, pour la voir.")}</p><p class="sub" style="font-size:var(--B)">Les heures du journal sont celles de l'histoire, pas la durée de la formation.</p></div>`);
@@ -643,10 +660,10 @@ const AXES=`<div class="axes">
   <span class="fl" id="xaf0" style="left:0">L'attestation de réussite</span><span class="fl r" id="xaf2" style="left:90%">Au plus tard :<br class="ph"> le permis récupéré</span>
   <span class="tk" id="xat1" style="left:40%">40 jours</span><span class="tk" id="xat2" style="left:90%">3 mois</span></div>
   <p class="nt" id="xan">L'attestation vaut autorisation de conduite pendant la formation pratique, en présence d'un référent accompagnateur. Passé les 40 jours sans partie pratique validée, tout est à refaire. Les 3 mois comptent à partir de la validation de la formation théorique.</p></div>
- <div class="ax" id="xb"><p class="tl">Absence de la plateforme</p><div class="tr">
+ <div class="ax" id="xb"><p class="tl">Cessation d'activité : sans circuler sur l'aire de mouvement</p><div class="tr">
   <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
-  <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une formation pratique est exigée (annexe 7 : grille de formation pratique)</span><span class="sh">Formation pratique exigée (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Le permis T est à repasser en entier</span>
-  <span class="tk" id="xbt1" style="left:16.7%">3 mois</span><span class="tk" id="xbt2" style="left:66.7%">12 mois consécutifs</span></div></div></div>`;
+  <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau est exigée, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
+  <span class="tk" id="xbt1" style="left:16.7%">3 mois</span><span class="tk" id="xbt2" style="left:66.7%">12 mois</span></div></div></div>`;
 async function candidat(){step();head('Préambule','Le candidat');
  vue(`<div style="width:100%;position:relative">${AXES.replace('<div class="ax" id="xb">','<div class="ax it" id="xb">')}<div class="xb it" id="f4" style="position:absolute;left:0;right:0;bottom:0">${bub('Xavier',"Donc avec l'attestation, je peux rouler seul ?")}</div></div>`);
  await sayS('p10',[at('p10',.02,()=>on('#xaf0')),W('p10','Elle vaut',()=>{on('#xa1');on('#xat1')}),W('p10','Mais seulement',()=>on('#xa1','hl')),
@@ -671,16 +688,16 @@ async function vraiFaux(){step();VZ.classList.remove('clear');head('Préambule',
  ['#xaf0','#xa1','#xat1','#xat2','#xaf2','#xb1','#xb2','#xbf1','#xbf2','#xbt1','#xbt2'].forEach(s=>on(s));
  await sayS('p13');
  const mk=document.createElement('div');mk.className='mk';
- const IT=[["L'attestation de réussite théorique est valable quarante jours.",'v','a',40,"Vrai : quarante jours, le temps de la formation pratique avec le référent. Passé ce délai sans partie pratique validée, tout est à refaire.","Regardez la frise : jusqu'où va la conduite avec le référent ?",'#xa1'],
+ const IT=mix('vf',[["L'attestation de réussite théorique est valable quarante jours.",'v','a',40,"Vrai : quarante jours, le temps de la formation pratique avec le référent. Passé ce délai sans partie pratique validée, tout est à refaire.","Regardez la frise : jusqu'où va la conduite avec le référent ?",'#xa1'],
   ["Avec l'attestation de réussite théorique, je peux conduire seul côté piste.",'f','a',6,"Faux : l'attestation vaut autorisation de conduite seulement en présence d'un référent accompagnateur.","Regardez la frise : pendant ces quarante jours, qui est à côté de vous ?",'#xa1','JS'],
-  ["Absent de la plateforme pendant six mois, je repasse le permis T en entier.",'f','b',33.3,"Faux : entre trois et douze mois d'absence, c'est une formation pratique qui est exigée, pas le permis T en entier.","Regardez où tombe le repère sur la frise des absences.",'#xb1'],
-  ["Absent de la plateforme pendant quatorze mois, je repasse le permis T en entier.",'v','b',77.8,"Vrai : plus de douze mois consécutifs d'absence, et le permis T est à repasser dans son intégralité.","Regardez où tombe le repère sur la frise des absences.",'#xb2']];
+  ["Six mois sans circuler sur l'aire de mouvement : je repasse le permis T en entier.",'f','b',33.3,"Faux : entre trois et douze mois de cessation d'activité, c'est une remise à niveau qui est exigée, tracée sur la grille de formation pratique. Pas le permis T en entier.","Regardez où tombe le repère sur la frise.",'#xb1'],
+  ["Quatorze mois sans circuler sur l'aire de mouvement : je repasse le permis T en entier.",'v','b',77.8,"Vrai : au-delà de douze mois de cessation d'activité, il faut suivre à nouveau une formation initiale.","Regardez où tombe le repère sur la frise.",'#xb2']]);
  let E=0;const qc=$c('#qc'),vf=$c('#vfw');cur().classList.add('tall');
  for(let i=0;i<IT.length;i++){const [t,b,ax,x,okT,koT,seg,extra]=IT[i];qc.querySelector('.n').textContent=`Affirmation ${i+1} sur ${IT.length}`;qc.querySelector('.q').innerHTML=nb(t);
   vf.classList.toggle('qa',ax==='a');vf.classList.toggle('qb',ax==='b');mk.classList.remove('ok');$c(`#x${ax} .tr`).appendChild(mk);mk.style.left=x+'%';
-  E+=await pick(null,[['v','Vrai'],['f','Faux']],b,okT,koT,i<IT.length-1?'Affirmation suivante':'Continuer',{retry:true,host:qc,
+  E+=await pick(null,[['v','Vrai'],['f','Faux']],b,okT,koT,i<IT.length-1?'Affirmation suivante':'Continuer',{once:true,host:qc,
    onDone:()=>{mk.classList.add('ok');if(extra==='JS')on('#xa1','js');const s=$c(seg);if(s){s.classList.add('hl');setTimeout(()=>s.classList.remove('hl'),FAST?10:2600)}}})}
- mk.remove();jlog('4 h 50',`Vrai ou faux sur le candidat : 4 affirmations${errTxt(E)}`);return null}
+ mk.remove();jlog('4 h 50',`Vrai ou faux sur le candidat : 4 affirmations${errTxt(E)}`);return gate('vf',E,IT.length,3,'Vrai ou faux')}
 
 /* 7. les objectifs : un plan pour chacun */
 const OBJ=[['Se repérer',"Se repérer et s'orienter sur l'aire de mouvement et les aires de trafic de Paris-Charles de Gaulle.",'Un :'],
@@ -708,11 +725,12 @@ async function plan(){step();head('Préambule','Le plan de la matinée');vue(PER
  // à vous : par où commence la matinée ?
  const dm=$c('#dm');dm.textContent="À vous : cliquez sur l'étape par laquelle la matinée commence.";dm.style.color='var(--marine)';dm.classList.add('in');
  const fb=document.createElement('p');fb.className='qfb';dm.after(fb);const lis=[...cur().querySelectorAll('.permis li')];lis.forEach(x=>x.classList.add('pk','ans'));
- let E=0;for(;;){const k=await new Promise(r=>lis.forEach((x,i)=>x.onclick=()=>{if(!x.classList.contains('off'))r(i)}));
-  if(k===0){lis.forEach(x=>{x.onclick=null;x.classList.remove('pk','ans')});lis[0].classList.add('ok');fb.className='qfb ok';fb.textContent="Oui : la réglementation, l'étape 1. Les autres suivent, dans l'ordre.";break}
-  E++;lis[k].classList.add('ko','off');lis[k].classList.remove('ans');fb.className='qfb ko';fb.textContent="Pas celle-ci. Rappelez-vous : on ne passe à la suivante qu'après avoir terminé la précédente."}
+ const k=await new Promise(r=>lis.forEach((x,i)=>x.onclick=()=>r(i)));let E=0;
+ lis.forEach(x=>{x.onclick=null;x.classList.remove('pk','ans')});lis[0].classList.add('ok');
+ const X="La réglementation, l'étape 1. Les autres suivent, dans l'ordre : on ne passe à la suivante qu'après avoir terminé la précédente.";
+ if(k===0){fb.className='qfb ok';fb.textContent=X}else{E=1;lis[k].classList.add('ko');fb.className='qfb ko';fb.innerHTML=xko("l'étape 1",X)}
  jlog('4 h 52',`Le plan de la matinée${errTxt(E)}`);
- await contV();return null}
+ await contV();return gate('plan',E,1,7,'Le plan de la matinée')}
 
 /* 9. pourquoi Roissy : le contexte, la carte, les chiffres, le film */
 async function roissy(){step();headOff();await photo('terminaux',FAST?10:900);setCam({zoom:1});VZ.classList.add('clear');
@@ -806,16 +824,16 @@ async function quelTerminal(L){L.title('Quel terminal ?');
  // retour à la vue du début, où l'on voit les trois aérogares
  FILM.style.opacity=0;await wait(700);FILM.currentTime=5.8;await wait(250);FILM.style.opacity=1;
  await sayS('i08',[at('i08',.02,()=>L.card('À vous','Je vous décris une aérogare : cliquez dessus, sur le film.'))]);
- const IT=[["Un bâtiment circulaire, des satellites tout autour, la circulation la plus contrainte.",'t1',"Le terminal 1, le plus ancien.","Pas celle-ci. Cherchez le bâtiment rond, entouré de ses satellites."],
-  ["Des vols charter et à bas coût, peu de volume mais beaucoup de coactivité sur peu de surface.",'t3',"Le terminal 3.","Pas celle-ci. Relisez : peu de volume, beaucoup de coactivité sur peu de surface."],
-  ["Des halls de 2A à 2G : deux rangées face à face, et 2G à part.",'t2',"Le terminal 2, le plus étendu.","Pas celle-ci. Cherchez les grands halls en deux rangées face à face."]];
+ const IT=mix('qt',[["Un bâtiment circulaire, des satellites tout autour, la circulation la plus contrainte.",'t1',"Le terminal 1, le plus ancien : le bâtiment circulaire, avec ses satellites tout autour, et la circulation la plus contrainte.","Pas celle-ci. Cherchez le bâtiment rond, entouré de ses satellites."],
+  ["Des vols charter et à bas coût, peu de volume mais beaucoup de coactivité sur peu de surface.",'t3',"Le terminal 3 : des vols charter et à bas coût, peu de volume, mais beaucoup de coactivité sur peu de surface.","Pas celle-ci. Relisez : peu de volume, beaucoup de coactivité sur peu de surface."],
+  ["Des halls de 2A à 2G : deux rangées face à face, et 2G à part.",'t2',"Le terminal 2, le plus étendu : les halls 2A à 2G, en deux rangées face à face, et 2G à part.","Pas celle-ci. Cherchez les grands halls en deux rangées face à face."]]);
  const POS={t1:T1,t2:T2,t3:T3},NAME={t1:'Terminal 1',t2:'Terminal 2',t3:'Terminal 3'};let E=0;
  for(let i=0;i<IT.length;i++){const [t,good,okT,koT]=IT[i];L.card(`Description ${i+1} sur ${IT.length}`,t);
   const fp=fpick(POS);
-  for(;;){const k=await fp.next();if(k===good)break;E++;fp.gs[k].el.classList.add('ko');L.card('Essayez encore',`${t} ${koT}`,{ko:1})}
+  const k=await fp.next();const bad=k!==good;if(bad){E++;fp.gs[k].el.classList.add('ko')}
   fp.kill();const tg=ftag(...POS[good],NAME[good]);tg.el.classList.add('lit');
-  L.card('Oui',okT,{ok:1});await contLab(L,i<IT.length-1?'Description suivante':'Continuer');tg.kill()}
- jlog('4 h 58',`Quel terminal : 3 descriptions${errTxt(E)}`);L.kill();filmOff();return null}
+  if(bad)L.card(`Réponse attendue : ${NAME[good].toLowerCase()}`,okT,{ko:1});else L.card('Oui',okT,{ok:1});await contLab(L,i<IT.length-1?'Description suivante':'Continuer');tg.kill()}
+ jlog('4 h 58',`Quel terminal : 3 descriptions${errTxt(E)}`);L.kill();filmOff();return gate('qt',E,IT.length,9,'Quel terminal')}
 
 /* 12. un mot sur l'avenir */
 async function terminal4(){step();head('Introduction',"Un mot sur l'avenir");

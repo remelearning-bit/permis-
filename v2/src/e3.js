@@ -52,15 +52,15 @@ async function cover(){step();await photo('aerien3',FAST?10:1200);setCam({zoom:1
 /* 2. les points d'accès */
 async function points(){step();head(H3,"Les points d'accès");
  vue(`<div class="hero">${bigIc('badge')}<p class="cap">Des titres spéciaux</p><p class="sub">L'accès au côté piste les nécessite.</p><p class="sub it" id="p1" style="font-weight:700;color:var(--marine)">Et il ne peut avoir lieu qu'en des points précis, où l'on contrôle les personnes et les véhicules : l'inspection filtrage.</p></div>`);
- const DUO=`<div class="duo2"><div class="card2 it" id="q1">${IC.user}<p class="lb">À pied</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'inspection filtrage</p><p class="tx" style="max-width:none;margin:0">Le contrôle des personnes.</p></div>
-  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="tx" style="max-width:none;margin:0">Le contrôle des véhicules.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
+ const DUO=`<div class="duo2"><div class="card2 it" id="q1">${IC.user}<p class="lb">À pied</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'inspection filtrage</p><p class="lb" style="margin:0">PIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle des personnes.</p></div>
+  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="lb" style="margin:0">PARIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle des véhicules.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
  await sayS('a04',[W('a04','Il ne peut',()=>show('#p1')),W('a04','À pied',()=>{vue(DUO);show('#q1',true)}),W('a04','En véhicule',()=>show('#q2',true)),W('a04',"c'est là",()=>show('#q3'))]);
  undim();await pause();return null}
 
 /* 3. les secteurs et les titres : les trois films du présentiel */
 async function secteurs(){step();head(H3,'Les secteurs');
  vue(`<div class="side"><div style="display:flex;justify-content:center"><figure class="fig" style="width:auto"><img src="${IMG.secteurs}" alt="" style="display:block;max-height:54vh;width:auto"><figcaption>Image du support REM Formation</figcaption></figure></div><div><p class="cap" style="text-align:left;margin:0 0 12px">La plateforme découpée en secteurs</p>
-  <ul class="conds"><li id="s1"><b>1</b><span>Les secteurs fonctionnels<small>Trafic et manœuvre.</small></span></li><li id="s2"><b>2</b><span>Le secteur de sûreté F<small>Ceux de l'arrêté préfectoral.</small></span></li><li id="s3"><b>3</b><span>Le poste d'accès routier<small>La porte d'entrée de ces secteurs pour les véhicules.</small></span></li></ul></div></div>`);
+  <ul class="conds"><li id="s1"><b>1</b><span>Les secteurs fonctionnels<small>Trafic (TRA) et manœuvre (MAN).</small></span></li><li id="s2"><b>2</b><span>Le secteur de sûreté F<small>Ceux de l'arrêté préfectoral.</small></span></li><li id="s3"><b>3</b><span>Le poste d'accès routier (PARIF)<small>La porte d'entrée de ces secteurs pour les véhicules.</small></span></li></ul></div></div>`);
  await sayS('a05',[W('a05','Les secteurs fonctionnels',()=>on('#s1')),W('a05','et le secteur',()=>on('#s2')),W('a05','Le poste',()=>on('#s3'))]);
  await film('../video/secteurs.mp4','Vidéo du support REM Formation : les secteurs.');return null}
 async function titres(){step();head(H3,'Les titres d\'accès');
@@ -84,20 +84,19 @@ async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
 async function boite(){step();head('Au poste d\'accès · 5 h 34','La boîte à gants');
  vue(`<div class="hero">${bigIc('doc')}<p class="cap">Le gendarme demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
  await sayS('a09');
- const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+ const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Obligatoire : il fait partie de ce que tout conducteur doit avoir sur lui.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Ma carte de carburant.",b:"n",ok:"Elle n'est pas un document de circulation.",h:"Pas tout à fait. Est-elle dans la liste des neuf ?"},
-  {t:"Ma pièce d'identité.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
-  {t:"Mon permis de conduire.",b:"p",ok:"Obligatoire, et en cours de validité.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+  {t:"Ma pièce d'identité.",b:"p",ok:"Obligatoire : elle fait partie de ce que tout conducteur doit avoir sur lui.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+  {t:"Mon permis de conduire.",b:"p",ok:"Obligatoire, et en cours de validité : il fait partie de ce que tout conducteur doit avoir sur lui.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Mon ticket de parking PH.",b:"n",ok:"Le parking PH sert pour le Bureau Local de Sûreté, pas pour entrer côté piste.",h:"Pas tout à fait. Un ticket de parking est-il un titre d'accès ?"},
-  {t:"Mon autorisation de conduite, le permis T.",b:"p",ok:"C'est l'objet de cette formation.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
-  {t:"Le laissez-passer véhicule.",b:"p",ok:"Le titre d'accès du véhicule.",h:"Pas tout à fait. Quel titre d'accès est propre au véhicule ?"},
-  {t:"Mon badge blanc.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+  {t:"Mon autorisation de conduite, le permis T.",b:"p",ok:"Obligatoire : c'est l'autorisation de conduite, l'objet de cette formation.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+  {t:"Le laissez-passer véhicule.",b:"p",ok:"Obligatoire : c'est le titre d'accès du véhicule.",h:"Pas tout à fait. Quel titre d'accès est propre au véhicule ?"},
   {t:"Ma carte Vitale.",b:"n",ok:"La carte Vitale n'est pas un document de circulation.",h:"Pas tout à fait. Est-elle dans la liste des neuf ?"},
-  {t:"L'attestation d'autorisation pour le véhicule.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux documents du véhicule."},
-  {t:"L'attestation d'assurance du véhicule.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux documents du véhicule."},
-  {t:"La carte grise du véhicule.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux documents du véhicule."}],
-  [['p','Je le présente','doc'],['n','Pas demandé','warn']],{label:'Document'});
- jlog('5 h 34',`Au poste d'accès, la boîte à gants : 12 documents${errTxt(E)}`);return null}
+  {t:"L'attestation d'autorisation pour le véhicule.",b:"p",ok:"Obligatoire : c'est l'un des documents du véhicule.",h:"Pas tout à fait. Repensez aux documents du véhicule."},
+  {t:"L'attestation d'assurance du véhicule.",b:"p",ok:"Obligatoire : c'est l'un des documents du véhicule.",h:"Pas tout à fait. Repensez aux documents du véhicule."},
+  {t:"La carte grise du véhicule.",b:"p",ok:"Obligatoire : c'est l'un des documents du véhicule.",h:"Pas tout à fait. Repensez aux documents du véhicule."}],
+  [['p','Je le présente','doc'],['n','Pas demandé','warn']],{label:'Document',id:'bg'});
+ jlog('5 h 34',`Au poste d'accès, la boîte à gants : 11 documents${errTxt(E)}`);return gate('bg',E,11,4,'La boîte à gants')}
 async function exceptions(){step();head(H3,'Deux exceptions');
  vue(`<div class="duo2"><div class="card2 it" id="x1">${IC.car}<p class="big2" style="font-size:clamp(28px,3vw,48px)">Les véhicules captifs</p></div><div class="card2 it" id="x2">${IC.car}<p class="big2" style="font-size:clamp(28px,3vw,48px)">Les véhicules non immatriculés</p></div></div>`);
  await sayS('a10',[W('a10','les véhicules captifs',()=>show('#x1')),W('a10','et les véhicules',()=>show('#x2'))]);
@@ -121,16 +120,16 @@ const HRS=()=>`<div class="hrs" style="position:relative">${PS.map((p,i)=>`<div 
 // le repère « maintenant » : sur toutes les lignes, ou sur une seule
 function nowAt(h,row,lbl){const st=cur(),nc=st.querySelector('.nowc'),nw=st.querySelector('#nw');if(row==null){nc.style.top='0px';nc.style.bottom='22px';nc.style.height=''}else{const r=st.querySelectorAll('.row2')[row];nc.style.top=r.offsetTop+'px';nc.style.height=r.offsetHeight+'px';nc.style.bottom='auto'}
  nw.style.left=h/24*100+'%';nw.querySelector('b').textContent=lbl;nw.classList.add('in');return nw}
-async function postes(){step();head(H3,"Les postes d'accès routiers");
+async function postes(){step();head(H3,"Les postes d'accès routiers (PARIF)");
  const st=vue('<div class="pmh" style="width:100%;height:100%"></div>');st.classList.add('tall');const M=pmap(st.querySelector('.pmh'));
  await sayS('a11',[W('a11','Quatre postes',()=>{for(let i=0;i<4;i++)setTimeout(()=>M.show(i),FAST?0:i*180)}),...PS.map((p,i)=>W('a11',p.w,()=>{M.cur(i);M.zoomTo(p.box)},.005))]);
  M.cur(-1);M.zoomTo(null);await wait(1400);
  head(H3,'Les horaires, sur vingt-quatre heures');vue(HRS());
  [0,1,2,3].forEach(i=>setTimeout(()=>on('#h'+i),FAST?0:300+i*250));
  await sayS('a12',[at('a12',.3,()=>nowAt(5.5,null,'5 h 30'))]);
- await sayS('a13');await pause(2000);return null}
+ await sayS('a13');await contV();return null}
 async function ouvert(){step();head("Quel poste d'accès à cette heure-là ? · 5 h 38",'Ouvert ou fermé ? À vous');
- const IT=[["13 Papa, à 3 h 30 du matin.",3,3.5,'f',"Le 13 Papa ouvre à 4 h."],["21 Mike, à 2 h du matin.",2,2,'o',"Le 21 Mike est ouvert 24 h sur 24."],["29 India, à 23 h.",1,23,'f',"Le 29 India ferme à 22 h."],["15 India, à 5 h.",0,5,'o',"Le 15 India est ouvert 24 h sur 24."],["29 India, à 6 h.",1,6,'o',"Le 29 India est ouvert de 5 h à 22 h."],["13 Papa, à 21 h 30.",3,21.5,'f',"Le 13 Papa ferme à 21 h."]];
+ const IT=mix('ouv',[["13 Papa, à 3 h 30 du matin.",3,3.5,'f',"Le 13 Papa ouvre à 4 h."],["21 Mike, à 2 h du matin.",2,2,'o',"Le 21 Mike est ouvert 24 h sur 24."],["29 India, à 23 h.",1,23,'f',"Le 29 India ferme à 22 h."],["15 India, à 5 h.",0,5,'o',"Le 15 India est ouvert 24 h sur 24."],["29 India, à 6 h.",1,6,'o',"Le 29 India est ouvert de 5 h à 22 h."],["13 Papa, à 21 h 30.",3,21.5,'f',"Le 13 Papa ferme à 21 h."]]);
  vue(`<div class="oc"><div>${HRS()}</div><div class="qc" id="oq"><p class="n">À vous</p><p class="q">Un poste d'accès et une heure : ouvert, ou fermé ?</p></div></div>`);
  on('.row2');
  await sayS('a14');const qc=$c('#oq');let E=0;
@@ -138,21 +137,21 @@ async function ouvert(){step();head("Quel poste d'accès à cette heure-là ? ·
  for(let i=0;i<IT.length;i++){const [t,row,h,g,ok]=IT[i];qc.querySelector('.n').textContent=`Situation ${i+1} sur ${IT.length}`;qc.querySelector('.q').innerHTML=nb(t);
   cur().querySelectorAll('.row2').forEach((r,k)=>r.style.opacity=k===row?1:.3);
   const nw=nowAt(h,row,hh(h));nw.classList.remove('ok');
-  E+=await pick(null,[['o','Ouvert'],['f','Fermé']],g,ok,"Pas tout à fait. Regardez la barre du poste : à cette heure-là, est-elle remplie ?",i<IT.length-1?'Suivant':'Continuer',{retry:true,host:qc,onDone:()=>nw.classList.add('ok')})}
+  E+=await pick(null,[['o','Ouvert'],['f','Fermé']],g,ok,"Pas tout à fait. Regardez la barre du poste : à cette heure-là, est-elle remplie ?",i<IT.length-1?'Suivant':'Continuer',{once:true,host:qc,onDone:()=>nw.classList.add('ok')})}
  cur().querySelectorAll('.row2').forEach(r=>r.style.opacity=1);
- jlog('5 h 38',`Quel poste d'accès à cette heure-là : 6 situations${errTxt(E)}`);return null}
+ jlog('5 h 38',`Quel poste d'accès à cette heure-là : 6 situations${errTxt(E)}`);return gate('ouv',E,IT.length,7,'Ouvert ou fermé')}
 
 /* 6. les deux questions du chapitre */
 async function questions(){step();head(H3+' · 5 h 42',"Deux questions d'entraînement");
- const Q=[{img:'qparif',line:'a15',q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["21 Mike",0,"Pas celui-ci. Le poste entouré est au sud-ouest de la plateforme."],["13 Papa",1,"Le 13 Papa, au sud-ouest de la plateforme, ouvert de 4 h à 21 h."],["15 India",0,"Pas celui-ci. Le 15 India est au nord ; le poste entouré est au sud-ouest."]]},
-  {line:'a16',q:"Quels documents sont nécessaires lors du passage d'un PARIF avec mon véhicule pour pénétrer côté piste ?",fixed:1,opts:[["Un titre de circulation aéroportuaire, un permis de conduire, une autorisation de conduite côté piste, une pièce d'identité, la carte grise du véhicule, l'assurance, l'attestation de laissez-passer du véhicule ainsi que le badge du véhicule.",1,"La liste complète : vos titres personnels, et ceux du véhicule."],["Un titre de circulation aéroportuaire et un permis de conduire.",0,"Il en manque. Repensez aux titres personnels et aux documents du véhicule."],["Un titre de circulation aéroportuaire.",0,"Il en manque beaucoup. Repensez aux titres personnels et aux documents du véhicule."]]}];
- let E=0;
+ const Q=[{img:'qparif',line:'a15',bk:7,q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["21 Mike",0,"Pas celui-ci. Le poste entouré est au sud-ouest de la plateforme."],["13 Papa",1,"Le 13 Papa, au sud-ouest de la plateforme, ouvert de 4 h à 21 h."],["15 India",0,"Pas celui-ci. Le 15 India est au nord ; le poste entouré est au sud-ouest."]]},
+  {line:'a16',bk:4,q:"Quels documents sont nécessaires lors du passage d'un PARIF avec mon véhicule pour pénétrer côté piste ?",fixed:1,opts:[["Un titre de circulation aéroportuaire, un permis de conduire, une autorisation de conduite côté piste, une pièce d'identité, la carte grise du véhicule, l'assurance, l'attestation de laissez-passer du véhicule ainsi que le badge du véhicule.",1,"La liste complète : vos titres personnels, et ceux du véhicule."],["Un titre de circulation aéroportuaire et un permis de conduire.",0,"Il en manque. Repensez aux titres personnels et aux documents du véhicule."],["Un titre de circulation aéroportuaire.",0,"Il en manque beaucoup. Repensez aux titres personnels et aux documents du véhicule."]]}];
+ let E=0,back=99;
  for(let i=0;i<Q.length;i++){const z=Q[i];
   vue(z.img?`<div class="qimg"><figure class="fig"><img src="${IMG[z.img]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(820px,100%)"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div>`);
   await sayS(z.line);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);if(!z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<Q.length-1?'Question suivante':'Terminer',{retry:true,host:qc})}
- jlog('5 h 42',`Questions d'entraînement : 2 questions${errTxt(E)}`);return null}
+  const e=await pick(null,o,gk,z.opts[+gk][2],kot,i<Q.length-1?'Question suivante':'Terminer',{once:true,host:qc});E+=e;if(e)back=Math.min(back,z.bk)}
+ jlog('5 h 42',`Questions d'entraînement : 2 questions${errTxt(E)}`);return gate('q3',E,Q.length,back,"Questions d'entraînement")}
 async function fin(){step();head('Étape 3 terminée · 5 h 45','Troisième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<2?'now':''}">${i<2?'✓':i+1}</i>`).join('')}</div>

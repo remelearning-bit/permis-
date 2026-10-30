@@ -194,16 +194,18 @@ async function sixEndroits(){step();if(!MV.classList.contains('on')){await mapRe
   L.card(s.nom,'Où sommes-nous ?',{a:null});
   const ks=Object.keys(ZN);for(let a=ks.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[ks[a],ks[b]]=[ks[b],ks[a]]}
   const kot={};ks.forEach(k=>{if(k!==s.zone)kot[k]=s.fb[k]});
-  E+=await pick(L,ks.map(k=>[k,ZN[k]]),s.zone,s.fb[s.zone],kot,i<SPOTS.length-1?'Repère suivant':"Vue d'ensemble",{retry:true});
+  E+=await pick(L,ks.map(k=>[k,ZN[k]]),s.zone,s.fb[s.zone],kot,i<SPOTS.length-1?'Repère suivant':"Vue d'ensemble",{once:true,x:true});
   mk.el.classList.add('done',s.zone);mk.el.querySelector('span').textContent=ZN[s.zone];
   await flyTo(ALL,1500)}
  jlog('5 h 24',`Six endroits placés sur la plateforme${errTxt(E)}`);
- L.card('Six sur six','',{a:null});await sayS('r8');await contLab(L,'Rejoindre le poste');
+ if(Q.has('pass')?false:SPOTS.length-E<needOf(SPOTS.length)){mks.forEach(o=>{o.el.remove();MO.delete(o)});L.kill();mapOff();return gate('six',E,SPOTS.length,1,'Six endroits')}
+ await gate('six',E,SPOTS.length,1,'Six endroits');
+ L.card('Six endroits placés','',{a:null});await sayS('r8');await contLab(L,'Rejoindre le poste');
  mks.forEach(o=>{o.el.remove();MO.delete(o)});L.kill();return null}
 
 /* 4. au poste : dans quelle aire sommes-nous ? */
 const VQ={ville:"Un avion au contact d'une passerelle, c'est déjà côté piste. Côté ville, aucun avion ne stationne.",
- piste:"C'est juste, mais pas assez précis : côté piste, dans quelle aire ?",
+ piste:"C'est juste, mais pas assez précis : côté piste, un poste de stationnement, c'est l'aire de trafic.",
  manoeuvre:"Les avions ne décollent pas d'ici : ils y stationnent, on les charge, on les avitaille. Ce n'est pas l'aire de manœuvre.",
  trafic:"Un poste de stationnement, c'est l'aire de trafic. Le permis T vous y autorise."};
 async function auPoste(){step();if(!MV.classList.contains('on')){await mapReady;mapOn();Object.assign(mc,frameFor({pts:SPOTS.map(s=>s.m)}))}
@@ -214,8 +216,8 @@ async function auPoste(){step();if(!MV.classList.contains('on')){await mapReady;
  const hk=fiche(L,'r9');await sayS('r9',hk);clearLab(L);L.card('À vous','Dans quelle aire sommes-nous ?',{a:null});
  const ks=['ville','piste','manoeuvre','trafic'];for(let a=ks.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[ks[a],ks[b]]=[ks[b],ks[a]]}
  const NM={ville:'Côté ville',piste:'Côté piste',manoeuvre:'Aire de manœuvre',trafic:'Aire de trafic'};const kot={};ks.forEach(k=>{if(k!=='trafic')kot[k]=VQ[k]});
- const E=await pick(L,ks.map(k=>[k,NM[k]]),'trafic',VQ.trafic,kot,'Suivant',{retry:true,onDone:()=>{$('#ring').classList.add('ok');$('#ringl').textContent='Aire de trafic'}});
- jlog('5 h 28',`Au poste : l'aire de trafic${errTxt(E)}`);L.kill();mapOff();RING=null;return null}
+ const E=await pick(L,ks.map(k=>[k,NM[k]]),'trafic',VQ.trafic,kot,'Suivant',{once:true,x:true,onDone:()=>{$('#ring').classList.add('ok');$('#ringl').textContent='Aire de trafic'}});
+ jlog('5 h 28',`Au poste : l'aire de trafic${errTxt(E)}`);L.kill();mapOff();RING=null;return gate('poste',E,1,3,'Au poste')}
 
 /* 5. les postes de stationnement, sur les photos du support */
 const SECT=[['vue','Les postes de stationnement','r11'],['t1','Terminal 1 et terminal 3','r12'],['t2','Terminal 2','r13'],['fn','Zone de fret nord','r14'],['fs','Zone de fret sud','r15']];
@@ -233,7 +235,7 @@ async function postes(){step();mapOff();
   const st=vue('<div class="sxw" style="height:100%"></div>');st.classList.add('tall');const S=stageFor(k,st.querySelector('.sxw'));const g=G[k];
   const hk=(g.hooks[id]||[]).map(([w,f])=>[typeof w==='number'?w:K(id,w,.005),()=>f(S)]);
   await sayS(id,hk);S.clear();S.zoom(800,450,1);g.tags.forEach(t=>S.show([t[0]]));
-  await wait(FAST?0:2600)}
+  await contV(i<SECT.length-1?'Suivant':'Continuer')}
  return null}
 
 /* 6. les trois questions du chapitre */
@@ -243,8 +245,8 @@ async function questions(){step();head(H2,"Trois questions d'entraînement");
   vue(`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QUIZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`);
   await sayS(z.line);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QUIZ.length-1?'Question suivante':'Terminer',{retry:true,host:qc})}
- jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return null}
+  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QUIZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
+ jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QUIZ.length,1,"Questions d'entraînement")}
 async function fin(){step();mapOff();head('Étape 2 terminée · 5 h 30','Deuxième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<1?'now':''}">${i<1?'✓':i+1}</i>`).join('')}</div>
