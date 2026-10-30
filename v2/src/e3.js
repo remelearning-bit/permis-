@@ -165,5 +165,5 @@ async function fin(){step();head('Étape 3 terminée · 5 h 45','Troisième case
  cur().classList.add('vb');
  await sayS('a17',[at('a17',.02,()=>{const i=$c('#pmn i:nth-of-type(3)');i.classList.add('now');i.innerHTML='✓'})]);
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 4 · L'inspection du véhicule</a>`}
-const NEXT='../navigation/permis-t-etape4-vehicule.html';
+const NEXT='etape4.html';
 runSeq([['Couverture',cover],["Les points d'accès",points],['Les secteurs',secteurs],["Les titres d'accès",titres],['Ce que le conducteur doit avoir',kit],['La boîte à gants',boite],['Deux exceptions',exceptions],["Les postes d'accès routiers",postes],['Ouvert ou fermé ? À vous',ouvert],['Questions',questions],["Fin de l'étape",fin]]);
