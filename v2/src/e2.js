@@ -74,7 +74,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .qimg .fig{margin:0;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(38,60,82,.16);background:#fff}.qimg .fig img{display:block;width:100%}
 .qfb2{font-weight:700;font-size:var(--B);line-height:1.38;margin:10px 0 0}.qfb2.ok{color:var(--vert)}.qfb2.ko{color:var(--orange)}.qfb2:empty{display:none}
 @media (max-width:700px){
- .qimg{grid-template-columns:1fr;gap:12px}.qimg .fig{max-height:24vh}.qimg .fig img{max-height:24vh;width:auto;margin:0 auto}
+ .qimg{grid-template-columns:1fr;gap:12px}.qimg .fig{max-height:24vh}.qimg .fig img{max-height:24vh;width:auto;margin:0 auto}#vz .stage>.qimg{margin-top:0}
  #flycap{top:auto;bottom:90px;transform:translateX(-50%);font-size:22px}
  .mk2 span{display:none}.mk2.done span,.mk2.live span{display:block;font-size:13px}
  #alt{top:auto;bottom:calc(84px + env(safe-area-inset-bottom));right:10px;padding:6px 10px}#alt b{font-size:20px}
@@ -181,26 +181,27 @@ async function deuxMondes(){step();if(!MV.classList.contains('on')){await mapRea
  clearMO();clearLab(L);L.kill();return null}
 
 /* 3. à vous : six endroits à placer */
-async function sixEndroits(){step();if(!MV.classList.contains('on')){await mapReady;mapOn()}
+async function sixEndroits(){step();const SP=mix('six',SPOTS);if(!MV.classList.contains('on')){await mapReady;mapOn()}
  const L=label([0,0,0],{lead:false,dock:true}).title('Côté ville, aire de trafic ou aire de manœuvre ?');L.card('À vous','Six endroits sur la plateforme.',{a:null});
  L.html('<div class="legend2"><span class="lv"><i></i>Côté ville</span><span class="lt"><i></i>Aire de trafic</span><span class="lm"><i></i>Aire de manœuvre</span></div>');
- const ALL={pts:SPOTS.map(s=>s.m)};await flyTo(ALL,1800,[[.05,'On remonte']]);
- const mks=SPOTS.map((s,i)=>{const el=document.createElement('div');el.className='mk2'+(s.side==='left'?' l':'');el.innerHTML=`<b>${i+1}</b><span>${nb(s.nom)}</span>`;document.body.appendChild(el);const o={el,m:s.m,side:s.side||'r'};MO.add(o);return o});
+ const ALL={pts:SP.map(s=>s.m)};await flyTo(ALL,1800,[[.05,'On remonte']]);
+ const mks=SP.map((s,i)=>{const el=document.createElement('div');el.className='mk2'+(s.side==='left'?' l':'');el.innerHTML=`<b>${i+1}</b><span>${nb(s.nom)}</span>`;document.body.appendChild(el);const o={el,m:s.m,side:s.side||'r'};MO.add(o);return o});
  placeMO();
  await sayS('r7');let E=0;
- for(let i=0;i<SPOTS.length;i++){const s=SPOTS[i],mk=mks[i];L.card(`Endroit ${i+1} sur ${SPOTS.length}`,`Cliquez sur le repère numéro ${i+1}.`,{a:null});mk.el.classList.add('live');
+ for(let i=0;i<SP.length;i++){const s=SP[i],mk=mks[i];L.card(`Endroit ${i+1} sur ${SP.length}`,`Cliquez sur le repère numéro ${i+1}.`,{a:null});mk.el.classList.add('live');
   await new Promise(r=>mk.el.querySelector('b').onclick=r);mk.el.classList.remove('live');mk.el.querySelector('b').onclick=null;
+  mks.forEach(o=>o.el.style.visibility='hidden'); // les repères ne doivent pas couvrir le panneau pendant la question
   L.card(s.nom,'',{a:null});await flyTo({Z:s.Z,c:s.v||s.m},1700,[[.05,s.nom]]);
   L.card(s.nom,'Où sommes-nous ?',{a:null});
   const ks=Object.keys(ZN);for(let a=ks.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[ks[a],ks[b]]=[ks[b],ks[a]]}
   const kot={};ks.forEach(k=>{if(k!==s.zone)kot[k]=s.fb[k]});
-  E+=await pick(L,ks.map(k=>[k,ZN[k]]),s.zone,s.fb[s.zone],kot,i<SPOTS.length-1?'Repère suivant':"Vue d'ensemble",{once:true,x:true});
+  E+=await pick(L,ks.map(k=>[k,ZN[k]]),s.zone,s.fb[s.zone],kot,i<SP.length-1?'Repère suivant':"Vue d'ensemble",{once:true,x:true});
   mk.el.classList.add('done',s.zone);mk.el.querySelector('span').textContent=ZN[s.zone];
-  await flyTo(ALL,1500)}
+  await flyTo(ALL,1500);mks.forEach(o=>o.el.style.visibility='')}
  jlog('5 h 24',`Six endroits placés sur la plateforme${errTxt(E)}`);
- if(Q.has('pass')?false:SPOTS.length-E<needOf(SPOTS.length)){mks.forEach(o=>{o.el.remove();MO.delete(o)});L.kill();mapOff();return gate('six',E,SPOTS.length,1,'Six endroits')}
- await gate('six',E,SPOTS.length,1,'Six endroits');
- L.card('Six endroits placés','',{a:null});await sayS('r8');await contLab(L,'Rejoindre le poste');
+ if(Q.has('pass')?false:SP.length-E<needOf(SP.length)){mks.forEach(o=>{o.el.remove();MO.delete(o)});L.kill();mapOff();return gate('six',E,SP.length,1,'Six endroits')}
+ await gate('six',E,SP.length,1,'Six endroits');
+ L.card('Six endroits placés','',{a:null});if(!E)await sayS('r8');await contLab(L,'Rejoindre le poste');
  mks.forEach(o=>{o.el.remove();MO.delete(o)});L.kill();return null}
 
 /* 4. au poste : dans quelle aire sommes-nous ? */
@@ -214,7 +215,7 @@ async function auPoste(){step();if(!MV.classList.contains('on')){await mapReady;
  await flyTo({Z:19+Math.log2(plane/400),c:PP},FAST?80:7000,[[.08,'Le terminal 2'],[.5,'Les postes au contact'],[.85,'Un avion au poste']]);
  RING={m:PP,w:488,h:380};$('#ring').classList.add('on');
  const hk=fiche(L,'r9');await sayS('r9',hk);clearLab(L);L.card('À vous','Dans quelle aire sommes-nous ?',{a:null});
- const ks=['ville','piste','manoeuvre','trafic'];for(let a=ks.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[ks[a],ks[b]]=[ks[b],ks[a]]}
+ const ks=['ville','manoeuvre','trafic'];for(let a=ks.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[ks[a],ks[b]]=[ks[b],ks[a]]}
  const NM={ville:'Côté ville',piste:'Côté piste',manoeuvre:'Aire de manœuvre',trafic:'Aire de trafic'};const kot={};ks.forEach(k=>{if(k!=='trafic')kot[k]=VQ[k]});
  const E=await pick(L,ks.map(k=>[k,NM[k]]),'trafic',VQ.trafic,kot,'Suivant',{once:true,x:true,onDone:()=>{$('#ring').classList.add('ok');$('#ringl').textContent='Aire de trafic'}});
  jlog('5 h 28',`Au poste : l'aire de trafic${errTxt(E)}`);L.kill();mapOff();RING=null;return gate('poste',E,1,3,'Au poste')}
@@ -245,13 +246,15 @@ const QUIZ2=[
  {q:"Comment nomme-t-on la voie où circule un avion, la voie de circulation avion ?",opts:[["Une taxiway ou une taxilane.",1,"La taxiway conduit aux pistes, la taxilane fait entrer l'avion sur son poste."],["Une route de service.",0,"Une route de service, c'est pour les véhicules."],["Une piste.",0,"La piste sert au décollage et à l'atterrissage."]]},
  {q:"Où se trouve la zone de fret de FedEx ?",opts:[["Dans la zone de fret nord.",1,"FedEx occupe la zone de fret nord, aux postes India."],["Dans la zone de fret sud.",0,"La zone de fret sud regroupe les postes Mike, November et Papa."],["Au terminal 1.",0,"Le terminal 1 accueille des passagers, pas le hub de FedEx."]]}];
 async function questions(){step();head(H2,"Trois questions d'entraînement");
- let E=0;ALT.q2=1;const QZ=(TRY.q2||0)%2?QUIZ2:QUIZ;
+ let E=0;ALT.q2=1;const QZ=(TRY.q2||0)%2?QUIZ2:QUIZ;const MISS=new Set();
+ // en cas d'échec : on revoit les écrans des questions manquées, puis on revient aux questions
+ const BKQ=[[4],[1],[1]],BKQ2=[[1],[1],[4]];
  for(let i=0;i<QZ.length;i++){const z=QZ[i];
   vue(z.ph?`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(720px,100%)"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div>`);
   if(z.line)await sayS(z.line);else await wait(FAST?0:400);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
- jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QZ.length,1,"Questions d'entraînement")}
+  const e=await pick(null,o,gk,z.opts[+gk][2],kot,i<QZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc});E+=e;if(e)(QZ===QUIZ?BKQ:BKQ2)[i].forEach(k=>MISS.add(k))}
+ jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QZ.length,[...MISS].sort((a,b)=>a-b),"Questions d'entraînement",5)}
 async function fin(){step();mapOff();head('Étape 2 terminée · 5 h 30','Deuxième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<1?'now':''}">${i<1?'✓':i+1}</i>`).join('')}</div>

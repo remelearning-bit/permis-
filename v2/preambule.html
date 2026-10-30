@@ -412,21 +412,24 @@ const nbr=(n,t)=>`${n} bonne${n>1?'s':''} réponse${n>1?'s':''} sur ${t}`;
    Une seule réponse par question, et chaque réponse est expliquée, juste ou fausse.
    Une série conditionne la suite : sous le seuil, on revoit la partie concernée, puis la série revient, dans un autre ordre. */
 // ?serie2 : tester la seconde série
-const SEUIL=0.8,TRY=Q.has('serie2')?new Proxy({},{get:(t,k)=>k in t?t[k]:1}):{};const needOf=n=>Math.ceil(n*80/100); // 80 % au moins : le seuil de la consigne d'exploitation n°3
+const SEUIL=0.8,TRY=Q.has('serie2')?new Proxy({},{get:(t,k)=>k in t?t[k]:1}):{};const needOf=n=>Math.ceil(n*80/100); // 80 % au moins : le seuil retenu, celui de l'évaluation théorique finale (consigne n°3, § 5.1.1.3)
 const lbOf=(opts,k)=>{const o=opts.find(x=>x[0]===k);return o?String(o[1]).replace(/[.\s]+$/,''):''};
 const xclean=t=>String(t||'').replace(/^(Oui|Exactement|Bien vu|C'est ça|Bonne réponse|Juste|Bravo|Vrai|Faux|Pas celui-ci|Pas celle-ci|Pas là|Pas tout à fait)\s*[.,:!]?\s*/i,'').replace(/^./,c=>c.toUpperCase());
 const xko=(lbl,ok)=>{let t=xclean(ok);const l=String(lbl).toLowerCase();if(t.toLowerCase().startsWith(l)&&/^\s*[:.]/.test(t.slice(l.length)))t=xclean(t.slice(l.length).replace(/^\s*[:.]\s*/,''));return `<b>${nb('Réponse attendue : '+lbl+'.')}</b>${t?` <span class="xp">${nb(t)}</span>`:''}`};
 const ALT={};const alt=(id,a,b)=>{if(b)ALT[id]=1;return mix(id,b&&(TRY[id]||0)%2?b:a)};
 function mix(id,a){if(!TRY[id])return a;const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
-async function gate(id,E,n,back,what){const ok=Math.max(0,n-E),need=needOf(n);TRY[id]=(TRY[id]||0)+1;
+async function gate(id,E,n,back,what,ret){const ok=Math.max(0,n-E),need=needOf(n);TRY[id]=(TRY[id]||0)+1;
  const h=(JRN[JRN.length-1]||[''])[0];
  if(ok>=need||Q.has('pass')){jlog(h,`${what} : série validée, ${ok} sur ${n}`);return null}
- jlog(h,`${what} : ${ok} sur ${n}, il en faut ${need}. Partie revue, puis série reposée`);
- vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite : 80 %, le seuil de la consigne d'exploitation n°3. Vous revoyez la partie, puis ${ALT[id]?'une nouvelle série vous attend':'la série revient, dans un autre ordre'}.`)}</p></div>`);
- await contV('Revoir la partie');return {goto:back}}
+ const parts=(Array.isArray(back)?back:[back]).map(k=>SEQ[k]?SEQ[k][0]:'').filter(Boolean);
+ jlog(h,`${what} : ${ok} sur ${n}, il en faut ${need}. Partie revue : ${parts.join(', ')}`);
+ const req=need===n?`Il les faut toutes pour passer à la suite (seuil de 80 %, celui de l'évaluation finale).`:`Il en faut au moins ${need} pour passer à la suite : 80 %, le seuil retenu, celui de l'évaluation finale.`;
+ vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(req)}</p><p class="sub" style="font-weight:700;color:var(--marine)">${nb(`Vous revoyez : ${parts.join(', ')}. Puis ${ALT[id]?'une nouvelle série vous attend':'la série revient, dans un autre ordre'}.`)}</p></div>`);
+ await contV('Revoir la partie');return Array.isArray(back)?{plan:back,ret}:{goto:back}}
 /* ---------------- navigation libre : ?nav ouvre la liste des écrans, ?nav&s=N démarre à l'écran N ---------------- */
 const NAV=Q.has('nav');let NAVI=0;
 function navUrl(i){const q=new URLSearchParams(location.search);q.set('nav','');q.set('s',i);return location.pathname+'?'+q.toString().replace('nav=&','nav&').replace(/nav=$/,'nav')}
+let SEQ=[];
 async function runSeq(seq){let start=0;
  if(NAV){document.body.classList.add('nav');start=Math.max(0,Math.min(seq.length-1,+(Q.get('s')||0)));
   const b=document.createElement('button');b.textContent='Écrans';const bar=document.getElementById('bar');bar.insertBefore(b,bar.querySelector('.sp').nextSibling);
@@ -435,7 +438,12 @@ async function runSeq(seq){let start=0;
   const nx=document.createElement('button');nx.textContent=innerWidth<560?'Suivant ›':'Écran suivant ›';bar.insertBefore(nx,b.nextSibling);nx.onclick=()=>{if(NAVI<seq.length-1)location.href=navUrl(NAVI+1)};
   if(start>0){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Lancer l'écran</button></div>`;document.body.appendChild(g);
    await new Promise(r=>g.querySelector('button').onclick=r);g.remove()}}
- let r=null;for(let i=start;i<seq.length;i++){NAVI=i;r=await seq[i][1](r);if(r&&r.goto!=null){i=r.goto-1;r=null}}}
+ SEQ=seq;let r=null,QP=null,RET=null;
+ for(let i=start;i<seq.length;i++){NAVI=i;r=await seq[i][1](r);
+  // revoir des écrans précis (r.plan), puis revenir à la série (r.ret)
+  if(r&&r.plan){QP=r.plan.slice();RET=r.ret;r=null}
+  if(QP){if(QP.length)i=QP.shift()-1;else{i=RET-1;QP=null}r=null;continue}
+  if(r&&r.goto!=null){i=r.goto-1;r=null}}}
 /* ---------------- Préambule et introduction (diapos 1 à 18) ----------------
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
@@ -503,7 +511,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .ax .nt{margin:clamp(42px,6vh,54px) 0 0;font-size:var(--B);line-height:1.4;color:#33475b;opacity:0;transition:opacity .5s}.ax .nt.in{opacity:1}
 .ax .chip{position:absolute;top:50%;transform:translate(-50%,-50%);background:#fff;color:var(--marine);font-weight:800;font-size:var(--B);padding:4px 12px;border-radius:999px;box-shadow:0 2px 10px rgba(38,60,82,.2);opacity:0;transition:opacity .4s;white-space:nowrap}
 .ax .chip.in{opacity:1}
-.mk{position:absolute;top:0;bottom:0;width:5px;margin-left:-2px;border-radius:3px;background:var(--orangeV);z-index:2;transition:left .6s ease,background .3s}
+.mk{position:absolute;top:0;bottom:0;width:5px;margin-left:-2px;border-radius:3px;background:var(--marine);z-index:2;transition:left .6s ease,background .3s}
 .mk.ok{background:var(--marine)}
 .vfw .nt{display:none}.vfw{display:grid;grid-template-columns:1.35fr 1fr;gap:clamp(28px,3.5vw,56px);align-items:center;width:100%}
 .qc{background:#fff;border-radius:16px;box-shadow:0 8px 28px rgba(38,60,82,.14);padding:clamp(18px,2vw,26px);pointer-events:auto;text-align:left}
@@ -605,7 +613,7 @@ async function cover(){await photo('cov',FAST?10:1200);if(PORT()){const c=pt(.3,
 
 /* 2. comment ça marche : un plan par idée */
 async function marche(){step();head('Préambule','Comment ça marche');
- vue(`<div class="hero"><p class="huge" id="h330">0 h 00</p><p class="cap">La durée obligatoire</p><p class="sub">De la partie théorique.</p></div>`);
+ vue(`<div class="hero"><p class="huge" id="h330">0 h 00</p><p class="cap">La partie théorique</p><p class="sub">Le minimum réglementaire est de 3 h, sans compter l'évaluation de 30 minutes.</p></div>`);
  const road=`<div class="hero"><div class="road">${[...Array(10)].map((_,i)=>`${i?'<b></b>':''}<i>${i+1}</i>`).join('')}</div><p class="cap" style="margin-top:clamp(18px,4vh,40px)">Dix étapes, dans l'ordre</p><p class="sub it" id="rd2">On ne passe à la suivante qu'après avoir terminé la précédente.</p></div>`;
  await sayS('p04',[at('p04',.02,()=>countTo('#h330',210,2600,v=>{const m=Math.round(v);return `${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}`})),
   W('p04','Elle se fait',()=>{vue(road);[...cur().querySelectorAll('.road i')].forEach((e,i)=>setTimeout(()=>e.classList.add('in'),FAST?0:i*160))}),
@@ -620,7 +628,7 @@ async function marche(){step();head('Préambule','Comment ça marche');
   W('p05','Un journal',()=>vue(`<div class="hero">${bigIc('journal')}<p class="cap">Le journal</p><p class="sub">Il note chaque décision de la matinée, avec l'heure.</p></div>`))]);
  // un premier essai, pour de vrai
  vue(`<div class="hero"><div class="qc" id="qe" style="width:min(600px,100%)"><p class="n">À vous d'essayer</p><p class="q">${nb("Une série de questions n'est pas réussie. Que se passe-t-il ?")}</p></div></div>`);
- const E0=await pick(null,[['suite','On passe quand même à la suite'],['revoir','On revoit la partie, puis la série revient'],['stop','La formation s\'arrête']],'revoir',"Exactement. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est la règle de la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci.",{_:"Non. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est la règle de la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci."},'Continuer',{once:true,host:$c('#qe')});
+ const E0=await pick(null,[['suite','On passe quand même à la suite'],['revoir','On revoit la partie, puis la série revient'],['stop','La formation s\'arrête']],'revoir',"Exactement. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est ce que demande la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci.",{_:"Non. En dessous du seuil, vous revoyez la partie concernée, puis la série revient. C'est ce que demande la consigne d'exploitation n°3. Et chaque réponse est expliquée, comme celle-ci."},'Continuer',{once:true,host:$c('#qe')});
  jlog('4 h 45',`Premier essai de question${errTxt(E0)}`);
  // l'apprenant ouvre lui-même le journal
  vue(`<div class="hero">${bigIc('journal')}<p class="cap">Votre réponse est inscrite au journal</p><p class="sub it in" id="jc" style="font-weight:700;color:var(--marine)">${nb("Cliquez sur « Journal », en bas de l'écran, pour la voir.")}</p><p class="sub" style="font-size:var(--B)">Les heures du journal sont celles de l'histoire, pas la durée de la formation.</p></div>`);
@@ -628,7 +636,7 @@ async function marche(){step();head('Préambule','Comment ça marche');
  await new Promise(r=>{const t=setInterval(()=>{if(!$('#jrn').classList.contains('on')){clearInterval(t);r()}},200)});
  vue(`<div class="hero">${bigIc('phone')}<p class="huge tel">01 49 19 81 79</p><p class="cap">Si quelque chose bloque</p><p class="sub">L'équipe de REM Formation répond au téléphone.</p></div>`);
  await sayS('p06',[W('p06',"L'évaluation",()=>vue(`<div class="hero">${bigIc('laptop')}<p class="cap">L'évaluation finale</p><p class="sub">En ligne, sur votre espace stagiaire, à la fin du parcours.</p></div>`))]);
- await wait(1500);return null}
+ await contV();return null}
 // un repère posé juste au-dessus d'un bouton de la barre du bas ; cliquer le repère ou le bouton lui-même, c'est pareil
 function barTarget(btn,txt){return new Promise(res=>{const el=document.createElement('div');el.className='tgt above';el.innerHTML=`<i></i><span>${txt}</span>`;document.body.appendChild(el);
  const place=()=>{if(!el.isConnected)return;const r=btn.getBoundingClientRect();el.style.transform=`translate(${r.left+r.width/2}px,${r.top-24}px)`;requestAnimationFrame(place)};place();
@@ -649,7 +657,7 @@ async function obligatoire(){step();head('Préambule','La formation obligatoire'
   <div><p class="ttl it" id="e00">Un prérequis, pas une option</p><ul class="conds">
   <li class="it" id="e1"><b>1</b><span>Un permis français en cours de validité</span></li>
   <li class="it" id="e2"><b>2</b><span>Ou un permis étranger<small>Dont les droits à conduire restent valables en France, selon les conditions de reconnaissance et d'échange des permis de conduire.</small></span></li>
-  <li class="it" id="e3"><b>3</b><span>De la bonne catégorie<small>Celle du type de véhicule immatriculé ou de l'engin utilisé.</small></span></li></ul></div></div>`);
+  <li class="it" id="e3"><b>3</b><span>De la bonne catégorie<small>Celle du véhicule immatriculé utilisé. Pour un engin non immatriculé, un permis de conduire est requis, quelle que soit sa catégorie.</small></span></li></ul></div></div>`);
  await sayS('p09',[at('p09',.02,()=>show('#e0')),W('p09','Le permis de conduire',()=>show('#e00')),W('p09','Il faut un permis français',()=>show('#e1')),W('p09','Ou un permis',()=>show('#e2')),W('p09','Et sa catégorie',()=>show('#e3')),
   W('p09','Pour la théorie',()=>vue(`<div class="hero"><div class="sq21">${[...Array(21)].map(()=>'<i></i>').join('')}</div><p class="cap">L'évaluation finale : 21 questions</p><p class="sub it" id="e5">80 % de bonnes réponses au minimum pour obtenir l'attestation.</p></div>`)),
   W('p09','Il faut au moins',()=>{show('#e5');[...cur().querySelectorAll('.sq21 i')].slice(0,17).forEach((e,i)=>setTimeout(()=>e.classList.add('on'),FAST?0:i*110))})]);
@@ -659,7 +667,7 @@ async function obligatoire(){step();head('Préambule','La formation obligatoire'
 const AXES=`<div class="axes">
  <div class="ax" id="xa"><p class="tl">Après la réussite de la théorie</p><div class="tr">
   <div class="sg" id="xa1" style="left:0;width:40%;background:var(--marine)"><span class="lg">Avec un référent accompagnateur</span><span class="sh">Référent</span></div>
-  <span class="fl" id="xaf0" style="left:0">L'attestation de réussite</span><span class="fl r" id="xaf2" style="left:90%">Au plus tard :<br class="ph"> le permis récupéré</span>
+  <span class="fl" id="xaf0" style="left:0">L'attestation de réussite</span><span class="fl r" id="xaf2" style="left:90%">Jusqu'à 3 mois :<br class="ph"> la copie de la demande</span>
   <span class="tk" id="xat1" style="left:40%">40 jours</span><span class="tk" id="xat2" style="left:90%">3 mois</span></div>
   <p class="nt" id="xan">L'attestation vaut autorisation de conduite pendant la formation pratique, en présence d'un référent accompagnateur. Passé les 40 jours sans partie pratique validée, tout est à refaire. Une fois la demande d'autorisation déposée, vous circulez au plus 3 mois à compter de la validation de votre permis, avec la copie de la demande, en attendant de le récupérer.</p></div>
  <div class="ax" id="xb"><p class="tl">Cessation d'activité : sans circuler sur l'aire de mouvement</p><div class="tr">
@@ -673,7 +681,7 @@ async function candidat(){step();head('Préambule','Le candidat');
  await sayS('p11',[at('p11',.02,()=>show('#f4'))]);
  await sayS('p12',[at('p12',.02,()=>{$c('#f4').classList.remove('in');on('#xa1','js')}),W('p12','Et attention',()=>show('#xb')),
   W('p12','Entre trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('p12','Plus de douze',()=>{on('#xb2');on('#xbf2')})]);
- await wait(2500);return null}
+ await contV();return null}
 
 /* 5. l'attestation : la photo de l'Annexe 8, parcourue partie par partie */
 async function attestation(){step();await photo('annexe',FAST?10:400);setCam({mode:'contain'});await vzOff();
@@ -758,9 +766,9 @@ async function roissy(){step();headOff();await photo('terminaux',FAST?10:900);se
  const vv=$('#vv'),vid=$('#vid');const openFilm=async()=>{vv.src='../video/intro.mp4';vid.classList.add('on');VO.pause();
   try{await vv.play()}catch(e){if(!$('#vplay')){$('#vclose').insertAdjacentHTML('beforebegin','<button class="act" id="vplay">Lancer le film</button>');$('#vplay').onclick=()=>{vv.play().catch(()=>{});$('#vplay').remove()}}}
   await new Promise(r=>{$('#vclose').onclick=r;vv.onended=r});vv.pause();vid.classList.remove('on')};
- // le film se lance tout seul quand la voix a fini ; on peut le revoir ensuite
+ // le film ne se lance pas tout seul : l'apprenant choisit de le regarder (consigne n°3, § 5.1.1.2)
  if(!$('#vcred'))$('#vclose').insertAdjacentHTML('beforebegin','<p id="vcred" style="margin:0;font-size:var(--B);color:var(--pierre)">Extrait : Europe 1, La Matinale.</p>');
- let seen=false;if(!FAST){await openFilm();seen=true}
+ let seen=false;
  for(;;){VB.innerHTML=`<button class="act alt">${seen?'Revoir le film':'Regarder le film'}</button><button class="act">Continuer</button>`;VB.querySelectorAll('button').forEach(b=>b.style.pointerEvents='auto');
   const b=await new Promise(r=>VB.querySelectorAll('button').forEach(x=>x.onclick=()=>r(x)));VB.innerHTML='';if(!b.classList.contains('alt'))break;await openFilm();seen=true}
  return null}

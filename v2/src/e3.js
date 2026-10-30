@@ -20,22 +20,22 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .hrs .op{position:absolute;top:0;bottom:0;background:var(--marine);border-radius:10px;transform-origin:left center;transform:scaleX(0);transition:transform 1.1s ease}
 .hrs .row2.in .op{transform:none}
 .hrs .ax2{position:relative;height:22px;margin-left:calc(clamp(110px,12vw,170px) + 16px)}
-.hrs .ax2 span{position:absolute;transform:translateX(-50%);font-weight:700;font-size:14px;color:#5d6b78}
-.hrs .now{position:absolute;top:-10px;bottom:-10px;width:5px;margin-left:-2px;background:var(--orangeV);border-radius:3px;z-index:2;transition:left .7s ease,opacity .4s;opacity:0}
-.hrs .now.in{opacity:1}.hrs .now b{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--orangeV);color:#fff;font-size:14px;padding:2px 8px;border-radius:999px;white-space:nowrap;margin-bottom:4px}
+.hrs .ax2 span{position:absolute;transform:translateX(-50%);font-weight:700;font-size:14px;color:#5d6b78}.ax2 span:last-child{transform:translateX(-100%)}
+.hrs .now{position:absolute;top:-10px;bottom:-10px;width:5px;margin-left:-2px;background:var(--marine);border-radius:3px;z-index:2;transition:left .7s ease,opacity .4s;opacity:0}
+.hrs .now.in{opacity:1}.hrs .now b{position:absolute;bottom:100%;left:50%;transform:translateX(-50%);background:var(--marine);color:#fff;font-size:14px;padding:2px 8px;border-radius:999px;white-space:nowrap;margin-bottom:4px}
 .hrs .now.ok{background:var(--marine)}.hrs .now.ok b{background:var(--marine)}
 .qimg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center;width:100%;max-width:1220px}.qimg .fig img{display:block;width:100%}
 .hrs .nowc .now{top:-6px;bottom:-6px}
 .oc{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:clamp(20px,3vw,46px);align-items:center;width:100%;max-width:1220px}
-@media (max-width:700px){.qimg{grid-template-columns:1fr;gap:12px}.qimg .fig img{max-height:17vh;width:auto;max-width:100%;margin:0 auto}.hrs .nowc{left:94px!important}.hrs .row2{grid-template-columns:86px 1fr;gap:8px}.hrs .nm{font-size:16px}.hrs .ax2{margin-left:94px}.oc{grid-template-columns:1fr;gap:14px}.pmw .pg .pln{font-size:40px}}
+@media (max-width:700px){.qimg{grid-template-columns:1fr;gap:12px}.qimg .fig img{max-height:22vh;width:auto;max-width:100%;margin:0 auto}#vz .stage>.qimg{margin-top:0}.hrs .nowc{left:94px!important}.hrs .row2{grid-template-columns:86px 1fr;gap:8px}.hrs .nm{font-size:16px}.hrs .ax2{margin-left:94px}.oc{grid-template-columns:1fr;gap:14px}.pmw .pg .pln{font-size:40px}}
 </style>`);
 const H3="Étape 3 · L'accès au côté piste";
-// un film du présentiel : il se lance quand la voix a fini ; on peut le revoir
+// un film du présentiel : il ne se lance pas tout seul, l'apprenant choisit de le regarder (consigne n°3, § 5.1.1.2)
 async function film(src,cred){const vv=$('#vv'),vid=$('#vid');const c=$('#vcred');if(c)c.remove();if(cred)$('#vclose').insertAdjacentHTML('beforebegin',`<p id="vcred" style="margin:0;font-size:var(--B);color:var(--pierre)">${nb(cred)}</p>`);
  const open=async()=>{vv.src=src;vid.classList.add('on');VO.pause();
   try{await vv.play()}catch(e){if(!$('#vplay')){$('#vclose').insertAdjacentHTML('beforebegin','<button class="act" id="vplay">Lancer le film</button>');$('#vplay').onclick=()=>{vv.play().catch(()=>{});$('#vplay').remove()}}}
   await new Promise(r=>{$('#vclose').onclick=r;vv.onended=r});vv.pause();vid.classList.remove('on')};
- let seen=false;if(!FAST){await open();seen=true}
+ let seen=false;
  for(;;){VB.innerHTML=`<button class="act alt">${seen?'Revoir le film':'Regarder le film'}</button><button class="act">Continuer</button>`;VB.querySelectorAll('button').forEach(b=>b.style.pointerEvents='auto');
   const b=await new Promise(r=>VB.querySelectorAll('button').forEach(x=>x.onclick=()=>r(x)));VB.innerHTML='';if(!b.classList.contains('alt'))break;await open();seen=true}}
 
@@ -53,7 +53,7 @@ async function cover(){step();await photo('aerien3',FAST?10:1200);setCam({zoom:1
 async function points(){step();head(H3,"Les points d'accès");
  vue(`<div class="hero">${bigIc('badge')}<p class="cap">Des titres spéciaux</p><p class="sub">L'accès au côté piste les nécessite.</p><p class="sub it" id="p1" style="font-weight:700;color:var(--marine)">Et il ne peut avoir lieu qu'en des points précis, où l'on contrôle les personnes et les véhicules : l'inspection filtrage.</p></div>`);
  const DUO=`<div class="duo2"><div class="card2 it" id="q1">${IC.user}<p class="lb">À pied</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'inspection filtrage</p><p class="lb" style="margin:0">PIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle des personnes.</p></div>
-  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="lb" style="margin:0">PARIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle des véhicules.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
+  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="lb" style="margin:0">PARIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle du conducteur et du véhicule.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
  await sayS('a04',[W('a04','Il ne peut',()=>show('#p1')),W('a04','À pied',()=>{vue(DUO);show('#q1',true)}),W('a04','En véhicule',()=>show('#q2',true)),W('a04',"c'est là",()=>show('#q3'))]);
  undim();await pause();return null}
 
@@ -72,7 +72,7 @@ async function titres(){step();head(H3,'Les titres d\'accès');
  await film('../video/titres-circulation.mp4','Vidéo du support REM Formation : les titres de circulation.');undim();return null}
 
 /* 4. ce que le conducteur doit avoir */
-const KIT=[['badge','Son titre de circulation aéroportuaire','Son titre'],['card',"Une pièce d'identité",'Une pièce'],['card','Son permis de conduire','Son permis'],['key','Son autorisation de conduite','Son autorisation','Permis T, R, M ou P.'],['car','Le laissez-passer véhicule','Le laissez-passer'],['badge','Son badge blanc','Son badge blanc'],['doc',"L'attestation d'autorisation pour le véhicule","L'attestation d'autorisation"],['doc',"L'attestation d'assurance et la carte grise","L'attestation d'assurance"],['car',"Un véhicule identifiable par le logo de l'entreprise",'Et le véhicule']];
+const KIT=[['badge','Son titre de circulation aéroportuaire','Son titre'],['card',"Une pièce d'identité",'Une pièce'],['card','Son permis de conduire','Son permis'],['key','Son autorisation de conduite','Son autorisation','Permis T, R, M ou P.'],['car','Le laissez-passer véhicule','Le laissez-passer'],['doc',"L'attestation d'autorisation pour le véhicule","L'attestation d'autorisation"],['doc',"L'attestation d'assurance et la carte grise","L'attestation d'assurance"],['car',"Un véhicule identifiable par le logo de l'entreprise",'Et le véhicule']];
 const KIT2=[['vest','Le gilet haute visibilité','le gilet','Obligatoire, il se porte.'],['doc','La vignette de circulation','la vignette','Sur le véhicule.'],['badge',"Le badge d'accès à lecture magnétique",'et le badge','Sur le véhicule.']];
 async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
  vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,20px)"><p class="cap" style="margin:0;font-size:clamp(22px,2.2vw,34px)">Ce que tout conducteur doit posséder<span id="kn" hidden></span></p><div class="tiles" style="grid-template-columns:repeat(3,1fr)">${KIT.map((f,i)=>`<div class="tile" id="kt${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}${f[3]?`<br><small style="font-weight:400">${nb(f[3])}</small>`:''}</p></div>`).join('')}</div></div>`);
@@ -82,7 +82,7 @@ async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
  await sayS('a08',KIT2.map((f,i)=>W('a08',f[2],()=>on('#ku'+i),.005)));
  await pause(2000);return null}
 async function boite(){step();head('Au poste d\'accès · 5 h 34','La boîte à gants');
- vue(`<div class="hero">${bigIc('doc')}<p class="cap">Le gendarme demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
+ vue(`<div class="hero">${bigIc('doc')}<p class="cap">L'agent de contrôle demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
  await sayS('a09');
  const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Obligatoire : il fait partie de ce que tout conducteur doit avoir sur lui.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Ma carte de carburant.",b:"n",ok:"Elle n'est pas un document de circulation.",h:"Pas tout à fait. Est-elle dans la liste des neuf ?"},
@@ -144,19 +144,19 @@ async function ouvert(){step();head("Quel poste d'accès à cette heure-là ? ·
 
 /* 6. les deux questions du chapitre */
 async function questions(){step();head(H3+' · 5 h 42',"Deux questions d'entraînement");
- const Q=[{img:'qparif',line:'a15',bk:7,q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["21 Mike",0,"Pas celui-ci. Le poste entouré est au sud-ouest de la plateforme."],["13 Papa",1,"Le 13 Papa, au sud-ouest de la plateforme, ouvert de 4 h à 21 h."],["15 India",0,"Pas celui-ci. Le 15 India est au nord ; le poste entouré est au sud-ouest."]]},
-  {line:'a16',bk:4,q:"Quels documents sont nécessaires lors du passage d'un PARIF avec mon véhicule pour pénétrer côté piste ?",fixed:1,opts:[["Un titre de circulation aéroportuaire, un permis de conduire, une autorisation de conduite côté piste, une pièce d'identité, la carte grise du véhicule, l'assurance, l'attestation de laissez-passer du véhicule ainsi que le badge du véhicule.",1,"La liste complète : vos titres personnels, et ceux du véhicule."],["Un titre de circulation aéroportuaire et un permis de conduire.",0,"Il en manque. Repensez aux titres personnels et aux documents du véhicule."],["Un titre de circulation aéroportuaire.",0,"Il en manque beaucoup. Repensez aux titres personnels et aux documents du véhicule."]]}];
+ const Q=[{img:'qparif',line:'a15',bk:[7],q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["21 Mike",0,"Pas celui-ci. Le poste entouré est au sud-ouest de la plateforme."],["13 Papa",1,"Le 13 Papa, au sud-ouest de la plateforme, ouvert de 4 h à 21 h."],["15 India",0,"Pas celui-ci. Le 15 India est au nord ; le poste entouré est au sud-ouest."]]},
+  {line:'a16',bk:[3,4],q:"Quels documents sont nécessaires lors du passage d'un PARIF avec mon véhicule pour pénétrer côté piste ?",fixed:1,opts:[["Un titre de circulation aéroportuaire, un permis de conduire, une autorisation de conduite côté piste, une pièce d'identité, la carte grise du véhicule, l'assurance, l'attestation de laissez-passer du véhicule ainsi que le badge du véhicule.",1,"La liste complète : vos titres personnels, et ceux du véhicule."],["Un titre de circulation aéroportuaire et un permis de conduire.",0,"Il en manque. Repensez aux titres personnels et aux documents du véhicule."],["Un titre de circulation aéroportuaire.",0,"Il en manque beaucoup. Repensez aux titres personnels et aux documents du véhicule."]]}];
  // seconde série : questions du test Groupe ADP (sans voix)
- const Q2=[{img:'qparif2',bk:7,q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["15 India",0,""],["21 Mike",1,"Le 21 Mike, à l'ouest du terminal 2, ouvert 24 h sur 24."],["29 India",0,""]]},
-  {bk:7,q:"Quels sont les PARIF ouverts 24 h sur 24 ?",opts:[["Le 21 Mike et le 15 India",1,"Ils ne ferment jamais. Le 29 India ouvre de 5 h à 22 h, le 13 Papa de 4 h à 21 h."],["Tous",0,""],["Le 13 Papa et le 29 India",0,""]]}];
+ const Q2=[{img:'qparif2',bk:[7],q:"Quel est le nom du PARIF entouré de rouge ?",opts:[["15 India",0,""],["21 Mike",1,"Le 21 Mike, à l'ouest du terminal 2, ouvert 24 h sur 24."],["29 India",0,""]]},
+  {bk:[7],q:"Quels sont les PARIF ouverts 24 h sur 24 ?",opts:[["Le 21 Mike et le 15 India",1,"Ils ne ferment jamais. Le 29 India ouvre de 5 h à 22 h, le 13 Papa de 4 h à 21 h."],["Tous",0,""],["Le 13 Papa et le 29 India",0,""]]}];
  ALT.q3=1;const QS=(TRY.q3||0)%2?Q2:Q;
- let E=0,back=99;
+ let E=0;const MISS=new Set();
  for(let i=0;i<QS.length;i++){const z=QS[i];
   vue(z.img?`<div class="qimg"><figure class="fig"><img src="${IMG[z.img]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QS.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(820px,100%)"><p class="n">Question ${i+1} sur ${QS.length}</p><p class="q">${nb(z.q)}</p></div>`);
   if(z.line)await sayS(z.line);else await wait(FAST?0:400);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);if(!z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  const e=await pick(null,o,gk,z.opts[+gk][2],kot,i<QS.length-1?'Question suivante':'Terminer',{once:true,host:qc});E+=e;if(e)back=Math.min(back,z.bk)}
- jlog('5 h 42',`Questions d'entraînement : 2 questions${errTxt(E)}`);return gate('q3',E,QS.length,back,"Questions d'entraînement")}
+  const e=await pick(null,o,gk,z.opts[+gk][2],kot,i<QS.length-1?'Question suivante':'Terminer',{once:true,host:qc});E+=e;if(e)z.bk.forEach(k=>MISS.add(k))}
+ jlog('5 h 42',`Questions d'entraînement : 2 questions${errTxt(E)}`);return gate('q3',E,QS.length,[...MISS].sort((a,b)=>a-b),"Questions d'entraînement",9)}
 async function fin(){step();head('Étape 3 terminée · 5 h 45','Troisième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<2?'now':''}">${i<2?'✓':i+1}</i>`).join('')}</div>

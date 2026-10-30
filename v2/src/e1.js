@@ -138,7 +138,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  .side{margin-top:10px}.side .fig{max-height:22vh}.side .fig img{max-height:22vh;width:auto;margin:0 auto}
 }
 </style>`);
-const pause=(ms=1600)=>wait(FAST?0:ms); // pas de bouton quand il n'y a rien à faire : l'écran suivant arrive seul
+const pause=()=>contV(); // consigne n°3, § 5.1.1.2 : rien ne se déroule seul, l'apprenant clique pour avancer
 const H1='Étape 1 · La réglementation';
 const img=(k,cap='')=>`<figure class="fig"><img src="${IMG[k]}" alt="">${cap?`<figcaption>${nb(cap)}</figcaption>`:''}</figure>`;
 // le moment où un hook arrive : on lance le suivant
@@ -201,7 +201,7 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
   <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
   <span class="tk" id="xbt1" style="left:16.7%">3 mois</span><span class="tk" id="xbt2" style="left:66.7%">12 mois</span></div></div></div>`;
- await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}</div>`)}),
+ await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}<p class="sub" style="text-align:center;margin-top:clamp(12px,3vh,28px)">${nb("Une règle précisée par la consigne d'exploitation n°3.")}</p></div>`)}),
   W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Plus de douze',()=>{on('#xb2');on('#xbf2')})]);
  await pause(2200);return null}
 
@@ -253,13 +253,13 @@ async function vem(L){L.title('Véhicule, engin ou matériel ?');
 /* 6. les consignes d'exploitation : qui pilote */
 async function consignes(){step();head('1 · Le contexte réglementaire',"Les consignes d'exploitation");
  vue(`<div style="width:100%"><div class="chain">
-  <div class="nd it" id="c1">${IC.build}<div>${P('','Le Groupe ADP pilote',"La formation, l'évaluation et la délivrance des autorisations de conduite. Il en définit les principes, identifie les parties prenantes et en assure le suivi.")}</div></div>${ARR('ca1')}
+  <div class="nd it" id="c1">${IC.build}<div>${P('','Le Groupe ADP (Aéroports de Paris) pilote',"La formation, l'évaluation et la délivrance des autorisations de conduite. Il en définit les principes, identifie les parties prenantes et en assure le suivi.")}</div></div>${ARR('ca1')}
   <div class="nd it" id="c2">${IC.check2||IC.shield}<div>${P('','Il agrée les centres',"Il évalue les formateurs pour les habiliter, et tient à jour la liste des centres agréés et des formateurs habilités.")}</div></div>${ARR('ca2')}
   <div class="nd it" id="c3">${IC.doc}<div>${P('',"Les consignes d'exploitation","Elles précisent les modalités pour les entreprises qui opèrent sur l'aérodrome.")}</div></div></div>
   <p class="sub it" id="c4" style="text-align:center;margin:clamp(16px,3vh,30px) auto 0;font-weight:700;color:var(--marine)">${nb("Consignes d'exploitation et mesures particulières d'application se consultent sur l'extranet.")}</p></div>`);
  await sayS('e15',[W('e15',"L'exploitant",()=>show('#c1',true)),W('e15','Il prononce',()=>{show('#ca1');show('#c2',true)}),W('e15','Les consignes',()=>{show('#ca2');show('#c3',true)}),W('e15','Consignes et',()=>{undim();show('#c4')})]);
  await pause(2200);
- vue(`<div class="duo2"><div class="card2 it in">${IC.shield}<p class="lb">Le système de gestion de la sécurité</p><p class="tx" style="max-width:none;margin:0">C'est par lui que le Groupe ADP délivre les permis T.</p></div>
+ vue(`<div class="duo2"><div class="card2 it in">${IC.shield}<p class="lb">Le système de gestion de la sécurité</p><p class="tx" style="max-width:none;margin:0">Le Groupe ADP s'en sert pour analyser les événements qui touchent la sécurité, et pour suspendre ou retirer une autorisation.</p></div>
   <div class="card2 it in">${IC.eye}<p class="lb">Contrôles et audits</p><p class="tx" style="max-width:none;margin:0">En cas d'événement majeur ou de problème récurrent touchant la sécurité, le Groupe ADP peut contrôler un centre de formation. Le centre et ses formateurs doivent répondre à toute sollicitation. Et il mène un programme d'audits des centres et de leurs formateurs.</p></div></div>`);
  await contV();return null}
 const ARR=id=>`<div class="ar it" id="${id}"><svg viewBox="0 0 60 28"><path d="M4 14h48M40 4l12 10-12 10"/></svg></div>`;
@@ -277,18 +277,18 @@ async function roles(){step();head('1 · Le contexte réglementaire',"La consign
   <div class="card2 it" id="i2">${IC.build}<p class="lb">Le sous-traitant sans activité aéronautique</p><p class="tx" style="max-width:none;margin:0">Le donneur d'ordres vérifie que ses conducteurs ont suivi une formation pratique adaptée.</p></div></div>`);
  await sayS('e19',[at('e19',.02,()=>show('#i1',true)),W('e19','Même logique',()=>show('#i2',true))]);undim();
  await pause();return null}
-const QF2=[{t:"Tenir à jour la liste des centres agréés et des formateurs habilités.",s:'La liste des centres et des formateurs',b:"adp",ok:"Le Groupe ADP : il agrée les centres, habilite les formateurs et en tient la liste."},
+const QF2=[{t:"Tenir à jour la liste des centres agréés et des formateurs habilités.",s:'La liste des centres et des formateurs',b:"adp",ok:"Le Groupe ADP : il agrée les centres, évalue les formateurs en vue de leur habilitation, et tient la liste des centres et des formateurs."},
  {t:"Garantir le maintien des compétences de l'employé pendant toute la validité de son autorisation de conduite.",s:'Le maintien des compétences',b:"emp",ok:"L'employeur : la consigne n°3 le lui confie, pendant toute la durée de validité de l'autorisation."},
- {t:"Dispenser, au nom de l'employeur, la formation pratique permis T.",s:"La pratique, au nom de l'employeur",b:"ref",ok:"Le référent : désigné par l'employeur, il dispense en son nom la formation pratique, en initial et en renouvellement."},
+ {t:"Accompagner le stagiaire pendant sa formation pratique et l'évaluer avec la grille de l'annexe 7.",s:"Accompagner et évaluer le stagiaire",b:"ref",ok:"Le référent : il accompagne le stagiaire pendant la formation pratique et l'évalue avec la grille de l'annexe 7."},
  {t:"Restituer l'autorisation de conduite au Groupe ADP quand l'employé n'est plus apte à la détenir.",s:"Restituer l'autorisation",b:"emp",ok:"L'employeur : il garantit la restitution de l'autorisation au Groupe ADP."},
  {t:"Recevoir le courriel d'information du Groupe ADP sur un changement qui touche la conduite.",s:'Le courriel du Groupe ADP',b:"cs",ok:"Le correspondant sécurité : le Groupe ADP l'adresse à tous les correspondants sécurité des employeurs."},
  {t:"Définir les principes du dispositif de formation et en assurer le suivi.",s:'Les principes du dispositif',b:"adp",ok:"Le Groupe ADP pilote le dispositif : il en définit les principes et en assure le suivi."}];
 async function quiFait(){step();head('1 · Le contexte réglementaire','Qui fait quoi ? À vous');
  vue(`<div class="hero">${bigIc('quiz')}<p class="cap">Une mission : qui s'en charge ?</p><p class="sub">Cliquez sur la bonne colonne. La mission s'y range.</p></div>`);
  await sayS('e20');
- const E=await sortV(alt('qf',[{t:"Agréer les centres de formation et habiliter les formateurs.",s:'Agréer les centres, habiliter les formateurs',b:"adp",ok:"Le Groupe ADP pilote le dispositif : il agrée les centres de formation et habilite les formateurs.",h:"Pas celui-ci. Qui pilote tout le dispositif ?"},
+ const E=await sortV(alt('qf',[{t:"Agréer les centres de formation.",s:'Agréer les centres',b:"adp",ok:"Le Groupe ADP pilote le dispositif : il agrée les centres de formation, et évalue les formateurs en vue de leur habilitation.",h:"Pas celui-ci. Qui pilote tout le dispositif ?"},
   {t:"Attester que l'activité du salarié nécessite l'autorisation de conduite.",s:'Attester le besoin',b:"emp",ok:"L'employeur l'atteste, et s'assure de la formation du salarié.",h:"Pas celui-ci. Qui connaît l'activité du salarié ?"},
-  {t:"Assurer la formation pratique, en initiale et en renouvellement.",s:'La formation pratique',b:"ref",ok:"Le référent « autorisation de conduite », désigné par l'employeur, assure la formation pratique.",h:"Pas celui-ci. Qui est désigné pour la pratique ?"},
+  {t:"Dispenser, au nom de l'employeur, la formation pratique, en initial et en renouvellement.",s:"La pratique, au nom de l'employeur",b:"ref",ok:"Le référent « autorisation de conduite » : désigné par l'employeur, il dispense en son nom la formation pratique.",h:"Pas celui-ci. Qui est désigné pour la pratique ?"},
   {t:"Recevoir du Groupe ADP les informations sur les changements qui touchent la conduite côté piste.",s:'Recevoir les informations du Groupe ADP',b:"cs",ok:"Le correspondant sécurité : le Groupe ADP lui adresse un courriel à chaque changement."},
   {t:"Diffuser ces informations aux référents permis T et aux conducteurs.",s:'Les diffuser aux référents et aux conducteurs',b:"cs",ok:"Le correspondant sécurité : le Groupe ADP lui demande de les diffuser aux référents permis T et aux conducteurs."},
   {t:"Désigner un ou plusieurs référents.",s:'Désigner les référents',b:"emp",ok:"L'employeur désigne un ou plusieurs référents « autorisation de conduite ».",h:"Pas celui-ci. Le référent est désigné par qui ?"}],QF2),
@@ -309,6 +309,7 @@ async function sanctions(){step();head('2 · Les sanctions','Trois registres');
  await sayS('e22',[...INF.map((f,i)=>W('e22',f[2],()=>lit(i),.005)),W('e22','là, c\'est',()=>on('#dl')),
   W('e22','Cent cinquante',()=>vue(`<div class="hero">${bigIc('badge')}<p class="huge" id="m150">0 €</p><p class="cap">Et/ou 6 jours de suspension</p><p class="sub">Pour le badge non apparent en zone de sûreté à accès réglementé.</p></div>`)),
   W('e22','Cent cinquante',()=>countTo('#m150',150,1400,v=>Math.round(v)+' €'),-.01)]);
+ await contV();
  head('2 · Les sanctions','Le rappel affiché sur la plateforme');
  vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(16px,3vh,30px)"><div class="parts">
   <div class="pt it" id="r1">${IC.card}<p class="lb">Retrait des permis</p><p class="tx" style="margin:0">Le permis de conduire comme le permis T.</p></div><div class="pt it" id="r2">${IC.badge}<p class="lb">Retrait du badge</p></div><div class="pt it" id="r3">${IC.euro}<p class="lb">Amende</p></div><div class="pt it" id="r4">${IC.build}<p class="lb">Poursuite judiciaire</p></div></div></div>`);
@@ -326,7 +327,7 @@ async function retrait(){step();head('2 · Les sanctions',"L'autorisation de con
  const CV=`<div class="side" style="grid-template-columns:1fr"><div><p class="cap" style="text-align:left;margin:0 0 clamp(10px,2vh,22px)">Dans quels cas ?</p><ul class="conds">${CAS.map((c,i)=>`<li id="k${i}"><b>${i+1}</b><span>${nb(c[0])}${c[1]?`<small>${nb(c[1])}</small>`:''}</span></li>`).join('')}</ul></div></div>`;
  await sayS('e23',[at('e23',.02,()=>show('#t1')),W('e23','Ou retirée',()=>show('#t2')),W('e23',"C'est le Groupe",()=>show('#t3')),W('e23','Dans quels',()=>vue(CV)),...CAS.map((c,i)=>W('e23',c[2],()=>on('#k'+i),.005))]);
  vue(`<div class="hero">${bigIc('doc')}<p class="cap">Une décision motivée</p><p class="sub">Avec les délais et les voies de recours. Le Groupe ADP en assure la traçabilité et l'archivage, dans le respect des règles de confidentialité et de protection des données personnelles.</p><div class="xb it" id="xr">${bub('Xavier','Et on me retire le permis du jour au lendemain, sans pouvoir m\'expliquer ?')}</div></div>`);
- await sayS('e24');await sayS('e24c',[at('e24c',.02,()=>show('#xr'))]);
+ await contV();await sayS('e24');await sayS('e24c',[at('e24c',.02,()=>show('#xr'))]);
  vue(`<div class="duo2"><div class="card2 it" id="u1"><p class="lb">Sauf urgence</p><p class="big2">15 jours</p><p class="tx" style="max-width:none;margin:0">Vous êtes avisé des mesures envisagées, et vous disposez de quinze jours pour faire part de vos observations, écrites ou orales.</p></div>
   <div class="card2 it" id="u2"><p class="lb">En cas d'urgence</p><p class="big2">1 mois</p><p class="tx" style="max-width:none;margin:0">Suspension immédiate, un mois au maximum, reconductible si les circonstances l'exigent.</p></div></div>`);
  await sayS('e24b',[at('e24b',.02,()=>show('#u1',true)),W('e24b',"En cas d'urgence",()=>show('#u2',true)),
@@ -357,12 +358,12 @@ async function prefet(){step();head('3 · Les acteurs du contrôle','Qui contrô
  vue(`<div class="hero">${bigIc('route')}<p class="cap">Les acteurs sur la piste</p><p class="sub">Ceux de l'État, vous les connaissez par la formation sûreté du badge. Ici, vous découvrez les acteurs sur la piste.</p></div>`);
  const FAM=`<div class="duo2"><div class="card2 it" id="f1">${IC.build}<p class="lb">Les services de l'État</p></div><div class="card2 it" id="f2">${IC.plane}<p class="lb">Le personnel du Groupe ADP</p></div></div>`;
  await sayS('e26',[W('e26','Deux familles',()=>{head('3 · Les acteurs du contrôle',"Deux familles d'acteurs");vue(FAM)}),W('e26','les services',()=>show('#f1')),W('e26','et le personnel',()=>show('#f2')),W('e26',"D'abord l'État",()=>show('#f1',true)),
-  W('e26','Le préfet',()=>vue(`<div class="hero">${bigIc('build')}<p class="cap">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><p class="sub">Il a autorité en matière de circulation sur l'aire de mouvement.</p><p class="sub it" id="pf">Il en fixe les modalités par arrêté préfectoral : elles sont opposables à tout intervenant. C'est de lui que vient l'arrêté du début.</p></div>`)),
+  W('e26','Le préfet',()=>vue(`<div class="hero">${bigIc('build')}<p class="cap">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><p class="sub">Il a autorité en matière de conduite en zone côté piste.</p><p class="sub it" id="pf">Il en fixe les modalités par arrêté préfectoral : elles sont opposables à tout intervenant. C'est de lui que vient l'arrêté du début.</p></div>`)),
   W('e26','Il en fixe',()=>show('#pf'))]);
  await pause();return null}
 const MIS=[['Renseigner',"Prévenir les troubles à l'ordre public, lutter contre le terrorisme."],['Protéger',"Les aéronefs d'État à l'arrivée et au départ : garde, contrôle des personnes, des bagages, du fret et de l'avitaillement."],['Contrôler',"Les personnes et les véhicules admis côté piste, et leurs titres d'accès."],['Sanctionner',"Saisie et retrait des autorisations de circuler, en cas d'infraction au code de la route ou de manquement à l'arrêté préfectoral."]];
 async function gta(){step();head('3 · Les acteurs du contrôle','La Gendarmerie des transports aériens');
- vue(`<div class="side"><div>${img('gta')}</div><div><p class="sub it" id="g0" style="text-align:left;margin:0 0 clamp(10px,2vh,20px);font-weight:600;color:var(--marine)">Elle surveille le respect de l'ensemble des règles applicables sur l'aire de mouvement.</p><ul class="conds">${MIS.map((m,i)=>`<li id="g${i+1}"><b>${i+1}</b><span>${m[0]}<small>${nb(m[1])}</small></span></li>`).join('')}</ul></div></div>`);
+ vue(`<div class="side"><div>${img('gta')}</div><div><p class="sub it" id="g0" style="text-align:left;margin:0 0 clamp(10px,2vh,20px);font-weight:600;color:var(--marine)">Elle surveille le respect de l'ensemble des règles applicables en zone côté piste.</p><ul class="conds">${MIS.map((m,i)=>`<li id="g${i+1}"><b>${i+1}</b><span>${m[0]}<small>${nb(m[1])}</small></span></li>`).join('')}</ul></div></div>`);
  await sayS('e27',[at('e27',.02,()=>show('#g0')),W('e27','Renseigner',()=>on('#g1')),W('e27','Protéger',()=>on('#g2')),W('e27','Contrôler',()=>on('#g3')),W('e27','Sanctionner',()=>on('#g4'))]);
  await pause(2000);
  vue(`<div class="duo2"><div class="card2 it in">${IC.shield}<p class="lb">Ses autres missions</p><p class="tx" style="max-width:none;margin:0">Police militaire et administrative, police judiciaire pour les infractions pénales constatées sur les plateformes. Et des missions aéronautiques : protection des installations sensibles, police de la navigation aérienne, constat d'incident et d'accident, participation aux enquêtes du Bureau d'enquêtes et d'analyses.</p></div>
@@ -387,7 +388,7 @@ async function adp(){step();head('3 · Les acteurs du contrôle','Le personnel d
 const ACT2=[{t:"Renseigner : prévenir les troubles à l'ordre public et lutter contre le terrorisme.",s:'Renseigner',b:"gta",ok:"La Gendarmerie des transports aériens : c'est la première de ses quatre missions."},
  {t:"Protéger les aéronefs d'État à l'arrivée et au départ.",s:"Protéger les aéronefs d'État",b:"gta",ok:"La Gendarmerie des transports aériens : protéger fait partie de ses quatre missions."},
  {t:"S'assurer que le Groupe ADP et toutes les parties prenantes de la formation respectent la réglementation.",s:'Surveiller le dispositif',b:"dsac",ok:"La Direction de la sécurité de l'aviation civile Nord, autorité de surveillance, par ses audits réglementaires."},
- {t:"Délivrer l'autorisation de conduite permis T.",s:"Délivrer l'autorisation",b:"adp",ok:"Le Groupe ADP : il la délivre par son système de gestion de la sécurité."},
+ {t:"Délivrer l'autorisation de conduite permis T.",s:"Délivrer l'autorisation",b:"adp",ok:"Le Groupe ADP : il la délivre sur la base de la demande d'autorisation, l'annexe 8."},
  {t:"Désigner, par arrêté, le Groupe ADP pour définir le dispositif de délivrance de l'autorisation de conduite.",s:'Désigner le Groupe ADP',b:"pre",ok:"Le préfet : c'est l'arrêté préfectoral qui désigne le Groupe ADP."}];
 async function acteurs(){step();head('3 · Les acteurs du contrôle','Qui fait quoi côté piste ? À vous');
  vue(`<div class="hero">${bigIc('quiz')}<p class="cap">Une mission : quel acteur la porte ?</p></div>`);
@@ -395,7 +396,7 @@ async function acteurs(){step();head('3 · Les acteurs du contrôle','Qui fait q
  const E=await sortV(alt('act',[{t:"Fixer par arrêté les modalités de circulation sur l'aire de mouvement.",s:'Fixer les modalités par arrêté',b:"pre",ok:"Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires fixe ces modalités par arrêté.",h:"Pas celui-ci. D'où vient l'arrêté du début ?"},
   {t:"Contrôler les personnes et les véhicules admis côté piste.",s:'Contrôler sur le terrain',b:"gta",ok:"La Gendarmerie des transports aériens contrôle sur le terrain.",h:"Pas celui-ci. Qui contrôle sur le terrain ?"},
   {t:"Mener des audits réglementaires sur le dispositif de formation.",s:'Mener des audits',b:"dsac",ok:"La Direction de la sécurité de l'aviation civile Nord, autorité de surveillance.",h:"Pas celui-ci. Qui surveille le système ?"},
-  {t:"Suspendre ou retirer une autorisation de conduite dans le cadre du système de gestion de la sécurité.",s:"Suspendre ou retirer l'autorisation",b:"adp",ok:"Le Groupe ADP suspend ou retire l'autorisation, dans le cadre de son système de gestion de la sécurité, selon l'arrêté préfectoral.",h:"Pas celui-ci. Qui délivre l'autorisation, par son système de gestion de la sécurité ?"},
+  {t:"Suspendre ou retirer une autorisation de conduite dans le cadre du système de gestion de la sécurité.",s:"Suspendre ou retirer l'autorisation",b:"adp",ok:"Le Groupe ADP suspend ou retire l'autorisation, dans le cadre de son système de gestion de la sécurité, selon l'arrêté préfectoral.",h:"Pas celui-ci. Qui délivre l'autorisation ?"},
   {t:"Saisir et retirer les autorisations de circuler, en cas d'infraction au code de la route ou de manquement à l'arrêté préfectoral.",s:'Saisir et retirer les autorisations de circuler',b:"gta",ok:"La Gendarmerie des transports aériens : sanctionner fait partie de ses quatre missions.",h:"Pas celui-ci. Repensez aux quatre missions : renseigner, protéger, contrôler, sanctionner."}],ACT2),
   [['pre','Le préfet','build'],['gta','La Gendarmerie des transports aériens','shield'],['dsac',"La Direction de la sécurité de l'aviation civile Nord",'eye'],['adp','Le Groupe ADP','plane']],{label:'Mission',id:'act'});
  jlog('5 h 14',`Qui fait quoi côté piste : 5 missions${errTxt(E)}`);return gate('act',E,5,12,'Qui fait quoi côté piste')}
@@ -408,7 +409,7 @@ async function dispositif(){step();head("4 · L'autorisation de conduite",'Le te
 async function autorisations(){step();await photo('permis4',FAST?10:400);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title('Les autorisations de conduite');
  const Z=(fx,fy,zoom)=>{const c=pt(fx,fy);return camTo({mode:'contain',x:c[0],z:c[2],zoom},1500)};
- await sayS('e33',[at('e33',.02,()=>L.card('Quatre autorisations','')),W('e33','T :',()=>{L.card('T','Les cheminements routiers autorisés, exclusivement.',{a:pt(.17,.28)});Z(.25,.25,1.6)}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:pt(.64,.28)});Z(.75,.25,1.6)}),
+ await sayS('e33',[at('e33',.02,()=>L.card('Quatre autorisations','')),W('e33','T :',()=>{L.card('T',"L'aire de trafic, sauf ses voies de circulation avion. Les traversées marquées au sol sont autorisées.",{a:pt(.17,.28)});Z(.25,.25,1.6)}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:pt(.64,.28)});Z(.75,.25,1.6)}),
   W('e33','R :',()=>{L.card('R','Les cheminements routiers autorisés, plus les voies avions sous clairance du contrôle.',{a:pt(.17,.75)});Z(.25,.75,1.6)}),W('e33','P :',()=>{L.card('P','Toutes zones.',{a:pt(.64,.75)});Z(.75,.75,1.6)})]);
  camTo({mode:'contain'},1200);
  await sayS('e34',[at('e34',.02,()=>L.card('Xavier','« Moi, c\'est le T. Si je dois traverser une voie avion pour rejoindre un poste, je fais comment ? »',{a:pt(.17,.28)}))]);
@@ -428,7 +429,7 @@ async function quelleAut(){step();head("4 · L'autorisation de conduite",'Quelle
   ["L'aire de mouvement en écoute de fréquence, sauf les pistes.",'m',"Le M : l'aire de mouvement en écoute de fréquence, sauf les pistes et leurs bandes, les voies de circulation avion S et K, et les routes réservées au permis P."],
   ["La même zone que le M, mais sous clairance des services de la circulation aérienne.",'r',"Le R : la même zone que le M, sous clairance."],
   ["L'ensemble de l'aire de mouvement.",'p',"Le P : l'ensemble de l'aire de mouvement."]];
- const IT=alt('qa',[["Les cheminements routiers autorisés, et rien d'autre.",'t',"Le T : les cheminements routiers autorisés, exclusivement.","Pas celui-ci. Lequel s'en tient aux cheminements routiers autorisés, exclusivement ?"],
+ const IT=alt('qa',[["Les cheminements véhicules, les routes de service et les postes de stationnement, avec les traversées marquées au sol.",'t',"Le T : l'aire de trafic, sauf ses voies de circulation avion, avec les traversées marquées au sol.","Pas celui-ci. Lequel s'en tient aux cheminements routiers autorisés, exclusivement ?"],
   ["Les cheminements routiers, plus les voies avions sous écoute de fréquence.",'m',"Le M : les cheminements routiers, plus les voies avions sous écoute de fréquence.","Pas celui-ci. Écoute de fréquence : cherchez la lettre qui suit le T."],
   ["Les cheminements routiers, plus les voies avions sous clairance du contrôle.",'r',"Le R : les cheminements routiers, plus les voies avions sous clairance du contrôle.","Pas celui-ci. Clairance du contrôle : ce n'est ni le T, ni le M, ni toutes zones."],
   ["Toutes zones.",'p',"Le P : toutes zones.","Pas celui-ci. Lequel ouvre toutes les zones ?"]],QA2);
@@ -453,7 +454,7 @@ async function bls(){step();head("4 · L'autorisation de conduite",'Le Bureau Lo
 async function annexes(){step();await photo('annexe8',FAST?10:400);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title('Les demandes à déposer');
  const z=(fy,zoom)=>camTo({mode:'contain',x:pt(.45,fy)[0],z:pt(.45,fy)[2],zoom},1600);
- L.card("Pour la théorie : l'annexe 8","La demande d'autorisation de conduite, permis T. Version 8 du 6 novembre 2025.",{a:pt(.5,.06)});await cont(L,'Suivant');
+ L.card("L'annexe 8 : la demande d'autorisation","La demande d'autorisation de conduite, permis T. Version 8 du 6 novembre 2025.",{a:pt(.5,.06)});await cont(L,'Suivant');
  z(.27,1.9);L.card('Partie 2 · Formation théorique','À remplir par le centre de formation agréé.',{a:pt(.4,.235)});await cont(L,'Suivant');
  z(.45,1.9);L.card('Partie 3 · Partie pratique',"À remplir par le représentant de l'employeur ou le centre de formation agréé. Elle doit être réalisée dans les 40 jours qui suivent la réussite de la formation théorique.",{a:pt(.4,.345)});await cont(L,'Suivant');
  z(.72,1.7);L.card('Parties 4 et 5 · Aptitude et engagement',"L'employeur atteste l'aptitude du demandeur à la conduite en zone côté piste. Le demandeur atteste être titulaire d'un permis de conduire en cours de validité, et s'engage à respecter les règles de conduite et de stationnement.",{a:pt(.4,.58)});await cont(L,'Suivant');
@@ -466,27 +467,27 @@ async function annexes(){step();await photo('annexe8',FAST?10:400);setCam({mode:
 async function quizBLS(){step();head('Au Bureau Local de Sûreté · 5 h 19','Cinq questions, celles du chapitre');
  const Q=[{id:'e40',q:"La circulation sur les aires de trafic de l'aéroport Paris-Charles de Gaulle est réglementée par :",o:[["L'arrêté préfectoral et les mesures particulières d'application de l'arrêté préfectoral en vigueur à Paris-Charles de Gaulle, le code de la route",1,"L'arrêté préfectoral et ses mesures particulières d'application, et le code de la route."],["Le code de l'aviation civile",0,"Pas celui-ci. Repensez aux trois référentiels qui s'imposent au volant."],["La sécurité aéroportuaire",0,"Pas celle-ci : ce n'est pas un texte. Repensez aux trois référentiels."]]},
   {id:'e41',q:"Le permis de conduire civil est-il obligatoire pour se présenter à la formation autorisation de conduite permis T ?",o:[["Oui",1,"C'est un prérequis : permis français en cours de validité, ou permis étranger valable en France, dans la catégorie du véhicule utilisé."],["Non",0,"Pas tout à fait. Rappelez-vous le préambule : un prérequis, pas une option."]]},
-  {id:'e42',q:"Quelle est la sanction en cas de carte d'identification aéroportuaire (CIA) non apparente ?",fixed:1,o:[["Une amende de 150 €",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Une suspension de 6 jours",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Réponse A et/ou B",1,"Les deux peuvent tomber : 150 € d'amende et/ou 6 jours de suspension. Un badge dans la poche ne suffit pas."]]},
+  {id:'e42',q:"Quelle est la sanction en cas de carte d'identification aéroportuaire (CIA) non apparente ?",fixed:1,o:[["Une amende de 150 €",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Une suspension de 6 jours",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Les deux : 150 € d'amende et/ou 6 jours de suspension",1,"Les deux peuvent tomber : 150 € d'amende et/ou 6 jours de suspension. Un badge dans la poche ne suffit pas."]]},
   {id:'e43',q:"Quelle est l'autorité chargée de la surveillance et du respect des règles de circulation « côté piste » ?",o:[["La police aux frontières",0,"Erreur classique. Repensez à qui contrôle sur le terrain."],["La Gendarmerie des transports aériens",1,"La Gendarmerie des transports aériens surveille, contrôle et sanctionne sur l'aire de mouvement. La Direction de la sécurité de l'aviation civile Nord, elle, surveille le système."],["La douane",0,"Pas celle-ci. Repensez aux quatre missions : renseigner, protéger, contrôler, sanctionner."]]},
   {id:'e44',q:"Lorsque je réussis mon permis T, où dois-je le récupérer ?",o:[["Au Bureau Local de Sûreté",1,"Bâtiment Pluton, 6 place de Berlin, à l'accueil des professionnels."],["À la gendarmerie",0,"Pas là. Repensez à l'endroit où l'on dépose les demandes."],["Au bureau de piste",0,"Pas là. Repensez à l'endroit où l'on dépose les demandes."]]}];
  vue(`<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center"><div class="qc" id="bq" style="width:min(680px,100%)"><p class="n"></p><p class="q"></p></div></div>`);
  VZ.insertAdjacentHTML('afterbegin',`<div class="bg" id="bgb" style="background-image:url(${IMG.hd7})"></div>`);
  // seconde série : questions des QCM REM et du test Groupe ADP, complétées par le contenu de l'étape (sans voix)
- const Q2=[{id:'b1',bk:2,q:"Mon attestation de réussite à la formation théorique me permet de circuler, pendant la formation pratique, accompagné d'un référent, pendant :",o:[["40 jours",1,"40 jours : c'est le délai pour réaliser la formation pratique, toujours avec un référent accompagnateur."],["Un an",0,""],["Une semaine",0,""]]},
-  {id:'b2',bk:2,q:"Quelle est la durée de validité d'une autorisation de conduite permis T ?",o:[["5 ans",0,""],["3 ans",0,""],["2 ans",1,"2 ans à compter de sa date de délivrance : d'où le recyclage tous les deux ans."]]},
-  {id:'b3',bk:9,q:"Si je suis responsable d'une infraction côté piste, suis-je verbalisable ?",fixed:1,o:[["Oui",1,"Une infraction peut valoir une sanction administrative, un procès-verbal et une sanction pénale : les trois registres coexistent."],["Non",0,""]]},
-  {id:'b4',bk:6,q:"Qui délivre l'autorisation de conduite permis T ?",o:[["Le Groupe ADP",1,"Le Groupe ADP, exploitant de l'aérodrome, la délivre par son système de gestion de la sécurité."],["La Gendarmerie des transports aériens",0,""],["Le centre de formation",0,""]]},
-  {id:'b5',bk:14,q:"Qui mène les audits réglementaires sur le dispositif de formation ?",o:[["La Direction de la sécurité de l'aviation civile Nord",1,"La Direction de la sécurité de l'aviation civile Nord, autorité de surveillance, mène les audits réglementaires."],["La Gendarmerie des transports aériens",0,""],["La police aux frontières",0,""]]}];
+ const Q2=[{id:'b1',bk:22,q:"Mon attestation de réussite à la formation théorique me permet de circuler, pendant la formation pratique, accompagné d'un référent, pendant :",o:[["40 jours",1,"40 jours : c'est le délai pour réaliser la formation pratique, toujours avec un référent accompagnateur."],["Un an",0,""],["Une semaine",0,""]]},
+  {id:'b2',bk:18,q:"Avec le permis T, puis-je rouler le long d'une voie de circulation avion de l'aire de trafic ?",fixed:1,o:[["Oui",0,""],["Non, seulement la traverser là où le marquage au sol l'autorise",1,"Le permis T exclut les voies de circulation avion, même celles de l'aire de trafic. Seules les traversées marquées au sol sont autorisées."]]},
+  {id:'b3',bk:[9,10],q:"Si je suis responsable d'une infraction côté piste, suis-je verbalisable ?",fixed:1,o:[["Oui",1,"Une infraction peut valoir une sanction administrative, un procès-verbal et une sanction pénale : les trois registres coexistent."],["Non",0,""]]},
+  {id:'b4',bk:[6,7],q:"Qui délivre l'autorisation de conduite permis T ?",o:[["Le Groupe ADP",1,"Le Groupe ADP, exploitant de l'aérodrome, la délivre sur la base de la demande d'autorisation, l'annexe 8, déposée à l'accueil des professionnels."],["La Gendarmerie des transports aériens",0,""],["Le centre de formation",0,""]]},
+  {id:'b5',bk:[12,13,14,15],q:"Qui mène les audits réglementaires sur le dispositif de formation ?",o:[["La Direction de la sécurité de l'aviation civile Nord",1,"La Direction de la sécurité de l'aviation civile Nord, autorité de surveillance, mène les audits réglementaires."],["La Gendarmerie des transports aériens",0,""],["La police aux frontières",0,""]]}];
  ALT.bls=1;const QS=(TRY.bls||0)%2?Q2:Q;
  const qc=$c('#bq');let E=0,back=99;
  // en cas d'échec, on revient à la partie de la première question manquée
- const BK={e40:2,e41:2,e42:9,e43:12,e44:21};
+ const BK={e40:[2,3,4],e41:[2],e42:[9,10],e43:[12,13,14,15],e44:[21]};const MISS=new Set();
  for(let i=0;i<QS.length;i++){const q=QS[i];qc.querySelector('.n').textContent=`Question ${i+1} sur ${QS.length}`;qc.querySelector('.q').innerHTML=nb(q.q);
   if(LINES[q.id])await sayS(q.id);else await wait(FAST?0:400);let o=q.o.map((x,k)=>[String(k),x[0]]);if(!q.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(q.o.findIndex(x=>x[1]));const kot={};q.o.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  const e=await pick(null,o,gk,q.o[+gk][2],kot,i<QS.length-1?'Question suivante':'Terminer',{once:true,host:qc});E+=e;if(e)back=Math.min(back,q.bk||BK[q.id])}
+  const e=await pick(null,o,gk,q.o[+gk][2],kot,i<QS.length-1?'Question suivante':'Terminer',{once:true,host:qc});E+=e;if(e)[].concat(q.bk||BK[q.id]).forEach(k=>MISS.add(k))}
  const bg=$('#bgb');if(bg)bg.remove();
- jlog('5 h 19',`Au Bureau Local de Sûreté : 5 questions${errTxt(E)}`);return gate('bls',E,Q.length,back,'Au Bureau Local de Sûreté')}
+ jlog('5 h 19',`Au Bureau Local de Sûreté : 5 questions${errTxt(E)}`);return gate('bls',E,QS.length,[...MISS].sort((a,b)=>a-b),'Au Bureau Local de Sûreté',23)}
 async function fin(){step();head('Étape 1 terminée · 5 h 20','Première case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i>${i+1}</i>`).join('')}</div>
