@@ -91,7 +91,7 @@ function makeAirliner(glowTex,o={}){
  for(const s of [1,-1]){add(new THREE.CylinderGeometry(.13,.13,2.3,10),metal,s*3.8,1.65,-.4);wheel(s*3.8+.35,.58,-.4,.58,.36);wheel(s*3.8-.35,.58,-.4,.58,.36);
   const brace=add(new THREE.BoxGeometry(.08,1.8,.08),metal,s*3.3,1.9,-.4);brace.rotation.z=s*.5}
  /* feux de roulage (blancs, sur le train avant) */
- {const tl=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xfff6e0,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));tl.scale.set(1.2,1.2,1);tl.position.set(0,1.75,12.85);g.add(tl)}
+ {const tl=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xfff6e0,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));tl.scale.set(1.2,1.2,1);tl.position.set(0,1.75,12.85);tl.userData.taxi=1;g.add(tl)}
  /* feux anticollision rouges, dessus et dessous du fuselage : l'avion roule */
- g.userData.beacons=[[0,5.98,1.5],[0,1.82,1.5]].map(p=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));s.scale.set(2.4,2.4,1);s.position.set(...p);g.add(s);return s});
+ g.userData.beacons=[[0,5.98,1.5],[0,1.82,1.5]].map(p=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));s.scale.set(1.5,1.5,1);s.position.set(...p);g.add(s);return s});
  return g}
