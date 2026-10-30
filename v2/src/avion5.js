@@ -1,6 +1,6 @@
 /* un biréacteur moyen-courrier générique, aux proportions d'un A320 (37,6 m de long, 35,8 m d'envergure, fuselage de 3,95 m),
    sans livrée de compagnie ; nez vers +z. Feux anticollision rouges dessus et dessous, feux de navigation, feux de roulage. */
-function makeAirliner(glowTex){
+function makeAirliner(glowTex,o={}){
  const g=new THREE.Group();
  const paint=new THREE.MeshStandardMaterial({color:0xf4f5f3,roughness:.38,metalness:.05});
  const belly=new THREE.MeshStandardMaterial({color:0xc9ced2,roughness:.45,metalness:.08});
@@ -67,10 +67,11 @@ function makeAirliner(glowTex){
   const nac=new THREE.LatheGeometry([[0,-2.2],[.62,-2.2],[.78,-1.4],[.95,-.2],[1.0,.9],[1.02,1.6],[.98,1.95],[.86,2.05],[.82,1.9]].map(([r,y])=>new THREE.Vector2(r,y)),40);
   const n1=add(nac,paint,ex,ey,ez);n1.rotation.x=Math.PI/2;
   const lip=add(new THREE.TorusGeometry(.86,.09,12,40),metal,ex,ey,ez+2.0);
+  if(!o.noFan){ // la soufflante (une scène qui fait tourner ses propres soufflantes passe noFan)
   const fan=add(new THREE.CircleGeometry(.82,40),dark,ex,ey,ez+1.75);
   {const bl=new THREE.InstancedMesh(new THREE.BoxGeometry(.05,.6,.03),metal,22);const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler();
    for(let k=0;k<22;k++){const an=k/22*Math.PI*2;E.set(0,.5,an);Q.setFromEuler(E);M.compose(new THREE.Vector3(Math.sin(-an)*.5+ex,Math.cos(an)*.5+ey,ez+1.77),Q,new THREE.Vector3(1,1,1));bl.setMatrixAt(k,M)}g.add(bl)}
-  const sp=add(new THREE.ConeGeometry(.24,.5,24),metal,ex,ey,ez+1.95);sp.rotation.x=Math.PI/2;
+  const sp=add(new THREE.ConeGeometry(.24,.5,24),metal,ex,ey,ez+1.95);sp.rotation.x=Math.PI/2;}
   const noz=add(new THREE.CylinderGeometry(.45,.6,1.1,32),metal,ex,ey,ez-2.6);noz.rotation.x=Math.PI/2;
   const cone=add(new THREE.ConeGeometry(.42,1.1,24),dark,ex,ey,ez-3.6);cone.rotation.x=-Math.PI/2;
   add(new THREE.BoxGeometry(.32,1.2,3.8),paint,ex,ey+1.05,ez-.7);

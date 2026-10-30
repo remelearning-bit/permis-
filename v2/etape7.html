@@ -187,45 +187,123 @@ function poseHuman(g,now){const U=g.userData;if(U.pose==='idle')return;g.updateM
 /* ---------------- l'avion ---------------- */
 const avion=new THREE.Group();scene.add(avion);
 const ext=(pts,depth,c)=>{const sh=new THREE.Shape();sh.moveTo(...pts[0]);pts.slice(1).forEach(p=>sh.lineTo(...p));sh.closePath();return new THREE.Mesh(new THREE.ExtrudeGeometry(sh,{depth,bevelEnabled:false}),mat(c))};
-{const W=0xf5f5f3,G=0xc4c9cd;
- const fus=cyl(2,2,34,W,0,3.6,0,avion,28);fus.rotation.x=Math.PI/2;
- const nez=new THREE.Mesh(new THREE.SphereGeometry(2,28,18),mat(W));nez.scale.set(1,1,1.8);nez.position.set(0,3.6,17);avion.add(nez);
- // pare-brise : une bande sombre qui épouse le nez
- [Math.PI-.42,Math.PI,Math.PI+.42].forEach(th=>{const b=box(.07,.1,.62,0xf5f5f3,1.86*Math.sin(th),3.62-1.86*Math.cos(th),18.5,avion);b.rotation.z=-th})
- const ws=new THREE.Mesh(new THREE.CylinderGeometry(1.79,1.905,.55,24,1,true,Math.PI-1.05,2.1),new THREE.MeshLambertMaterial({color:0x1d2a36,side:THREE.DoubleSide}));ws.rotation.x=Math.PI/2;ws.position.set(0,3.62,18.5);avion.add(ws);
- const q=new THREE.Mesh(new THREE.ConeGeometry(2,9,24),mat(W));q.rotation.x=-Math.PI/2;q.position.set(0,4.4,-21.5);q.scale.set(1,1,.7);avion.add(q);
- // ailes en flèche, vers l'arrière, avec winglets
- [1,-1].forEach(s=>{const a=ext([[0,0],[16.5*s,9.5],[16.5*s,11.5],[0,6]],.35,G);a.rotation.x=-Math.PI/2;a.position.set(0,2.75,5);avion.add(a);
-  const wl=ext([[0,0],[1.6,0],[2.3,1.9],[1.5,1.9]],.12,G);wl.rotation.y=Math.PI/2;wl.position.set(16.5*s-.06,3.05,-4.5);avion.add(wl);
-  const st=ext([[0,0],[6*s,3.6],[6*s,5],[0,4.2]],.22,G);st.rotation.x=-Math.PI/2;st.position.set(0,4.5,-16.3);avion.add(st)});
- // dérive en flèche
- const der=ext([[0,0],[7.5,0],[9.4,7.2],[6.8,7.2]],.34,W);der.rotation.y=Math.PI/2;der.position.set(-.17,5.2,-13.2);avion.add(der);
- const derM=ext([[4.1,4.3],[8.65,4.3],[9.4,7.2],[6.8,7.2]],.38,MARINE);derM.rotation.y=Math.PI/2;derM.position.set(-.19,5.2,-13.2);avion.add(derM);
- for(let i=0;i<14;i++)box(.1,.36,.26,MARINE,2.01,4.1,13-i*2.1,avion);for(let i=0;i<14;i++)box(.1,.36,.26,MARINE,-2.01,4.1,13-i*2.1,avion);
- box(.1,1.7,.9,0xdfe2e4,2.02,3.7,14.6,avion);
- const train=(x,z)=>{const t=cyl(.55,.55,.9,NOIR,x,.55,z,avion,14);t.rotation.z=Math.PI/2;box(.3,2.2,.3,0x8a9096,x,1.6,z,avion)};train(-3.4,-1);train(3.4,-1);train(0,12);
- blob(10,40,avion,0,-2);blob(36,10,avion,0,-1)}
+const glowW=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,30);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
+/* un biréacteur moyen-courrier générique, aux proportions d'un A320 (37,6 m de long, 35,8 m d'envergure, fuselage de 3,95 m),
+   sans livrée de compagnie ; nez vers +z. Feux anticollision rouges dessus et dessous, feux de navigation, feux de roulage. */
+function makeAirliner(glowTex,o={}){
+ const g=new THREE.Group();
+ const paint=new THREE.MeshStandardMaterial({color:0xf4f5f3,roughness:.38,metalness:.05});
+ const belly=new THREE.MeshStandardMaterial({color:0xc9ced2,roughness:.45,metalness:.08});
+ const metal=new THREE.MeshStandardMaterial({color:0xb7bdc2,roughness:.3,metalness:.55});
+ const dark=new THREE.MeshStandardMaterial({color:0x1a2129,roughness:.35,metalness:.2});
+ const glass=new THREE.MeshStandardMaterial({color:0x16202a,roughness:.12,metalness:.3});
+ const tyre=new THREE.MeshStandardMaterial({color:0x15181b,roughness:.95});
+ const paint2=new THREE.MeshStandardMaterial({color:0xf4f5f3,roughness:.38,metalness:.05,side:THREE.DoubleSide});
+ const fin=new THREE.MeshStandardMaterial({color:0x263C52,roughness:.4,metalness:.05});
+ const add=(geo,m,x=0,y=0,z=0)=>{const o=new THREE.Mesh(geo,m);o.position.set(x,y,z);g.add(o);return o};
+ /* fuselage : sections elliptiques le long de l'axe, nez arrondi, cône arrière relevé */
+ const L0=-18.8,L1=18.8,R=1.98;
+ const prof=z=>{ // demi-largeur, demi-hauteur, centre vertical (hauteur de l'axe 3.9 m au sol)
+  if(z>14.2){const u=(z-14.2)/(L1-14.2);return [R*Math.sqrt(Math.max(0,1-Math.pow(u,2.3))),R*Math.sqrt(Math.max(0,1-Math.pow(u,2.1))),3.9-u*u*.6]}
+  if(z<-8){const u=(-8-z)/(-8-L0);const k=1-u*.86;return [R*k*(1-u*u*.25),R*(1-u*.83),3.9+u*u*1.15]}
+  return [R,R,3.9]};
+ {const NU=120,NV=56,pos=[],idx=[],grp=[];
+  for(let i=0;i<=NU;i++){const z=L0+(L1-L0)*i/NU;const [rx,ry,cy]=prof(z);
+   for(let j=0;j<=NV;j++){const t=j/NV*Math.PI*2;pos.push(Math.sin(t)*rx,cy+Math.cos(t)*ry,z)}}
+  const top=[],bot=[];for(let i=0;i<NU;i++)for(let j=0;j<NV;j++){const a=i*(NV+1)+j,b=a+1,c=a+NV+1,d=c+1;const tm=(j+.5)/NV*Math.PI*2;(Math.cos(tm)<-.3?bot:top).push(a,c,b,b,c,d)}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex([...top,...bot]);geo.computeVertexNormals();
+  // deux matériaux : peinture blanche au-dessus, ventre gris sous la ceinture
+  geo.addGroup(0,top.length,0);geo.addGroup(top.length,bot.length,1);
+  add(geo,[paint,belly])}
+ /* vitres du poste de pilotage : un bandeau à hauteur constante autour du nez, découpé en vitres (pare-brise, latérales, arrière) ;
+    chaque point est trouvé en partant de l'axe et en avançant jusqu'à la peau du fuselage */
+ const inside=(x,y,z)=>{if(z>L1||z<L0)return false;const [rx,ry,cy]=prof(z);return rx>0&&ry>0&&(x/rx)**2+((y-cy)/ry)**2<=1};
+ const surf=(y,ph)=>{const dx=Math.sin(ph),dz=Math.cos(ph);let d=0;while(d<8&&inside(dx*d,y,14.2+dz*d))d+=.01;d+=.012;return [dx*d,y,14.2+dz*d]};
+ const glassM=new THREE.MeshStandardMaterial({color:0x0e1720,roughness:.08,metalness:.5,side:THREE.DoubleSide});
+ const frameM=new THREE.MeshStandardMaterial({color:0x2a333c,roughness:.5,side:THREE.DoubleSide});
+ const pane=(y0,y1,p0,p1,m,off=0)=>{const N=10,pos=[],idx=[];for(let i=0;i<=N;i++){const y=y0+(y1-y0)*i/N;for(let j=0;j<=N;j++){const q=surf(y,p0+(p1-p0)*j/N);const k=1+off;pos.push(q[0]*k,q[1],14.2+(q[2]-14.2)*k)}}
+  for(let i=0;i<N;i++)for(let j=0;j<N;j++){const a=i*(N+1)+j,b=a+1,c=a+N+1,d=c+1;idx.push(a,c,b,b,c,d)}
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();g.add(new THREE.Mesh(geo,m))};
+ // cadre sombre continu, puis les vitres posées dessus
+ pane(4.5,5.12,-1.12,1.12,frameM,0);
+ for(const s of [1,-1]){
+  pane(4.56,5.07,s*.03,s*.33,glassM,.002);   // pare-brise
+  pane(4.56,5.07,s*.38,s*.7,glassM,.002);    // vitre latérale (ouvrante)
+  pane(4.62,5.02,s*.76,s*1.06,glassM,.002)}  // vitre arrière
+ /* hublots, portes */
+ {const wg=new THREE.BoxGeometry(.06,.3,.22);const n=31;const wins=new THREE.InstancedMesh(wg,glass,n*2);let k=0;const M=new THREE.Matrix4();
+  for(let i=0;i<n;i++){const z=11.0-i*.53-(i>13?.6:0);for(const s of [1,-1]){M.makeTranslation(s*(R-.005),4.35,z);wins.setMatrixAt(k++,M)}}g.add(wins)}
+ for(const s of [1,-1])for(const [z,h] of [[12.3,1.85],[-7.4,1.85],[3.9,1.0],[2.95,1.0]]){
+  const fr=new THREE.Group();const tb=(w,hh,x,y)=>{const m=new THREE.Mesh(new THREE.BoxGeometry(.03,hh,w),belly);m.position.set(0,y,x);fr.add(m)};
+  const w=h>1.5?.82:.55;tb(.04,h,-w/2,0);tb(.04,h,w/2,0);tb(w,.04,0,h/2);tb(w,.04,0,-h/2);fr.position.set(s*(R-.0),h>1.5?3.95:4.05,z);g.add(fr)}
+ /* aile : profil épais à l'emplanture, flèche de 25°, dièdre de 5°, sharklet en bout */
+ const wingGeo=(span,rootC,tipC,sweep,dih,tr,tt)=>{const pos=[],idx=[];const sec=(y,c,t,x0,z0)=>[[0,0],[.08,.55],[.3,1],[.65,.7],[1,.08],[1,-.05],[.6,-.32],[.25,-.42],[.05,-.3]].map(([u,v])=>[x0,z0+v*t,-u*c]);
+  const S=[sec(0,rootC,tr,0,0),sec(1,tipC,tt,span,span*Math.tan(dih))];
+  S[1].forEach(p=>p[2]-=span*Math.tan(sweep));const n=S[0].length;S.forEach(s=>s.forEach(p=>pos.push(...p)));
+  for(let j=0;j<n;j++){const a=j,b=(j+1)%n,c=j+n,d=(j+1)%n+n;idx.push(a,b,c,b,d,c)}
+  const c0=pos.length/3;pos.push(0,0,-rootC*.4);for(let j=0;j<n;j++)idx.push(c0,(j+1)%n,j);
+  const c1=pos.length/3;pos.push(span,span*Math.tan(dih),-span*Math.tan(sweep)-tipC*.4);for(let j=0;j<n;j++)idx.push(c1,j+n,(j+1)%n+n);
+  const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));geo.setIndex(idx);geo.computeVertexNormals();return geo};
+ for(const s of [1,-1]){
+  const w=add(wingGeo(15.9,6.3,1.6,.44,.087,.62,.16),paint2,s*1.85,3.0,6.2);if(s<0)w.scale.x=-1;
+  const tipX=s*(1.85+15.9),tipY=3.0+15.9*Math.tan(.087),tipZ=6.2-15.9*Math.tan(.44);
+  {const sg=new THREE.Group();const sk=new THREE.Mesh(wingGeo(2.2,1.5,.45,.75,0,.14,.05),paint2);sk.rotation.z=Math.PI/2-.32;sg.add(sk);sg.position.set(tipX,tipY,tipZ+.05);if(s<0)sg.scale.x=-1;g.add(sg)}
+  // feux de navigation : rouge à gauche (s=1 côté gauche vu du pilote, x>0), vert à droite
+  const nav=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:s>0?0xff2a1a:0x22dd55,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));nav.scale.set(.7,.7,1);nav.position.set(tipX,tipY+.1,tipZ-.2);g.add(nav);
+  // volets et ailerons : liserés foncés au bord de fuite
+  const fl=add(new THREE.BoxGeometry(11.5,.04,.05),belly,s*(1.85+8.3),3.36+8.3*Math.tan(.087)*.8,6.2-8.3*Math.tan(.44)-3.9);fl.rotation.y=s*.33;fl.rotation.z=s*.087;
+  /* réacteur : nacelle (lèvre d'entrée, corps, tuyère), soufflante sombre et cône, mât */
+  const ex=s*5.75,ey=2.05,ez=5.0;
+  const nac=new THREE.LatheGeometry([[0,-2.2],[.62,-2.2],[.78,-1.4],[.95,-.2],[1.0,.9],[1.02,1.6],[.98,1.95],[.86,2.05],[.82,1.9]].map(([r,y])=>new THREE.Vector2(r,y)),40);
+  const n1=add(nac,paint,ex,ey,ez);n1.rotation.x=Math.PI/2;
+  const lip=add(new THREE.TorusGeometry(.86,.09,12,40),metal,ex,ey,ez+2.0);
+  if(!o.noFan){ // la soufflante (une scène qui fait tourner ses propres soufflantes passe noFan)
+  const fan=add(new THREE.CircleGeometry(.82,40),dark,ex,ey,ez+1.75);
+  {const bl=new THREE.InstancedMesh(new THREE.BoxGeometry(.05,.6,.03),metal,22);const M=new THREE.Matrix4(),Q=new THREE.Quaternion(),E=new THREE.Euler();
+   for(let k=0;k<22;k++){const an=k/22*Math.PI*2;E.set(0,.5,an);Q.setFromEuler(E);M.compose(new THREE.Vector3(Math.sin(-an)*.5+ex,Math.cos(an)*.5+ey,ez+1.77),Q,new THREE.Vector3(1,1,1));bl.setMatrixAt(k,M)}g.add(bl)}
+  const sp=add(new THREE.ConeGeometry(.24,.5,24),metal,ex,ey,ez+1.95);sp.rotation.x=Math.PI/2;}
+  const noz=add(new THREE.CylinderGeometry(.45,.6,1.1,32),metal,ex,ey,ez-2.6);noz.rotation.x=Math.PI/2;
+  const cone=add(new THREE.ConeGeometry(.42,1.1,24),dark,ex,ey,ez-3.6);cone.rotation.x=-Math.PI/2;
+  add(new THREE.BoxGeometry(.32,1.2,3.8),paint,ex,ey+1.05,ez-.7);
+ }
+ /* carénage ventral sous l'emplanture des ailes, sortie du groupe auxiliaire au bout du cône arrière */
+ {const f=add(new THREE.SphereGeometry(1,32,16),belly,0,2.35,3.0);f.scale.set(2.05,.75,7.2)}
+ {const ap=add(new THREE.CylinderGeometry(.16,.2,.4,16),dark,0,5.05,-18.75);ap.rotation.x=Math.PI/2}
+ /* empennage : plan horizontal et dérive (marine, sans logo) */
+ for(const s of [1,-1]){const h=add(wingGeo(5.9,3.4,1.3,.52,.1,.28,.08),paint2,s*.55,4.95,-13.7);if(s<0)h.scale.x=-1}
+ {const sh=new THREE.Shape();sh.moveTo(0,0);sh.lineTo(-5.2,0);sh.lineTo(-7.7,6.2);sh.lineTo(-5.9,6.2);sh.closePath();
+  const fg=new THREE.ExtrudeGeometry(sh,{depth:.32,bevelEnabled:true,bevelThickness:.08,bevelSize:.08,bevelSegments:2});fg.translate(0,0,-.16);
+  const f=add(fg,fin,0,5.3,-11.0);f.rotation.y=-Math.PI/2;
+  const st=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xffffff,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.9}));st.scale.set(1,1,1);st.position.set(0,4.6,-18.9);g.add(st)}
+ /* train d'atterrissage : avant (deux roues), principal sous l'aile (deux roues de chaque côté) */
+ const wheel=(x,y,z,r,w)=>{const t=add(new THREE.CylinderGeometry(r,r,w,28),tyre,x,y,z);t.rotation.z=Math.PI/2;const h=add(new THREE.CylinderGeometry(r*.55,r*.55,w+.02,20),metal,x,y,z);h.rotation.z=Math.PI/2};
+ add(new THREE.CylinderGeometry(.09,.09,2.0,10),metal,0,1.4,12.6);wheel(.22,.38,12.6,.38,.22);wheel(-.22,.38,12.6,.38,.22);
+ for(const s of [1,-1]){add(new THREE.CylinderGeometry(.13,.13,2.3,10),metal,s*3.8,1.65,-.4);wheel(s*3.8+.35,.58,-.4,.58,.36);wheel(s*3.8-.35,.58,-.4,.58,.36);
+  const brace=add(new THREE.BoxGeometry(.08,1.8,.08),metal,s*3.3,1.9,-.4);brace.rotation.z=s*.5}
+ /* feux de roulage (blancs, sur le train avant) */
+ {const tl=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xfff6e0,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:.95}));tl.scale.set(1.2,1.2,1);tl.position.set(0,1.75,12.85);g.add(tl)}
+ /* feux anticollision rouges, dessus et dessous du fuselage : l'avion roule */
+ g.userData.beacons=[[0,5.98,1.5],[0,1.82,1.5]].map(p=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending}));s.scale.set(2.4,2.4,1);s.position.set(...p);g.add(s);return s});
+ return g}
+
+// le même avion que l'écran témoin de l'étape 5, à l'échelle de la scène (envergure 33,3 m, bouts d'aile à 16,5 m de l'axe, comme les cônes)
+{const AV=makeAirliner(glowW,{noFan:true});AV.userData.beacons.forEach(b=>AV.remove(b));AV.scale.setScalar(.93);AV.position.z=-3.57;avion.add(AV);blob(9,38,avion,0,-3.5);blob(34,9,avion,0,-2)}
 // réacteurs : nacelle, lèvre d'entrée d'air, mât sous l'aile, soufflante qui tourne
-const avionCock=new THREE.Object3D();avionCock.position.set(0,4.6,18.6);avion.add(avionCock);
-const avionBeac=new THREE.Object3D();avionBeac.position.set(0,6.9,-2);avion.add(avionBeac);
-const ENG=[];[5.5,-5.5].forEach(x=>{const e=cyl(1.12,1.0,4.2,0xd9dcdf,x,1.75,2.5,avion,24);e.rotation.x=Math.PI/2;
- const lip=new THREE.Mesh(new THREE.TorusGeometry(1.08,.13,10,28),mat(0xb3b9be));lip.position.set(x,1.75,4.6);avion.add(lip);
- const tuy=cyl(.62,.4,.9,0x8a9096,x,1.75,.05,avion,16);tuy.rotation.x=Math.PI/2;
- box(.32,.9,2.6,0xd9dcdf,x,2.85,2.3,avion);
- const f=new THREE.Group();f.position.set(x,1.75,4.5);avion.add(f);f.add(new THREE.Mesh(new THREE.CircleGeometry(1.02,24),mat(0x2c333a)));
- for(let k=0;k<3;k++){const b=box(.22,1.9,.05,0x8e969d,0,0,.02,f);b.rotation.z=k*Math.PI/3}const sp=new THREE.Mesh(new THREE.ConeGeometry(.28,.5,12),mat(0xb3b9be));sp.rotation.x=Math.PI/2;sp.position.z=.2;f.add(sp);ENG.push(f)});
+const avionCock=new THREE.Object3D();avionCock.position.set(0,4.5,12.3);avion.add(avionCock);
+const avionBeac=new THREE.Object3D();avionBeac.position.set(0,6.4,-2);avion.add(avionBeac);
+const ENG=[];[5.35,-5.35].forEach(x=>{const f=new THREE.Group();f.position.set(x,1.9,2.71);avion.add(f);f.add(new THREE.Mesh(new THREE.CircleGeometry(.76,32),mat(0x1a2129)));for(let k=0;k<11;k++){const b=box(.05,1.4,.03,0x8e969d,0,0,.02,f);b.rotation.z=k*Math.PI/11}const sp=new THREE.Mesh(new THREE.ConeGeometry(.22,.46,16),mat(0xb3b9be));sp.rotation.x=Math.PI/2;sp.position.z=.2;f.add(sp);ENG.push(f)});
 // le souffle des réacteurs : visible seulement quand les moteurs tournent
 const blast=new THREE.Group();avion.add(blast);blast.visible=false;const STREAK=[];
-[5.5,-5.5].forEach(x=>{
+[5.35,-5.35].forEach(x=>{
  for(let k=0;k<9;k++){const s=new THREE.Mesh(new THREE.PlaneGeometry(.18,3.2),new THREE.MeshBasicMaterial({color:0xffffff,transparent:true,opacity:.8,depthWrite:false}));s.rotation.x=-Math.PI/2;blast.add(s);STREAK.push({s,x,o:k/9,dx:(k%2?1:-1)*(.3+k*.22)})}});
-const CALES=[[-3.4,-1.9],[3.4,-1.9],[0,11.1]].map(([x,z])=>{const c=box(.9,.35,.45,JAUNE,x,.18,z,avion);c.visible=false;return c});
-const BEAC=[cyl(.36,.36,.45,0x6b1a12,0,5.78,-2,avion,14),cyl(.36,.36,.45,0x6b1a12,0,1.38,-2,avion,14)];
+const CALES=[[-3.53,-4.75],[3.53,-4.75],[0,7.55]].map(([x,z])=>{const c=box(.9,.35,.45,JAUNE,x,.18,z,avion);c.visible=false;return c});
+const BEAC=[cyl(.3,.3,.4,0x6b1a12,0,5.62,-2,avion,14),cyl(.3,.3,.4,0x6b1a12,0,1.62,-2,avion,14)];
 const beacM=new THREE.MeshBasicMaterial({color:0xff2a10});const beacOff=mat(0x6b1a12);
 const glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,31);r.addColorStop(0,'rgba(255,60,30,1)');r.addColorStop(.35,'rgba(255,60,30,.5)');r.addColorStop(1,'rgba(255,60,30,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
 const GLOW=BEAC.map(b=>{const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,transparent:true,depthWrite:false}));s.scale.setScalar(4.6);s.position.copy(b.position);s.visible=false;avion.add(s);return s});
 const ST={beacon:false,engines:false};
 // l'engin de repoussage, attelé au train avant (montré au départ et quand la voix le nomme)
-const repous=new THREE.Group();box(2.4,.9,4.2,0x3a4148,0,.65,0,repous);box(1.7,.9,1.3,MARINE,0,1.45,1.3,repous);wheels(repous,1.25,[-1.4,1.4],.42);box(.22,.22,6.2,0x8a9096,0,.55,-5.2,repous);repous.position.set(0,0,24.2);repous.rotation.y=0;avion.add(repous);repous.visible=false;
+const repous=new THREE.Group();box(2.4,.9,4.2,0x3a4148,0,.65,0,repous);box(1.7,.9,1.3,MARINE,0,1.45,1.3,repous);wheels(repous,1.25,[-1.4,1.4],.42);box(.22,.22,6.2,0x8a9096,0,.55,-5.2,repous);repous.position.set(0,0,20.4);repous.rotation.y=0;avion.add(repous);repous.visible=false;
 // repères pour retrouver les pièces animées dans la copie de l'avion
 BEAC.forEach(b=>b.userData.beac=1);ENG.forEach(f=>f.userData.fan=1);blast.userData.blast=1;CALES.forEach(c=>c.userData.cale=1);
 // le second avion, sur le poste voisin de gauche (zone composée, vigie, « entre deux avions »)
@@ -258,7 +336,7 @@ const IZ=new THREE.Group();scene.add(IZ);IZ.visible=false;
  [-20,-12,-4].forEach((z,i)=>{for(let k=0;k<(i===2?1:2);k++){box(1.8,1.2,2.4,0x8696a6,34+(k?1.9:-.1)-.9,.95,z,IZ);box(1.9,.15,2.5,0x5d6b78,34+(k?1.9:-.1)-.9,.3,z,IZ)}});
  for(let z=-24;z<=0;z+=8){strip(30.5,z,37.5,z,.3,BLANC,.035);}strip(30.5,-24,30.5,0,.3,BLANC,.035);strip(37.5,-24,37.5,0,.3,BLANC,.035)}
 [tracteur,tapis,gpu,avit,van].forEach(v=>v.visible=false);
-const SPOT={tracteur:{p:[-11,-12],r:0},tapis:{p:[-4.6,8.6],r:Math.PI*.82},gpu:{p:[-4.2,16.5],r:Math.PI/2},avit:{p:[-12.5,-1],r:Math.PI}};
+const SPOT={tracteur:{p:[-11,-12],r:0},tapis:{p:[-4.6,8.6],r:Math.PI*.82},gpu:{p:[-4.2,11.5],r:Math.PI/2},avit:{p:[-12.5,-1],r:Math.PI}};
 // tuyau, câble équipotentiel, fosse hydrant
 const pit=cyl(.55,.55,.06,0x5a6168,-9,.04,-4.5,scene,16);
 [[-10.1,-5.6,-7.9,-5.6],[-7.9,-5.6,-7.9,-3.4],[-7.9,-3.4,-10.1,-3.4],[-10.1,-3.4,-10.1,-5.6]].forEach(([x0,z0,x1,z1])=>strip(x0,z0,x1,z1,.22,ROUGE,.03));
@@ -340,10 +418,10 @@ const placeur=person();placeur.position.set(0,0,24.8);placeur.rotation.y=Math.PI
 const agentRS=person();agentRS.position.set(15,0,8);agentRS.rotation.y=.98;agentRS.visible=false;
 const avitailleur=person();avitailleur.position.set(-9.8,0,-1.4);avitailleur.rotation.y=2.96;avitailleur.visible=false;
 // les cônes
-const CONES=[];const CONEPOS=[[17.5,-5.5],[-17.5,-5.5],[0,21.6],[7,-21.4],[-7,-21.4],[0,-25.6]];
+const CONES=[];const CONEPOS=[[17.5,-5.5],[-17.5,-5.5],[0,14.9],[7,-20.1],[-7,-20.1],[0,-22.1]];
 CONEPOS.forEach(([x,z])=>{const g=new THREE.Group();g.position.set(x,0,z);g.scale.setScalar(.85);const c=new THREE.Mesh(new THREE.ConeGeometry(.42,1.1,16),mat(CONE));c.position.y=.58;g.add(c);cyl(.29,.35,.18,BLANC,0,.62,0,g,16);box(1,.08,1,NOIR,0,.04,0,g);blob(1.6,1.6,g);g.visible=false;scene.add(g);CONES.push(g)});
 // périmètre de sécurité collision : polygone tracé progressivement
-const PSC=[[0,21.6],[17.5,-5.5],[7,-21.4],[0,-25.6],[-7,-21.4],[-17.5,-5.5],[0,21.6]];
+const PSC=[[0,14.9],[17.5,-5.5],[7,-20.1],[0,-22.1],[-7,-20.1],[-17.5,-5.5],[0,14.9]];
 const pscG=new THREE.Group();scene.add(pscG);const pscSeg=[];
 for(let i=0;i<PSC.length-1;i++){const g=dashed(PSC[i][0],PSC[i][1],PSC[i+1][0],PSC[i+1][1],.28,JAUNE,1.2,1,.045,pscG);g.visible=false;pscSeg.push(g)}
 // flèches du choix de trajectoire
@@ -507,7 +585,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last
  for(const A of [...anims]){const t=Math.max(0,Math.min(1,(now-A.t0)/A.D));A.fn(t);if(t>=1){anims.delete(A);A.r()}}
  const on=ST.beacon&&(Math.floor(now/600)%2===0);BEAC.forEach(b=>b.material=on?beacM:beacOff);
  {const on2=ST2.beacon&&(Math.floor(now/600)%2===0);A2.beac.forEach(b=>b.material=on2?beacM:beacOff);if(ST2.engines)A2.fan.forEach(f=>f.rotation.z+=dt*18)}
- if(ST.engines){ENG.forEach(f=>f.rotation.z+=dt*18);if(blast.visible)STREAK.forEach(k=>{const u=((now/900)+k.o)%1;k.s.position.set(k.x+k.dx*u*2.2,.12+u*.4,-1-u*26);k.s.material.opacity=.95*(1-u*u)})}
+ if(ST.engines){ENG.forEach(f=>f.rotation.z+=dt*18);if(blast.visible)STREAK.forEach(k=>{const u=((now/900)+k.o)%1;k.s.position.set(k.x+k.dx*u*2.2,.12+u*.4,-2.4-u*26);k.s.material.opacity=.95*(1-u*u)})}
  if(pumping){BEADS.forEach((b,i)=>{const u=((now/1400)+i/BEADS.length)%1;b.position.copy(H2.getPointAt(u));b.visible=true})}else BEADS.forEach(b=>b.visible=false);
  gyro.visible=!!PASS.flash;gyro.material.color.setHex(Math.floor(now/350)%2===0?0xffc21a:0xb07a10);
  for(const g of HUMANS)if(g.visible){g.userData.mixer.update(dt);poseHuman(g,now)}
@@ -591,7 +669,7 @@ async function zec(prev){await next("Vers la zone d'évolution contrôlée",[30,
   [.55,async()=>{await ar;placePlane(1);setPlane({beacon:false,engines:false,cales:true});placeur.userData.pose='idle';setZone(0)}],
   [.66,()=>{L.card('Active au départ',"Dès l'allumage des feux anticollision, jusqu'à ce que l'avion ait quitté le poste et que le souffle ait cessé.",{obj:avionBeac});setPlane({beacon:true});placeur.visible=false;placeur.userData.pose='idle';setZone(1,true)}]]);
  await ar;placePlane(1);
- await say('z21',[[.03,()=>{L.card('Zone active : aucun engin, aucun matériel',"Interdiction d'y pénétrer et d'y stationner. Sauf, si nécessaire, l'engin de repoussage ou de tractage, le groupe électrogène du parc et le groupe de démarrage à air.",{a:[0,1,24.2]});repous.visible=true;gpu.visible=true;gpu.position.set(-4.2,0,16.5);gpu.rotation.y=Math.PI/2}]]);
+ await say('z21',[[.03,()=>{L.card('Zone active : aucun engin, aucun matériel',"Interdiction d'y pénétrer et d'y stationner. Sauf, si nécessaire, l'engin de repoussage ou de tractage, le groupe électrogène du parc et le groupe de démarrage à air.",{a:[0,1,20.4]});repous.visible=true;gpu.visible=true;gpu.position.set(-4.2,0,11.5);gpu.rotation.y=Math.PI/2}]]);
  setPlane({beacon:false});setZone(0);repous.visible=false;gpu.visible=false;placeur.visible=false;return L}
 async function classer(L){step('classer');L.title('Zone active, ou pas ?');L.card('À vous',"Pour chaque situation, dites si la zone d'évolution contrôlée est active ou inactive.",{a:null});
  await go('classer');
@@ -672,7 +750,7 @@ async function entrer(prev){await next("Vers l'entrée du périmètre",[24,0,14]
 async function perim(L){step('perim');L.title('Dans le périmètre');await go('perim');
  // les engins indispensables arrivent : vite sur le cheminement, arrêt, puis au pas sur le poste
  const dT=(async()=>{await driveAt(tapis,[[-60,29.6],[-30,29.6],[-15,29.4]],CHEMIN);await wait(1000);await driveAt(tapis,[[-15,29.4],[-11,23],[-7,15],[-4.6,8.6]],AU_PAS)})();
- const dG=(async()=>{await wait(3000);await driveAt(gpu,[[-60,29.6],[-30,29.6],[-12,29.4]],CHEMIN);await wait(1000);await driveAt(gpu,[[-12,29.4],[-7,23],[-4.2,16.5]],AU_PAS)})();
+ const dG=(async()=>{await wait(3000);await driveAt(gpu,[[-60,29.6],[-30,29.6],[-12,29.4]],CHEMIN);await wait(1000);await driveAt(gpu,[[-12,29.4],[-7,19],[-4.2,11.5]],AU_PAS)})();
  await say('z28',[[.03,()=>L.card('Seuls les engins indispensables',"Ceux des opérations d'assistance qui exigent un contact direct avec l'aéronef. Les autres se garent hors de la zone, sur les emplacements réservés.",{a:[-7,1.2,15]})],[.38,()=>L.card('Au pas, sens horaire','Les girations dans le sens des aiguilles d\'une montre. Le contournement aux extrémités, dans les deux sens, au pas.',{a:null})],[.68,()=>{L.card('Entre deux avions',"Entre les bouts d'ailes de deux postes adjacents : au pas, priorité aux engins qui opèrent sur l'un des deux avions, puis à celui qui se dirige vers l'avant du poste, ou vers l'arrière quand le cheminement utilisé passe à l'arrière.",{a:[-21,3,-5.5]});look([-21,1.5,-5.5],1500)}]]);
  await Promise.all([dT,dG]);
  return L}
