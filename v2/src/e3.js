@@ -53,7 +53,7 @@ async function cover(){step();await photo('aerien3',FAST?10:1200);setCam({zoom:1
 async function points(){step();head(H3,"Les points d'accès");
  vue(`<div class="hero">${bigIc('badge')}<p class="cap">Des titres spéciaux</p><p class="sub">L'accès au côté piste les nécessite.</p><p class="sub it" id="p1" style="font-weight:700;color:var(--marine)">Et il ne peut avoir lieu qu'en des points précis, où l'on contrôle les personnes et les véhicules : l'inspection filtrage.</p></div>`);
  const DUO=`<div class="duo2"><div class="card2 it" id="q1">${IC.user}<p class="lb">À pied</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'inspection filtrage</p><p class="tx" style="max-width:none;margin:0">Le contrôle des personnes.</p></div>
-  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="tx" style="max-width:none;margin:0">Le contrôle des véhicules et de leurs occupants.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
+  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="tx" style="max-width:none;margin:0">Le contrôle des véhicules.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
  await sayS('a04',[W('a04','Il ne peut',()=>show('#p1')),W('a04','À pied',()=>{vue(DUO);show('#q1',true)}),W('a04','En véhicule',()=>show('#q2',true)),W('a04',"c'est là",()=>show('#q3'))]);
  undim();await pause();return null}
 
@@ -75,7 +75,7 @@ async function titres(){step();head(H3,'Les titres d\'accès');
 const KIT=[['badge','Son titre de circulation aéroportuaire','Son titre'],['card',"Une pièce d'identité",'Une pièce'],['card','Son permis de conduire','Son permis'],['key','Son autorisation de conduite','Son autorisation','Permis T, R, M ou P.'],['car','Le laissez-passer véhicule','Le laissez-passer'],['badge','Son badge blanc','Son badge blanc'],['doc',"L'attestation d'autorisation pour le véhicule","L'attestation d'autorisation"],['doc',"L'attestation d'assurance et la carte grise","L'attestation d'assurance"],['car',"Un véhicule identifiable par le logo de l'entreprise",'Et le véhicule']];
 const KIT2=[['vest','Le gilet haute visibilité','le gilet','Obligatoire, il se porte.'],['doc','La vignette de circulation','la vignette','Sur le véhicule.'],['badge',"Le badge d'accès à lecture magnétique",'et le badge','Sur le véhicule.']];
 async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
- vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,20px)"><p class="cap" style="margin:0;font-size:clamp(22px,2.2vw,34px)">Neuf choses à avoir sur soi<span id="kn" hidden></span></p><div class="tiles" style="grid-template-columns:repeat(3,1fr)">${KIT.map((f,i)=>`<div class="tile" id="kt${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}${f[3]?`<br><small style="font-weight:400">${nb(f[3])}</small>`:''}</p></div>`).join('')}</div></div>`);
+ vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,20px)"><p class="cap" style="margin:0;font-size:clamp(22px,2.2vw,34px)">Ce que tout conducteur doit posséder<span id="kn" hidden></span></p><div class="tiles" style="grid-template-columns:repeat(3,1fr)">${KIT.map((f,i)=>`<div class="tile" id="kt${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}${f[3]?`<br><small style="font-weight:400">${nb(f[3])}</small>`:''}</p></div>`).join('')}</div></div>`);
  let prev=null,n=0;const lit=i=>{if(prev!==null)$c('#kt'+prev).classList.remove('now');$c('#kt'+i).classList.add('in','now');prev=i;$c('#kn').textContent=++n};
  await sayS('a07',KIT.map((f,i)=>W('a07',f[2],()=>lit(i),.005)));if(prev!==null)$c('#kt'+prev).classList.remove('now');
  vue(`<div class="tiles" style="grid-template-columns:repeat(3,1fr);max-width:960px">${KIT2.map((f,i)=>`<div class="tile" id="ku${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}<br><small style="font-weight:400">${nb(f[3])}</small></p></div>`).join('')}</div>`);
@@ -84,7 +84,7 @@ async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
 async function boite(){step();head('Au poste d\'accès · 5 h 34','La boîte à gants');
  vue(`<div class="hero">${bigIc('doc')}<p class="cap">Le gendarme demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
  await sayS('a09');
- const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Le premier qu'on vous demande.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
+ const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Ma carte de carburant.",b:"n",ok:"Elle n'est pas un document de circulation.",h:"Pas tout à fait. Est-elle dans la liste des neuf ?"},
   {t:"Ma pièce d'identité.",b:"p",ok:"Obligatoire.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Mon permis de conduire.",b:"p",ok:"Obligatoire, et en cours de validité.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},

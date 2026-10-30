@@ -749,32 +749,14 @@ async function referentiels(){step();head('1 · Le contexte réglementaire','Tro
  await pause();return null}
 
 /* 3. l'arrêté préfectoral : le périmètre qui s'étend, puis les absences */
-const ZMAP=`<div class="zmap"><svg class="zl" viewBox="0 0 800 420" font-family="Barlow,system-ui,sans-serif">
- <rect class="z" id="zall" x="16" y="16" width="768" height="388" rx="22" fill="#fff" stroke="#b9c3cb" stroke-width="3" stroke-dasharray="10 8"/>
- <text id="zallt" x="40" y="56" font-weight="700" font-size="24" fill="#8a96a0">La zone côté piste</text>
- <rect class="z" id="zf" x="60" y="92" width="400" height="270" rx="18" fill="#dfe5e9" stroke="#263C52" stroke-width="3"/>
- <text x="84" y="132" font-weight="700" font-size="23" fill="#263C52">Secteurs fonctionnels</text><text x="84" y="160" font-weight="700" font-size="23" fill="#263C52">trafic et manœuvre</text>
- <rect class="z" id="zs" x="330" y="200" width="410" height="170" rx="18" fill="#c9d3da" fill-opacity=".85" stroke="#263C52" stroke-width="3"/>
- <text x="480" y="300" font-weight="700" font-size="23" fill="#263C52">Secteur de sûreté F</text>
- <g id="zb"><rect x="104" y="196" width="96" height="66" rx="6" fill="#fff" stroke="#5d6b78" stroke-width="2"/><rect x="540" y="232" width="120" height="44" rx="6" fill="#fff" stroke="#5d6b78" stroke-width="2"/><text x="152" y="290" text-anchor="middle" font-size="17" fill="#5d6b78">bâtiment</text></g>
- </svg><svg class="zp" viewBox="0 0 400 470" font-family="Barlow,system-ui,sans-serif">
- <rect class="z" id="zallp" x="8" y="8" width="384" height="454" rx="20" fill="#fff" stroke="#b9c3cb" stroke-width="3" stroke-dasharray="10 8"/>
- <text id="zalltp" x="26" y="44" font-weight="700" font-size="22" fill="#8a96a0">La zone côté piste</text>
- <rect x="30" y="70" width="270" height="230" rx="16" fill="#dfe5e9" stroke="#263C52" stroke-width="3"/>
- <text x="48" y="104" font-weight="700" font-size="22" fill="#263C52">Secteurs fonctionnels</text><text x="48" y="130" font-weight="700" font-size="22" fill="#263C52">trafic et manœuvre</text>
- <rect x="120" y="250" width="250" height="190" rx="16" fill="#c9d3da" fill-opacity=".85" stroke="#263C52" stroke-width="3"/>
- <text x="140" y="410" font-weight="700" font-size="22" fill="#263C52">Secteur de sûreté F</text>
- <rect x="56" y="160" width="80" height="56" rx="6" fill="#fff" stroke="#5d6b78" stroke-width="2"/><text x="96" y="238" text-anchor="middle" font-size="16" fill="#5d6b78">bâtiment</text>
- <rect x="230" y="300" width="100" height="44" rx="6" fill="#fff" stroke="#5d6b78" stroke-width="2"/>
- </svg></div>`;
+const ZMAP=`<div class="parts" style="grid-template-columns:repeat(3,1fr);max-width:1000px"><div class="pt it in" id="za1"><p class="lb">Les secteurs fonctionnels trafic et manœuvre</p></div><div class="pt it in" id="za2"><p class="lb">Ou le secteur de sûreté F</p></div><div class="pt it in" id="za3"><p class="lb">En dehors des bâtiments et des cours</p></div></div><div class="hero it" id="zall" style="margin-top:clamp(14px,3vh,30px)"><p class="cap">Étendu à toute la zone côté piste</p></div>`;
 async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêté préfectoral");
  vue(`<div class="hero"><p class="huge tel">2026-00286</p><p class="cap">L'arrêté préfectoral du 13 mars 2026</p><p class="sub it" id="a1">Il modifie l'arrêté de 2018. C'est le texte de base.</p></div>`);
  await sayS('e10',[W('e10','modifie',()=>show('#a1')),
-  W('e10','Il oblige',()=>vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,20px)"><p class="cap it" id="a2" style="font-weight:700;font-size:clamp(22px,2.2vw,34px);margin:0;text-align:center">${nb('Une autorisation de conduite spécifique, obligatoire pour tout conducteur')}</p>${ZMAP}<p class="sub it" id="a3" style="text-align:center">En dehors des bâtiments et des cours.</p></div>`)),
+  W('e10','Il oblige',()=>vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(10px,2vh,20px)"><p class="cap it" id="a2" style="font-weight:700;font-size:clamp(22px,2.2vw,34px);margin:0;text-align:center">${nb('Une autorisation de conduite spécifique, obligatoire pour tout conducteur')}</p>${ZMAP}<p class="sub it" id="a3" style="text-align:center"></p></div>`)),
   W('e10','Il oblige',()=>show('#a2'),-.01),
   W('e10','en dehors',()=>show('#a3')),
-  W('e10','Pour simplifier',()=>{for(const [a,t] of [[$c('#zall'),$c('#zallt')],[$c('#zallp'),$c('#zalltp')]]){if(a){a.setAttribute('fill','#263C52');a.setAttribute('fill-opacity','.14');a.setAttribute('stroke','#263C52');a.setAttribute('stroke-dasharray','0')}if(t){t.textContent='Étendu à toute la zone côté piste';t.setAttribute('fill','#263C52')}}
-   const s=$c('#a3');if(s)s.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers.")})]);
+  W('e10','Pour simplifier',()=>{show('#zall');const t=$c('#a3');if(t)t.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers.")})]);
  vue(`<div class="hero">${bigIc('build')}<p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
  const ABS=`<div class="axes" style="max-width:1040px"><div class="ax" id="xb"><p class="tl">Absence de la plateforme</p><div class="tr">
   <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
@@ -789,7 +771,7 @@ const ZON=["La zone d'évolution contrôlée","Le périmètre de sécurité coll
 async function mpa(){step();head('1 · Le contexte réglementaire',"Les mesures particulières d'application");
  vue(`<div class="duo2"><div class="card2 it" id="m1">${IC.user}<p class="lb">Qui les prend ?</p><p class="big2" style="font-size:clamp(30px,3.4vw,52px)">Le directeur d'aéroport</p><p class="tx" style="max-width:none;margin:0">Il complète l'arrêté, quand c'est nécessaire. Ces mesures collent au terrain.</p></div>
   <div class="card2 it" id="m2">${IC.car}<p class="lb">Sur quoi ?</p><p class="tx" style="max-width:none;margin:0;font-size:clamp(18px,1.6vw,25px);font-weight:600;color:var(--marine)">Les règles de sécurité de circulation et de stationnement sur l'aire de mouvement.</p></div></div>`);
- const ZL=`<div class="hero"><p class="cap" style="margin-bottom:clamp(8px,2vh,20px)">Elles portent aussi sur les zones</p><ul class="chk">${ZON.map((z,i)=>`<li id="zz${i}"><b>${CHECK}</b>${nb(z)}</li>`).join('')}</ul></div>`;
+ const ZL=`<div class="hero"><p class="cap" style="margin-bottom:clamp(8px,2vh,20px)">Elles portent aussi sur :</p><ul class="chk">${ZON.map((z,i)=>`<li id="zz${i}"><b>${CHECK}</b>${nb(z)}</li>`).join('')}</ul></div>`;
  await sayS('e12',[W('e12','le directeur',()=>show('#m1',true)),W('e12','Elles portent',()=>show('#m2',true)),W('e12','La zone',()=>vue(ZL)),
   ...['La zone','Le périmètre de sécurité collision','Le périmètre de sécurité incendie','La zone particulièrement','La zone d\'évolution de passerelle','Et les couloirs'].map((w,i)=>W('e12',w,()=>on('#zz'+i,'on'),.005))]);
  await pause(2200);return null}
@@ -815,7 +797,7 @@ async function vem(L){L.title('Véhicule, engin ou matériel ?');
  await sayS('e14',[at('e14',.02,()=>L.card('À vous','Pour chaque chose : un véhicule, un engin, un matériel, ou aucun des trois ?',{a:null}))]);
  const PTS={v:pt(...PV),e:pt(...PE),m:pt(...PM)};let E=0;
  const Qs=[['e',"Cliquez sur l'engin.","Autotracté, mais pas immatriculé : un engin.","Pas celui-ci. L'engin avance tout seul, mais il n'a pas de plaque d'immatriculation."],
-  ['m','Cliquez sur le matériel.',"Il n'avance pas tout seul : un matériel, comme les conteneurs et les palettes.","Pas celui-ci. Le matériel n'est pas autotracté : il faut le tirer."],
+  ['m','Cliquez sur le matériel.',"Il n'avance pas tout seul : un matériel, comme les conteneurs et les palettes.","Pas celui-ci. Le matériel n'est pas autotracté."],
   ['v','Cliquez sur le véhicule.','Autotracté et immatriculé selon le code de la route : un véhicule.',"Pas celui-ci. Cherchez celui qui porte une plaque d'immatriculation."]];
  for(let i=0;i<Qs.length;i++){const [g,q,ok,ko]=Qs[i];L.card(`Sur la photo · ${i+1} sur 5`,q,{a:null});onKo=()=>L.card('Essayez encore',`${q} ${ko}`,{ko:1,a:null});
   E+=await photoPick(PTS,g);onKo=null;const lb={v:'Véhicule',e:'Engin',m:'Matériel'}[g];const sm=small(PTS[g],lb);
@@ -873,7 +855,7 @@ async function sanctions(){step();head('2 · Les sanctions','Trois registres');
   <div class="pt it" id="s1">${IC.doc}<p class="lb">Les sanctions administratives</p></div><div class="pt it" id="s2">${IC.quiz}<p class="lb">Les procès-verbaux</p></div><div class="pt it" id="s3">${IC.build}<p class="lb">Les sanctions pénales</p></div></div>
   <p class="cap it" id="s4" style="font-size:clamp(20px,2vw,30px);text-align:center;margin:0">Ils coexistent, ils ne s'excluent pas.</p></div>`);
  await sayS('e21',[W('e21','sanctions administratives',()=>show('#s1')),W('e21','des procès',()=>show('#s2')),W('e21','et des sanctions',()=>show('#s3')),W('e21','Les trois',()=>show('#s4')),
-  W('e21',"C'est la Gendarmerie",()=>vue(`<div class="side"><div>${img('gta')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">La Gendarmerie des transports aériens</p><p class="sub" style="text-align:left">C'est elle qui sanctionne les infractions.</p></div></div>`))]);
+  W('e21',"C'est la Gendarmerie",()=>vue(`<div class="side"><div>${img('gta')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">La Gendarmerie des transports aériens</p><p class="sub" style="text-align:left">Les infractions commises peuvent être sanctionnées par elle.</p></div></div>`))]);
  head('2 · Les sanctions','Les infractions relevées');
  vue(`<div class="tiles">${INF.map((f,i)=>`<div class="tile" id="tf${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}</p>${i===2?'<span class="tag" id="dl">Un délit</span>':''}</div>`).join('')}</div>`);
  let prev=null;const lit=i=>{if(prev!==null)$c('#tf'+prev).classList.remove('now');const t=$c('#tf'+i);t.classList.add('in','now');prev=i};
@@ -984,7 +966,7 @@ async function quelleAut(){step();head("4 · L'autorisation de conduite",'Quelle
  vue(`<div class="pzw"><div class="pz" id="pz"><img src="${IMG.permis4}" alt="Les quatre permis T, M, R et P">${Object.entries(PZ).map(([k,[x,y,w,h]])=>`<button data-k="${k}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" aria-label="${k.toUpperCase()}"></button>`).join('')}</div>
   <div class="qc" id="pq"><p class="n">À vous</p><p class="q">Pour chaque périmètre, cliquez sur le bon permis.</p><p class="qfb2" id="pfb"></p></div></div>`);
  await sayS('e36');
- const IT=[["Les cheminements routiers autorisés, et rien d'autre.",'t',"Le T : cheminements routiers exclusivement.","Pas celui-ci. Lequel ne donne accès à aucune voie avion ?"],
+ const IT=[["Les cheminements routiers autorisés, et rien d'autre.",'t',"Le T : cheminements routiers exclusivement.","Pas celui-ci. Lequel s'en tient aux cheminements routiers autorisés, exclusivement ?"],
   ["Les cheminements routiers, plus les voies avions sous écoute de fréquence.",'m',"Le M.","Pas celui-ci. Écoute de fréquence : cherchez la lettre qui suit le T."],
   ["Les cheminements routiers, plus les voies avions sous clairance du contrôle.",'r',"Le R.","Pas celui-ci. Clairance du contrôle : ce n'est ni le T, ni le M, ni toutes zones."],
   ["Toutes zones.",'p',"Le P.","Pas celui-ci. Lequel ouvre toutes les zones ?"]];
