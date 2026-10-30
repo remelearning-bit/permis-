@@ -1,0 +1,74 @@
+{
+"a01": {
+"w": "D",
+"t": "Cinq heures trente. On quitte le côté ville. Côté piste, on n'entre pas n'importe où, ni n'importe comment. Il faut des titres spéciaux, et des points de passage précis."
+},
+"a02": {
+"w": "X",
+"t": "Et au volant, on passe où ?"
+},
+"a03": {
+"w": "D",
+"t": "Par un poste d'accès routier avec inspection filtrage. On y va, et on prépare les papiers en route. Cliquez pour continuer."
+},
+"a04": {
+"w": "D",
+"t": "L'accès au côté piste nécessite des titres spéciaux. Il ne peut avoir lieu qu'en des points précis. On y effectue des contrôles d'inspection filtrage des personnes et des véhicules. À pied, on passe par un poste d'inspection filtrage. En véhicule, par un poste d'accès routier avec inspection filtrage : c'est là que vous allez."
+},
+"a05": {
+"w": "D",
+"t": "Côté piste, la plateforme est découpée en secteurs. Les secteurs fonctionnels trafic et manœuvre, et le secteur de sûreté F, ceux de l'arrêté préfectoral. Le poste d'accès routier est la porte d'entrée de ces secteurs pour les véhicules. La vidéo vous les présente : regardez-la avant de continuer."
+},
+"a06": {
+"w": "D",
+"t": "Pour le véhicule, il faut un titre d'accès à part : le laissez-passer véhicule. La vidéo du présentiel vous le présente, regardez-la avant de continuer."
+},
+"a06b": {
+"w": "D",
+"t": "Et le badge lui-même, votre titre de circulation aéroportuaire : permanent ou temporaire, ses couleurs, ce qu'il autorise. Une seconde vidéo, à regarder avant de continuer."
+},
+"a07": {
+"w": "D",
+"t": "Tout conducteur qui circule côté piste doit avoir sur lui neuf choses. Son titre de circulation aéroportuaire. Une pièce d'identité. Son permis de conduire. Son autorisation de conduite, permis T, R, M ou P. Le laissez-passer véhicule. Son badge blanc. L'attestation d'autorisation pour le véhicule. L'attestation d'assurance et la carte grise. Et le véhicule doit être identifiable par le logo de l'entreprise."
+},
+"a08": {
+"w": "D",
+"t": "Ajoutez ce qui ne se présente pas mais se porte : le gilet haute visibilité, obligatoire. Et ce qui reste sur le véhicule : la vignette de circulation, et le badge d'accès à lecture magnétique."
+},
+"a09": {
+"w": "D",
+"t": "Vous arrivez au poste d'accès. Le gendarme vous demande les papiers. Vous ouvrez la boîte à gants. Pour chaque document, dites-moi si vous le présentez, ou s'il n'a rien à faire là."
+},
+"a10": {
+"w": "D",
+"t": "Deux exceptions à ce régime : les véhicules captifs, et les véhicules non immatriculés."
+},
+"a11": {
+"w": "D",
+"t": "Quatre postes d'accès routiers avec inspection filtrage, sur la carte. Quinze India, ouvert vingt-quatre heures sur vingt-quatre. Vingt-neuf India, de cinq heures à vingt-deux heures. Vingt et un Mike, vingt-quatre heures sur vingt-quatre. Treize Papa, de quatre heures à vingt et une heures."
+},
+"a12": {
+"w": "X",
+"t": "Donc à cinq heures trente, les quatre sont ouverts."
+},
+"a13": {
+"w": "D",
+"t": "Oui. Mais ce n'est pas vrai à toute heure."
+},
+"a14": {
+"w": "D",
+"t": "À vous. Je vous donne un poste d'accès et une heure : ouvert, ou fermé ?"
+},
+"a15": {
+"w": "D",
+"t": "Deux questions d'entraînement, pas notées. La première : quel est le nom du poste d'accès entouré de rouge ?"
+},
+"a16": {
+"w": "D",
+"t": "La deuxième : quels documents sont nécessaires au passage d'un poste d'accès avec votre véhicule ?"
+},
+"a17": {
+"w": "D",
+"t": "Troisième case cochée. Il est cinq heures quarante-cinq, le gendarme vous a laissé passer. Avant de rouler, on fait le tour du véhicule."
+}
+}
