@@ -3,7 +3,12 @@ from PIL import Image
 T=open('/home/claude/permis-/v2/preambule.html',encoding='utf-8').read()
 e1=open('/home/claude/w/e1.js',encoding='utf-8').read()
 common=e1[:e1.index('/* 1. la couverture et les quatre parties */')]
-js=common+open('/home/claude/w/e5.js',encoding='utf-8').read()
+e5src=open('/home/claude/w/e5.js',encoding='utf-8').read()
+# la traversée à feux en scène 3D (écran témoin validé par Cat) remplace l'écran photo du dispositif lumineux
+t5=(open('/home/claude/w/avion5.js',encoding='utf-8').read()+open('/home/claude/w/t5.js',encoding='utf-8').read()).replace("' · 5 h 58'","' · 6 h 12'").replace("jlog('5 h 58'","jlog('6 h 12'").replace("jlog('5 h 59'","jlog('6 h 13'")
+k=e5src.index('runSeq([');assert "['Le dispositif lumineux',feux]" in e5src
+e5src=e5src[:k]+t5+'\n'+e5src[k:].replace("['Le dispositif lumineux',feux]","['Le dispositif lumineux',traversee]")
+js=common+e5src
 lines=open('/home/claude/w/e5lines.json',encoding='utf-8').read()
 img={};dim={}
 for k in sorted(os.path.splitext(os.path.basename(x))[0] for x in glob.glob('/home/claude/w/e5img/*')):
