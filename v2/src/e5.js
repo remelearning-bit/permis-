@@ -45,7 +45,7 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
   const qc=$c('#qq');let o=z.o.map((y,k)=>[String(k),y[0]]);if(!z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.o.findIndex(y=>y[1]));const kot={};z.o.forEach((y,k)=>{if(!y[1]&&y[2])kot[k]=y[2]});
   const e=await pick(null,o,gk,z.o[+gk][2],kot,i<Q.length-1?'Question suivante':'Terminer',{once:true,x:!!x,host:qc});E+=e;if(e)[].concat(z.bk||bk).forEach(k=>MISS.add(k))}
- jlog(h,`${what} : ${Q.length} questions${errTxt(E)}`);return gate(id,E,Q.length,[...MISS].sort((a,b)=>a-b),what,ret)}
+ jlog(h,`${what} : ${Q.length} question${Q.length>1?"s":""}${errTxt(E)}`);return gate(id,E,Q.length,[...MISS].sort((a,b)=>a-b),what,ret)}
 
 /* 3. signalétiques et cheminements (diapos 96 à 115) */
 const rds=S('rds','Les routes de service à accès restreint',['c09','c10','c11'],[['c09',.3,'Routes périphériques','Certaines routes de service sont à accès restreint, réservées aux seuls ayants droit.'],['c09',.8,'Exemples','CDG1 vers CDG2, le tunnel vers le terminal 2G depuis le 29 India, les routes de service du Fret Sud au large des aires Mike, November et Papa.'],['c10',.5,'Les ayants droit',"Groupe ADP, les services compétents de l'État, le SNA-RP, et leurs sous-traitants avec une mission qui justifie cet accès."],['c11',.6,'En faible visibilité',"La gendarmerie des transports aériens, les pompiers, le service médical d'urgence, le risque animalier, les Flyco, les balayeuses, la sûreté, les services techniques, et les chantiers autorisés."]],'Les routes et les cheminements');
@@ -130,7 +130,7 @@ async function fin(){step();head('Étape 5 · 6 h 25','Les principes sont posés
  cur().classList.add('vb');
  await sayS('c64');
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 5, suite · Les risques sur l'aire de mouvement</a>`}
-const NEXT='../navigation/permis-t-etape5b-risques.html';
+const NEXT='etape5b.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 .qimg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center;width:100%;max-width:1220px}
 .qimg .fig{margin:0;border-radius:14px;overflow:hidden;box-shadow:0 8px 28px rgba(38,60,82,.16);background:#fff}
