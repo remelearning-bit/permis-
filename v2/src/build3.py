@@ -6,7 +6,7 @@ common=e1[:e1.index('/* 1. la couverture et les quatre parties */')]
 js=common+open('/home/claude/w/e3.js',encoding='utf-8').read()
 lines=open('/home/claude/w/e3lines.json',encoding='utf-8').read()
 img={};dim={}
-for k in ['aerien3','secteurs','parifclean','qparif']:
+for k in ['aerien3','secteurs','parifclean','qparif','qparif2']:
     f=glob.glob(f'/home/claude/w/e3img/{k}.*')[0];im=Image.open(f);dim[k]=list(im.size)
     img[k]='data:image/jpeg;base64,'+base64.b64encode(open(f,'rb').read()).decode()
 def grab(src,name):return re.search(r'const '+name+r'=(\{.*?\});\n',src,re.S)

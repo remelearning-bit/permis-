@@ -411,16 +411,18 @@ const nbr=(n,t)=>`${n} bonne${n>1?'s':''} réponse${n>1?'s':''} sur ${t}`;
 /* ---------------- questions intermédiaires (consigne d'exploitation n°3, §5.1.1.2) ----------------
    Une seule réponse par question, et chaque réponse est expliquée, juste ou fausse.
    Une série conditionne la suite : sous le seuil, on revoit la partie concernée, puis la série revient, dans un autre ordre. */
-const SEUIL=0.8,TRY={};const needOf=n=>Math.max(1,Math.round(n*SEUIL));
+// ?serie2 : tester la seconde série
+const SEUIL=0.8,TRY=Q.has('serie2')?new Proxy({},{get:(t,k)=>k in t?t[k]:1}):{};const needOf=n=>Math.ceil(n*80/100); // 80 % au moins : le seuil de la consigne d'exploitation n°3
 const lbOf=(opts,k)=>{const o=opts.find(x=>x[0]===k);return o?String(o[1]).replace(/[.\s]+$/,''):''};
 const xclean=t=>String(t||'').replace(/^(Oui|Exactement|Bien vu|C'est ça|Bonne réponse|Juste|Bravo|Vrai|Faux|Pas celui-ci|Pas celle-ci|Pas là|Pas tout à fait)\s*[.,:!]?\s*/i,'').replace(/^./,c=>c.toUpperCase());
-const xko=(lbl,ok)=>`<b>${nb('Réponse attendue : '+lbl+'.')}</b> <span class="xp">${nb(xclean(ok))}</span>`;
+const xko=(lbl,ok)=>{let t=xclean(ok);const l=String(lbl).toLowerCase();if(t.toLowerCase().startsWith(l)&&/^\s*[:.]/.test(t.slice(l.length)))t=xclean(t.slice(l.length).replace(/^\s*[:.]\s*/,''));return `<b>${nb('Réponse attendue : '+lbl+'.')}</b>${t?` <span class="xp">${nb(t)}</span>`:''}`};
+const ALT={};const alt=(id,a,b)=>{if(b)ALT[id]=1;return mix(id,b&&(TRY[id]||0)%2?b:a)};
 function mix(id,a){if(!TRY[id])return a;const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 async function gate(id,E,n,back,what){const ok=Math.max(0,n-E),need=needOf(n);TRY[id]=(TRY[id]||0)+1;
  const h=(JRN[JRN.length-1]||[''])[0];
  if(ok>=need||Q.has('pass')){jlog(h,`${what} : série validée, ${ok} sur ${n}`);return null}
  jlog(h,`${what} : ${ok} sur ${n}, il en faut ${need}. Partie revue, puis série reposée`);
- vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite. Vous revoyez la partie, puis la série revient, dans un autre ordre.`)}</p></div>`);
+ vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite : 80 %, le seuil de la consigne d'exploitation n°3. Vous revoyez la partie, puis ${ALT[id]?'une nouvelle série vous attend':'la série revient, dans un autre ordre'}.`)}</p></div>`);
  await contV('Revoir la partie');return {goto:back}}
 /* ---------------- navigation libre : ?nav ouvre la liste des écrans, ?nav&s=N démarre à l'écran N ---------------- */
 const NAV=Q.has('nav');let NAVI=0;
@@ -659,7 +661,7 @@ const AXES=`<div class="axes">
   <div class="sg" id="xa1" style="left:0;width:40%;background:var(--marine)"><span class="lg">Avec un référent accompagnateur</span><span class="sh">Référent</span></div>
   <span class="fl" id="xaf0" style="left:0">L'attestation de réussite</span><span class="fl r" id="xaf2" style="left:90%">Au plus tard :<br class="ph"> le permis récupéré</span>
   <span class="tk" id="xat1" style="left:40%">40 jours</span><span class="tk" id="xat2" style="left:90%">3 mois</span></div>
-  <p class="nt" id="xan">L'attestation vaut autorisation de conduite pendant la formation pratique, en présence d'un référent accompagnateur. Passé les 40 jours sans partie pratique validée, tout est à refaire. Les 3 mois comptent à partir de la validation de la formation théorique.</p></div>
+  <p class="nt" id="xan">L'attestation vaut autorisation de conduite pendant la formation pratique, en présence d'un référent accompagnateur. Passé les 40 jours sans partie pratique validée, tout est à refaire. Une fois la demande d'autorisation déposée, vous circulez au plus 3 mois à compter de la validation de votre permis, avec la copie de la demande, en attendant de le récupérer.</p></div>
  <div class="ax" id="xb"><p class="tl">Cessation d'activité : sans circuler sur l'aire de mouvement</p><div class="tr">
   <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
   <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau est exigée, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
@@ -688,10 +690,14 @@ async function vraiFaux(){step();VZ.classList.remove('clear');head('Préambule',
  ['#xaf0','#xa1','#xat1','#xat2','#xaf2','#xb1','#xb2','#xbf1','#xbf2','#xbt1','#xbt2'].forEach(s=>on(s));
  await sayS('p13');
  const mk=document.createElement('div');mk.className='mk';
- const IT=mix('vf',[["L'attestation de réussite théorique est valable quarante jours.",'v','a',40,"Vrai : quarante jours, le temps de la formation pratique avec le référent. Passé ce délai sans partie pratique validée, tout est à refaire.","Regardez la frise : jusqu'où va la conduite avec le référent ?",'#xa1'],
+ const VF2=[["Pendant la formation pratique, l'attestation de réussite me permet de conduire, accompagné d'un référent.",'v','a',20,"Vrai : l'attestation vaut autorisation de conduite pendant la formation pratique, en présence d'un référent accompagnateur.","",'#xa1','JS'],
+  ["Je peux faire ma formation pratique deux mois après avoir réussi la théorie.",'f','a',60,"Faux : la formation pratique doit être faite dans les 40 jours qui suivent la réussite de la théorie. Passé ce délai, tout est à refaire.","",'#xa1'],
+  ["Deux mois sans circuler sur l'aire de mouvement : une remise à niveau est exigée.",'f','b',11.1,"Faux : la remise à niveau n'est exigée qu'entre 3 et 12 mois de cessation d'activité.","",'#xb1'],
+  ["Huit mois sans circuler sur l'aire de mouvement : une remise à niveau m'attend avant de reprendre le volant.",'v','b',44.4,"Vrai : entre 3 et 12 mois de cessation d'activité, une remise à niveau est exigée, tracée sur la grille de formation pratique.","",'#xb1']];
+ const IT=alt('vf',[["L'attestation de réussite théorique est valable quarante jours.",'v','a',40,"Vrai : quarante jours, le temps de la formation pratique avec le référent. Passé ce délai sans partie pratique validée, tout est à refaire.","Regardez la frise : jusqu'où va la conduite avec le référent ?",'#xa1'],
   ["Avec l'attestation de réussite théorique, je peux conduire seul côté piste.",'f','a',6,"Faux : l'attestation vaut autorisation de conduite seulement en présence d'un référent accompagnateur.","Regardez la frise : pendant ces quarante jours, qui est à côté de vous ?",'#xa1','JS'],
   ["Six mois sans circuler sur l'aire de mouvement : je repasse le permis T en entier.",'f','b',33.3,"Faux : entre trois et douze mois de cessation d'activité, c'est une remise à niveau qui est exigée, tracée sur la grille de formation pratique. Pas le permis T en entier.","Regardez où tombe le repère sur la frise.",'#xb1'],
-  ["Quatorze mois sans circuler sur l'aire de mouvement : je repasse le permis T en entier.",'v','b',77.8,"Vrai : au-delà de douze mois de cessation d'activité, il faut suivre à nouveau une formation initiale.","Regardez où tombe le repère sur la frise.",'#xb2']]);
+  ["Quatorze mois sans circuler sur l'aire de mouvement : je repasse le permis T en entier.",'v','b',77.8,"Vrai : au-delà de douze mois de cessation d'activité, il faut suivre à nouveau une formation initiale.","Regardez où tombe le repère sur la frise.",'#xb2']],VF2);
  let E=0;const qc=$c('#qc'),vf=$c('#vfw');cur().classList.add('tall');
  for(let i=0;i<IT.length;i++){const [t,b,ax,x,okT,koT,seg,extra]=IT[i];qc.querySelector('.n').textContent=`Affirmation ${i+1} sur ${IT.length}`;qc.querySelector('.q').innerHTML=nb(t);
   vf.classList.toggle('qa',ax==='a');vf.classList.toggle('qb',ax==='b');mk.classList.remove('ok');$c(`#x${ax} .tr`).appendChild(mk);mk.style.left=x+'%';

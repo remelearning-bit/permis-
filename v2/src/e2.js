@@ -239,14 +239,19 @@ async function postes(){step();mapOff();
  return null}
 
 /* 6. les trois questions du chapitre */
+// seconde série : questions des QCM REM et du test Groupe ADP (sans voix)
+const QUIZ2=[
+ {q:"Qu'appelle-t-on l'aire de mouvement ?",opts:[["Les postes de stationnement avion.",0,"Les postes ne sont qu'une partie de l'aire de trafic."],["Les voies de circulation avion.",0,"Les voies de circulation avion n'en sont qu'une partie."],["L'aire de trafic et l'aire de manœuvre.",1,"Côté piste, la zone où les avions se déplacent : l'aire de manœuvre et l'aire de trafic, ensemble."]]},
+ {q:"Comment nomme-t-on la voie où circule un avion, la voie de circulation avion ?",opts:[["Une taxiway ou une taxilane.",1,"La taxiway conduit aux pistes, la taxilane fait entrer l'avion sur son poste."],["Une route de service.",0,"Une route de service, c'est pour les véhicules."],["Une piste.",0,"La piste sert au décollage et à l'atterrissage."]]},
+ {q:"Où se trouve la zone de fret de FedEx ?",opts:[["Dans la zone de fret nord.",1,"FedEx occupe la zone de fret nord, aux postes India."],["Dans la zone de fret sud.",0,"La zone de fret sud regroupe les postes Mike, November et Papa."],["Au terminal 1.",0,"Le terminal 1 accueille des passagers, pas le hub de FedEx."]]}];
 async function questions(){step();head(H2,"Trois questions d'entraînement");
- let E=0;
- for(let i=0;i<QUIZ.length;i++){const z=QUIZ[i];
-  vue(`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QUIZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`);
-  await sayS(z.line);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
+ let E=0;ALT.q2=1;const QZ=(TRY.q2||0)%2?QUIZ2:QUIZ;
+ for(let i=0;i<QZ.length;i++){const z=QZ[i];
+  vue(z.ph?`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(720px,100%)"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div>`);
+  if(z.line)await sayS(z.line);else await wait(FAST?0:400);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QUIZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
- jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QUIZ.length,1,"Questions d'entraînement")}
+  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
+ jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QZ.length,1,"Questions d'entraînement")}
 async function fin(){step();mapOff();head('Étape 2 terminée · 5 h 30','Deuxième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<1?'now':''}">${i<1?'✓':i+1}</i>`).join('')}</div>

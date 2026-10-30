@@ -411,16 +411,18 @@ const nbr=(n,t)=>`${n} bonne${n>1?'s':''} réponse${n>1?'s':''} sur ${t}`;
 /* ---------------- questions intermédiaires (consigne d'exploitation n°3, §5.1.1.2) ----------------
    Une seule réponse par question, et chaque réponse est expliquée, juste ou fausse.
    Une série conditionne la suite : sous le seuil, on revoit la partie concernée, puis la série revient, dans un autre ordre. */
-const SEUIL=0.8,TRY={};const needOf=n=>Math.max(1,Math.round(n*SEUIL));
+// ?serie2 : tester la seconde série
+const SEUIL=0.8,TRY=Q.has('serie2')?new Proxy({},{get:(t,k)=>k in t?t[k]:1}):{};const needOf=n=>Math.ceil(n*80/100); // 80 % au moins : le seuil de la consigne d'exploitation n°3
 const lbOf=(opts,k)=>{const o=opts.find(x=>x[0]===k);return o?String(o[1]).replace(/[.\s]+$/,''):''};
 const xclean=t=>String(t||'').replace(/^(Oui|Exactement|Bien vu|C'est ça|Bonne réponse|Juste|Bravo|Vrai|Faux|Pas celui-ci|Pas celle-ci|Pas là|Pas tout à fait)\s*[.,:!]?\s*/i,'').replace(/^./,c=>c.toUpperCase());
-const xko=(lbl,ok)=>`<b>${nb('Réponse attendue : '+lbl+'.')}</b> <span class="xp">${nb(xclean(ok))}</span>`;
+const xko=(lbl,ok)=>{let t=xclean(ok);const l=String(lbl).toLowerCase();if(t.toLowerCase().startsWith(l)&&/^\s*[:.]/.test(t.slice(l.length)))t=xclean(t.slice(l.length).replace(/^\s*[:.]\s*/,''));return `<b>${nb('Réponse attendue : '+lbl+'.')}</b>${t?` <span class="xp">${nb(t)}</span>`:''}`};
+const ALT={};const alt=(id,a,b)=>{if(b)ALT[id]=1;return mix(id,b&&(TRY[id]||0)%2?b:a)};
 function mix(id,a){if(!TRY[id])return a;const b=a.slice();for(let i=b.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[b[i],b[j]]=[b[j],b[i]]}return b}
 async function gate(id,E,n,back,what){const ok=Math.max(0,n-E),need=needOf(n);TRY[id]=(TRY[id]||0)+1;
  const h=(JRN[JRN.length-1]||[''])[0];
  if(ok>=need||Q.has('pass')){jlog(h,`${what} : série validée, ${ok} sur ${n}`);return null}
  jlog(h,`${what} : ${ok} sur ${n}, il en faut ${need}. Partie revue, puis série reposée`);
- vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite. Vous revoyez la partie, puis la série revient, dans un autre ordre.`)}</p></div>`);
+ vue(`<div class="hero">${typeof bigIc==='function'?bigIc('quiz'):''}<p class="cap">${nb(`${ok} bonne${ok>1?'s':''} réponse${ok>1?'s':''} sur ${n}`)}</p><p class="sub">${nb(`Il en faut au moins ${need} pour passer à la suite : 80 %, le seuil de la consigne d'exploitation n°3. Vous revoyez la partie, puis ${ALT[id]?'une nouvelle série vous attend':'la série revient, dans un autre ordre'}.`)}</p></div>`);
  await contV('Revoir la partie');return {goto:back}}
 /* ---------------- navigation libre : ?nav ouvre la liste des écrans, ?nav&s=N démarre à l'écran N ---------------- */
 const NAV=Q.has('nav');let NAVI=0;
@@ -606,7 +608,7 @@ const FC={
   r3c:["Côté piste",[["Les pistes","les pistes"],["Les voies de circulation avion","les voies"],["Les postes de stationnement et leur zone d'évolution contrôlée (ZEC)","les postes"],["Les routes de service et les cheminements véhicules","Les routes de service"],["L'aérogare après le poste d'inspection filtrage (PIF)","Et la partie"],["Un accès soumis à des règles particulières et à des titres spéciaux","L'accès est soumis"]]],
   r3d:["La frontière",[["La frontière : la limite entre côté ville et côté piste","La limite"],["Côté piste, l'aire de mouvement : là où les avions se déplacent","l'aire de mouvement",0,"",1],["L'aire de manœuvre","l'aire de manœuvre",0,"",2],["L'aire de trafic","et l'aire de trafic",0,"",2]]],
   r4a:["Aire de manœuvre",[["Le domaine de l'avion en mouvement","le domaine"],["Le décollage, l'atterrissage et la circulation des avions","utilisée pour"],["Quatre pistes : un doublet nord et un doublet sud","Roissy en a"]]],
-  r4b:["Aire de manœuvre",[["La taxiway, qui conduit aux pistes","La taxiway"],["La taxilane, qui fait entrer l'avion sur son poste","Et la taxilane"],["Les bandes aéronautiques, dégagées de tout obstacle","les bandes aéronautiques",0,"On les appelait les servitudes."],["Pistes, voies de circulation avion, bandes aéronautiques : l'aire de manœuvre","Pistes, voies"]]],
+  r4b:["Aire de manœuvre",[["La taxiway, qui conduit aux pistes","La taxiway"],["La taxilane, qui fait entrer l'avion sur son poste","Et la taxilane",0,"Elle est sur l'aire de trafic, mais dans le secteur manœuvre (MAN) : interdite au permis T."],["Les bandes aéronautiques, dégagées de tout obstacle","les bandes aéronautiques",0,"On les appelait les servitudes."],["Pistes, taxiways, bandes aéronautiques : l'aire de manœuvre","Pistes, voies"]]],
   r4c:["Aire de trafic",[["L'escale des avions","l'escale"],["Passagers, fret, avitaillement, stationnement, entretien","Débarquement"],["Les postes de stationnement","Elle comprend"],["Les cheminements véhicules et les routes de service qui y mènent","Et les cheminements"]]],
   r4d:["Aire de trafic",[["La zone de fret aussi : des avions garés, chargés et déchargés","La zone de fret"]]],
   r6:["Le permis T",[["Les cheminements véhicules et les routes de service de l'aire de trafic","Sur l'aire",1],["Jamais les pistes","Jamais sur les pistes",-1],["Jamais les voies de circulation avion, même sur l'aire de trafic : autorisation M, R ou P","Jamais sur les voies",-1],["T comme trafic","T comme",0]]],
@@ -895,14 +897,19 @@ async function postes(){step();mapOff();
  return null}
 
 /* 6. les trois questions du chapitre */
+// seconde série : questions des QCM REM et du test Groupe ADP (sans voix)
+const QUIZ2=[
+ {q:"Qu'appelle-t-on l'aire de mouvement ?",opts:[["Les postes de stationnement avion.",0,"Les postes ne sont qu'une partie de l'aire de trafic."],["Les voies de circulation avion.",0,"Les voies de circulation avion n'en sont qu'une partie."],["L'aire de trafic et l'aire de manœuvre.",1,"Côté piste, la zone où les avions se déplacent : l'aire de manœuvre et l'aire de trafic, ensemble."]]},
+ {q:"Comment nomme-t-on la voie où circule un avion, la voie de circulation avion ?",opts:[["Une taxiway ou une taxilane.",1,"La taxiway conduit aux pistes, la taxilane fait entrer l'avion sur son poste."],["Une route de service.",0,"Une route de service, c'est pour les véhicules."],["Une piste.",0,"La piste sert au décollage et à l'atterrissage."]]},
+ {q:"Où se trouve la zone de fret de FedEx ?",opts:[["Dans la zone de fret nord.",1,"FedEx occupe la zone de fret nord, aux postes India."],["Dans la zone de fret sud.",0,"La zone de fret sud regroupe les postes Mike, November et Papa."],["Au terminal 1.",0,"Le terminal 1 accueille des passagers, pas le hub de FedEx."]]}];
 async function questions(){step();head(H2,"Trois questions d'entraînement");
- let E=0;
- for(let i=0;i<QUIZ.length;i++){const z=QUIZ[i];
-  vue(`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QUIZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`);
-  await sayS(z.line);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
+ let E=0;ALT.q2=1;const QZ=(TRY.q2||0)%2?QUIZ2:QUIZ;
+ for(let i=0;i<QZ.length;i++){const z=QZ[i];
+  vue(z.ph?`<div class="qimg"><figure class="fig"><img src="${PHO[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(720px,100%)"><p class="n">Question ${i+1} sur ${QZ.length}</p><p class="q">${nb(z.q)}</p></div>`);
+  if(z.line)await sayS(z.line);else await wait(FAST?0:400);const qc=$c('#qq');let o=z.opts.map((x,k)=>[String(k),x[0]]);for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
   const gk=String(z.opts.findIndex(x=>x[1]));const kot={};z.opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
-  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QUIZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
- jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QUIZ.length,1,"Questions d'entraînement")}
+  E+=await pick(null,o,gk,z.opts[+gk][2],kot,i<QZ.length-1?'Question suivante':'Terminer',{once:true,x:true,host:qc})}
+ jlog('5 h 30',`Questions d'entraînement : 3 questions${errTxt(E)}`);return gate('q2',E,QZ.length,1,"Questions d'entraînement")}
 async function fin(){step();mapOff();head('Étape 2 terminée · 5 h 30','Deuxième case cochée');
  const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
  vue(`<div class="hero"><div class="pmini" id="pmn"><b>T</b>${ET.map((e,i)=>`<i class="${i<1?'now':''}">${i<1?'✓':i+1}</i>`).join('')}</div>
