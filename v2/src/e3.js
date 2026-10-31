@@ -62,12 +62,20 @@ async function secteurs(){step();head(H3,'Les secteurs');
  vue(`<div class="side"><div style="display:flex;justify-content:center"><figure class="fig" style="width:auto"><img src="${IMG.secteurs}" alt="" style="display:block;max-height:54vh;width:auto"><figcaption>Image du support REM Formation</figcaption></figure></div><div><p class="cap" style="text-align:left;margin:0 0 12px">La plateforme découpée en secteurs</p>
   <ul class="conds"><li id="s1"><b>1</b><span>Les secteurs fonctionnels<small>Trafic (TRA) et manœuvre (MAN).</small></span></li><li id="s2"><b>2</b><span>Le secteur de sûreté F<small>Ceux de l'arrêté préfectoral.</small></span></li><li id="s3"><b>3</b><span>Le poste d'accès routier (PARIF)<small>La porte d'entrée de ces secteurs pour les véhicules.</small></span></li></ul></div></div>`);
  await sayS('a05',[W('a05','Les secteurs fonctionnels',()=>on('#s1')),W('a05','et le secteur',()=>on('#s2')),W('a05','Le poste',()=>on('#s3'))]);
- await film('../video/secteurs.mp4','Vidéo du support REM Formation : les secteurs.');return null}
+ await film('../video/secteurs.mp4','Vidéo du support REM Formation : les secteurs.');
+ await vite("Le poste d'accès routier avec inspection filtrage, c'est :",[["La porte d'entrée des secteurs côté piste pour les véhicules.",1,"Les personnes et les véhicules y sont contrôlés."],["Le point d'entrée des piétons.",0,"Non : à pied, on passe par un poste d'inspection filtrage."],["Un parking de l'aire de trafic.",0,"Non : c'est un point de contrôle, à l'entrée du côté piste."]],'5 h 33',"Question : le poste d'accès routier");return null}
+/* une question entre deux films, pour garder l'apprenant actif ; la réponse est expliquée, on continue dans tous les cas */
+async function vite(q,opts,h,j){vue(`<div class="qc" id="qq" style="width:min(820px,100%)"><p class="n">Avant la suite</p><p class="q">${nb(q)}</p></div>`);
+ await wait(FAST?0:400);const qc=$c('#qq');const o=opts.map((x,k)=>[String(k),x[0]]);const gk=String(opts.findIndex(x=>x[1]));const kot={};opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
+ const e=await pick(null,o,gk,opts[+gk][2],kot,'Continuer',{once:true,host:qc});jlog(h,j+(e?' (1 erreur)':''))}
 async function titres(){step();head(H3,'Les titres d\'accès');
  vue(`<div class="duo2"><div class="card2 it" id="l1">${IC.car}<p class="lb">Pour le véhicule</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le laissez-passer véhicule</p><p class="tx" style="max-width:none;margin:0">Un titre d'accès à part, propre au véhicule, en plus de vos titres personnels.</p></div>
   <div class="card2 it" id="l2">${IC.badge}<p class="lb">Pour vous</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le titre de circulation aéroportuaire</p><p class="tx" style="max-width:none;margin:0">Le badge : permanent ou temporaire, ses couleurs, ce qu'il autorise.</p></div></div>`);
  await sayS('a06',[at('a06',.02,()=>show('#l1',true))]);
  await film('../video/laissez-passer.mp4','Vidéo du support REM Formation : le laissez-passer véhicule.');
+ await vite("Le laissez-passer véhicule :",[["C'est le titre d'accès du véhicule, en plus de vos titres personnels.",1,"Un titre d'accès à part, propre au véhicule."],["Il remplace votre titre de circulation aéroportuaire.",0,"Non : il s'ajoute à vos titres personnels, il ne remplace rien."]],'5 h 35',"Question : le laissez-passer véhicule");
+ vue(`<div class="duo2"><div class="card2 it in dim" id="l1">${IC.car}<p class="lb">Pour le véhicule</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le laissez-passer véhicule</p><p class="tx" style="max-width:none;margin:0">Un titre d'accès à part, propre au véhicule, en plus de vos titres personnels.</p></div>
+  <div class="card2 it" id="l2">${IC.badge}<p class="lb">Pour vous</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le titre de circulation aéroportuaire</p><p class="tx" style="max-width:none;margin:0">Le badge : permanent ou temporaire, ses couleurs, ce qu'il autorise.</p></div></div>`);
  await sayS('a06b',[at('a06b',.02,()=>show('#l2',true))]);
  await film('../video/titres-circulation.mp4','Vidéo du support REM Formation : les titres de circulation.');undim();return null}
 

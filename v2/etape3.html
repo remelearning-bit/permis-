@@ -632,6 +632,7 @@ Object.assign(IC,{
  key:'<svg class="ic" viewBox="0 0 48 48"><circle cx="15" cy="24" r="8"/><path d="M23 24h20M37 24v7M31 24v5"/></svg>'});
 document.head.insertAdjacentHTML('beforeend',`<style>
 .hd1 .k{color:var(--pierre)}
+.plan{list-style:none;margin:0 auto;padding:0;display:flex;flex-direction:column;gap:clamp(10px,2.2vh,22px);width:100%;max-width:920px}.plan li{font-size:clamp(20px,2.1vw,32px);font-weight:600;color:var(--marine);line-height:1.25;display:flex;gap:18px;align-items:baseline}.plan .no{font-weight:800;min-width:1.1em}.plan.infl{gap:clamp(6px,1.4vh,14px)}.plan.infl li{background:none;box-shadow:none!important;padding:0;flex-direction:row;align-items:baseline;text-align:left;position:static;font-size:clamp(18px,1.8vw,27px);opacity:.35;transition:opacity .4s}.plan.infl li.in{opacity:1}.plan.infl li.now{opacity:1;font-weight:800}.plan .dl{opacity:0;transition:opacity .4s}.plan .dl.in{opacity:1}
 .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,30px);width:100%;max-width:1100px}
 .parts .pt{background:#fff;border-radius:18px;box-shadow:0 8px 28px rgba(38,60,82,.12);padding:clamp(18px,2.2vw,30px) clamp(12px,1.4vw,20px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
 .parts .pt .no{font-weight:800;font-size:clamp(30px,3.2vw,50px);line-height:1}
@@ -741,9 +742,9 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
  for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=nb(it.t);fb.className='qfb2';fb.innerHTML='';
   bw.classList.remove('lock');bks.forEach(b=>b.classList.remove('ko','ok'));
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
-  const g=bks.find(x=>x.dataset.k===it.b);drop(g,it);
+  const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);drop(g,it);
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
-  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.ok)}
+  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(ks.map((k,i)=>{const l=lbOf(buckets,k);return i?l.charAt(0).toLowerCase()+l.slice(1):l}).join(', ou '),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
@@ -811,12 +812,20 @@ async function secteurs(){step();head(H3,'Les secteurs');
  vue(`<div class="side"><div style="display:flex;justify-content:center"><figure class="fig" style="width:auto"><img src="${IMG.secteurs}" alt="" style="display:block;max-height:54vh;width:auto"><figcaption>Image du support REM Formation</figcaption></figure></div><div><p class="cap" style="text-align:left;margin:0 0 12px">La plateforme découpée en secteurs</p>
   <ul class="conds"><li id="s1"><b>1</b><span>Les secteurs fonctionnels<small>Trafic (TRA) et manœuvre (MAN).</small></span></li><li id="s2"><b>2</b><span>Le secteur de sûreté F<small>Ceux de l'arrêté préfectoral.</small></span></li><li id="s3"><b>3</b><span>Le poste d'accès routier (PARIF)<small>La porte d'entrée de ces secteurs pour les véhicules.</small></span></li></ul></div></div>`);
  await sayS('a05',[W('a05','Les secteurs fonctionnels',()=>on('#s1')),W('a05','et le secteur',()=>on('#s2')),W('a05','Le poste',()=>on('#s3'))]);
- await film('../video/secteurs.mp4','Vidéo du support REM Formation : les secteurs.');return null}
+ await film('../video/secteurs.mp4','Vidéo du support REM Formation : les secteurs.');
+ await vite("Le poste d'accès routier avec inspection filtrage, c'est :",[["La porte d'entrée des secteurs côté piste pour les véhicules.",1,"Les personnes et les véhicules y sont contrôlés."],["Le point d'entrée des piétons.",0,"Non : à pied, on passe par un poste d'inspection filtrage."],["Un parking de l'aire de trafic.",0,"Non : c'est un point de contrôle, à l'entrée du côté piste."]],'5 h 33',"Question : le poste d'accès routier");return null}
+/* une question entre deux films, pour garder l'apprenant actif ; la réponse est expliquée, on continue dans tous les cas */
+async function vite(q,opts,h,j){vue(`<div class="qc" id="qq" style="width:min(820px,100%)"><p class="n">Avant la suite</p><p class="q">${nb(q)}</p></div>`);
+ await wait(FAST?0:400);const qc=$c('#qq');const o=opts.map((x,k)=>[String(k),x[0]]);const gk=String(opts.findIndex(x=>x[1]));const kot={};opts.forEach((x,k)=>{if(!x[1])kot[k]=x[2]});
+ const e=await pick(null,o,gk,opts[+gk][2],kot,'Continuer',{once:true,host:qc});jlog(h,j+(e?' (1 erreur)':''))}
 async function titres(){step();head(H3,'Les titres d\'accès');
  vue(`<div class="duo2"><div class="card2 it" id="l1">${IC.car}<p class="lb">Pour le véhicule</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le laissez-passer véhicule</p><p class="tx" style="max-width:none;margin:0">Un titre d'accès à part, propre au véhicule, en plus de vos titres personnels.</p></div>
   <div class="card2 it" id="l2">${IC.badge}<p class="lb">Pour vous</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le titre de circulation aéroportuaire</p><p class="tx" style="max-width:none;margin:0">Le badge : permanent ou temporaire, ses couleurs, ce qu'il autorise.</p></div></div>`);
  await sayS('a06',[at('a06',.02,()=>show('#l1',true))]);
  await film('../video/laissez-passer.mp4','Vidéo du support REM Formation : le laissez-passer véhicule.');
+ await vite("Le laissez-passer véhicule :",[["C'est le titre d'accès du véhicule, en plus de vos titres personnels.",1,"Un titre d'accès à part, propre au véhicule."],["Il remplace votre titre de circulation aéroportuaire.",0,"Non : il s'ajoute à vos titres personnels, il ne remplace rien."]],'5 h 35',"Question : le laissez-passer véhicule");
+ vue(`<div class="duo2"><div class="card2 it in dim" id="l1">${IC.car}<p class="lb">Pour le véhicule</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le laissez-passer véhicule</p><p class="tx" style="max-width:none;margin:0">Un titre d'accès à part, propre au véhicule, en plus de vos titres personnels.</p></div>
+  <div class="card2 it" id="l2">${IC.badge}<p class="lb">Pour vous</p><p class="big2" style="font-size:clamp(26px,2.8vw,44px)">Le titre de circulation aéroportuaire</p><p class="tx" style="max-width:none;margin:0">Le badge : permanent ou temporaire, ses couleurs, ce qu'il autorise.</p></div></div>`);
  await sayS('a06b',[at('a06b',.02,()=>show('#l2',true))]);
  await film('../video/titres-circulation.mp4','Vidéo du support REM Formation : les titres de circulation.');undim();return null}
 
