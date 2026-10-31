@@ -841,7 +841,7 @@ async function fin(score){
   jlog('7 h 29','Parties revues : '+parts.map(k=>REVN[k]).join(', '));score=await ask(QQ)}
  jlog('7 h 28',`Questions de l'étape : ${plur(score)}`);
  step('fin');await go('haut',2500);
- const L=label([0,0,-6],{big:1,lead:false}).title('Étape 7 terminée · 7 h 30').card(plur(score),'').html(`<p class="s" style="margin-top:14px;font-weight:600">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul>`).html(`<a class="act" style="text-decoration:none" href="../navigation/permis-t-etape8-manoeuvre.html">Étape 8 · L'aire de manœuvre</a>`);
+ const L=label([0,0,-6],{big:1,lead:false}).title('Étape 7 terminée · 7 h 30').card(plur(score),'').html(`<p class="s" style="margin-top:14px;font-weight:600">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul>`).html(`<a class="act" style="text-decoration:none" href="etape8.html">Étape 8 · L'aire de manœuvre</a>`);
  await say('z44')}
 async function main(){
  const J=Q.get('at');

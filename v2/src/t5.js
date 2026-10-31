@@ -4,7 +4,7 @@
    blancs et noirs). Voix existantes c36, c37, c38. Vue à la première personne, comme « En panne sur la voie avion ». */
 async function traversee(part='feux'){
  // un seul monde pour tout le trajet de l'étape 5 ; chaque écran est un lieu (part) : zone30, couleurs, chemins, feux
- const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion'],dstop:['6 h 13','Le double stop'],zecdeb:['6 h 14',"Quand la zone d'évolution contrôlée déborde"]};
+ const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion'],dstop:['6 h 13','Le double stop'],zecdeb:['6 h 14',"Quand la zone d'évolution contrôlée déborde"],man:['7 h 32','La frontière, en trois dimensions']};
  step();head(H5+' · '+HD[part][0],HD[part][1]);if(innerWidth<700)headOff();
  const host=document.createElement('div');host.id='trav';host.innerHTML='<canvas></canvas><svg class="ld"></svg><div class="ui"></div>';document.body.appendChild(host);
  const cv=host.querySelector('canvas'),ldv=host.querySelector('.ld'),UI=host.querySelector('.ui');
@@ -48,13 +48,13 @@ async function traversee(part='feux'){
   for(const [x,rz] of [[-48.4,-Math.PI/2],[48.4,Math.PI/2]]){const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.8),sm);m.rotation.x=-Math.PI/2;m.rotation.z=rz;m.position.set(x,.075,0);scene.add(m)}}
  /* les feux de protection de traversée, encastrés dans la chaussée, sur la ligne d'effet */
  const FEUX=[],glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,30);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
- for(const fx of (part==='dstop'||part==='zecdeb'?[]:[-44.5,44.5]))for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
+ for(const fx of (part==='dstop'||part==='zecdeb'||part==='man'?[]:[-44.5,44.5]))for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(1,1,1);s.position.set(fx,.25,z);scene.add(s);FEUX.push({d,s})}
  let feu='off',feuT=0;const COUL={rouge:0xff2a1a,orange:0xff8c1a};
  const setFeu=f=>{feu=f;feuT=performance.now()};
  // au loin : la tour, des bâtiments
  cyl(2.6,3.2,44,0xdedcd6,-260,22,-380);cyl(7,5,6,0x3f6584,-260,47,-380);cyl(7.4,7.4,1.2,0xdedcd6,-260,50.6,-380);
- box(320,16,30,0xe4e2dc,-330,8,160);box(320,5,.4,0x3f6584,-330,9,144.8);box(200,12,40,0xdcdad4,280,6,-220);box(60,22,260,0xe2e0da,340,11,40);box(.4,6,240,0x3f6584,309.8,12,40);
+ if(part!=='man')box(320,16,30,0xe4e2dc,-330,8,160);if(part!=='man')box(320,5,.4,0x3f6584,-330,9,144.8);box(200,12,40,0xdcdad4,280,6,-220);if(part!=='man'){box(60,22,260,0xe2e0da,340,11,40);box(.4,6,240,0x3f6584,309.8,12,40)}
  /* l'avion qui roule sur la voie (même modèle que la démonstration de la panne) */
  const avion=makeAirliner(glowTex);scene.add(avion);blob(9,40,avion,0,-1);blob(36,9,avion,0,2);
  avion.position.set(0,0,-420);let planeV=0,planeOn=false;
@@ -124,8 +124,18 @@ async function traversee(part='feux'){
   g.beginPath();g.moveTo(-36,66);g.lineTo(36,66);g.lineTo(6,48);g.lineTo(-6,48);g.closePath();g.fill();g.restore();
   const tx=new THREE.CanvasTexture(c);tx.anisotropy=8;const tm=new THREE.Mesh(new THREE.PlaneGeometry(3.2,2.9),new THREE.MeshLambertMaterial({map:tx,transparent:true}));
   tm.rotation.x=-Math.PI/2;tm.rotation.z=Math.PI/2;tm.position.set(-147,.08,0);scene.add(tm)}
+ /* ---- lieu « l'aire de manœuvre » (diapos 227 à 230) : la voie avion, la ligne de sécurité, la bande dégagée d'obstacles, le stop routier ;
+    un véhicule jaune arrêté après le stop, dans la bande ; un gros porteur qui roule ---- */
+ let jaune=null;
+ if(part==='man'){avion.scale.setScalar(1.3);
+  jaune=new THREE.Group();scene.add(jaune);box(4.6,1.9,2.0,0xF2C200,0,1.35,0,jaune);box(1.1,.85,1.96,0x2f3a44,1.9,1.75,0,jaune);box(4.7,.3,2.04,0x8a6d00,0,.45,0,jaune);
+  [[1.5,1],[1.5,-1],[-1.5,1],[-1.5,-1]].forEach(([x,z])=>{const w=cyl(.36,.36,.24,0x23282d,x,.36,z,jaune,16);w.rotation.x=Math.PI/2});blob(6,3,jaune);jaune.position.set(-41,0,-1.6);
+  // le stop routier sur la route de service (photo de la diapo 227) : panneau octogonal sur poteau, au droit du stop peint
+  const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#fff';g.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;g.lineTo(128+124*Math.cos(a),128+124*Math.sin(a))}g.fill();
+  g.fillStyle='#c4161c';g.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;g.lineTo(128+112*Math.cos(a),128+112*Math.sin(a))}g.fill();g.fillStyle='#fff';g.font='bold 78px Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('STOP',128,132);
+  const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const pm=new THREE.Mesh(new THREE.PlaneGeometry(.9,.9),new THREE.MeshBasicMaterial({map:t,transparent:true}));pm.position.set(-48.6,2.3,4.6);pm.rotation.y=-Math.PI/2;scene.add(pm);cyl(.04,.04,2.3,0x8a9096,-48.6,1.15,4.6,scene,8)}
  /* notre véhicule : on voit l'intérieur, à la première personne */
- const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128,zecdeb:-205}[part],0,0);
+ const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128,zecdeb:-205,man:-128}[part],0,0);
  blob(3,6,veh); // on est dans le véhicule : on n'en voit que le tableau de bord
  const BODY=new THREE.Group();veh.add(BODY);BODY.visible=false;
  box(4.7,1.5,1.95,0xf3f4f2,-.2,1.45,0,BODY);box(4.8,.55,2.0,MARINE,-.2,.55,0,BODY);box(.9,.8,1.9,0x2f3a44,1.95,1.75,0,BODY);
@@ -172,7 +182,7 @@ async function traversee(part='feux'){
   for(const A of [...anims]){const t=Math.min(1,(now-A.t0)/A.D);A.fn(t);if(t>=1){anims.delete(A);A.r()}}
   if(follow&&!move){camT.lerp(new THREE.Vector3(avion.position.x,3,avion.position.z+follow),Math.min(1,dt*3))}
   if(move){const t=Math.min(1,(now-move.t0)/move.D),e=ease(t);camT.lerpVectors(move.a,move.b,e);if(t>=1){const r=move.r;move=null;r()}}
-  if(planeOn)avion.position.z+=10*Math.min(.25,(now-lastP)/1000)*(FAST?8:1);lastP=now;
+  if(planeOn){avion.position.z+=10*Math.min(.25,(now-lastP)/1000)*(FAST?8:1);if(part==='man'&&avion.position.z>380)avion.position.z=-380}lastP=now;
   const bon=Math.floor(now/600)%2===0;avion.userData.beacons.forEach(b=>b.material.opacity=bon?1:.12);if(avZ)avZ.userData.beacons.forEach(b=>b.material.opacity=zecOn&&bon?1:0);
   const blink=((now-feuT)%1000)<650;
   FEUX.forEach(({d,s})=>{let c=null;if(feu==='rouge')c=COUL.rouge;else if(feu==='orange')c=COUL.orange;else if(feu==='clignotant'&&blink)c=COUL.orange;
@@ -247,6 +257,23 @@ async function traversee(part='feux'){
    await choisir(D,[{t:'50 km/h',p:[-334,2.6,6.5],ok:1},{t:'30 km/h',p:[-334,1.2,9],fb:'La route de la ferme est la seule exception : 50 km/h. Partout ailleurs, zone 30.'},{t:'70 km/h',p:[-334,3.8,4],fb:'Rien n\'est au-dessus de 50 sur la plateforme : la route de la ferme est limitée à 50 km/h.'}],
     'Oui : 50 km/h sur la route de la ferme, 30 partout ailleurs.');
    jlog('6 h 07','Zone 30 : la route de la ferme à 50');await look(ahead(),1200);D.kill();return await fin()}
+  if(part==='man'){
+   // vue d'en haut, la caméra tourne autour du croisement quand on fait glisser
+   IN.visible=false;veh.visible=false;const C=new THREE.Vector3(-26,0,0);let az=-2.3,dragX=null;const R0=58,HY=30;
+   const place=()=>{seatOff={x:C.x+R0*Math.cos(az),y:HY,z:C.z+R0*Math.sin(az)};camT.copy(C)};place();
+   cv.style.touchAction='none';cv.onpointerdown=e=>{dragX=e.clientX};addEventListener('pointerup',()=>dragX=null);cv.onpointermove=e=>{if(dragX===null)return;az+=(e.clientX-dragX)*.006;dragX=e.clientX;place()};
+   avion.visible=true;avion.position.z=-260;planeOn=true;
+   const L=tag([0,.1,-40],{dx:-40,dy:-70});L.dock().set('La frontière, en trois dimensions','Faites glisser pour tourner autour.');
+   await sayS('m04');
+   const RP=[['m05',[0,.2,-44],'La voie de circulation avion','Ligne axiale jaune : la circulation des aéronefs. Jamais avec un permis T ; l\'avion qui roule a la priorité absolue.'],
+    ['m06',[-19.5,.1,-44],'La ligne de sécurité','Ligne blanche continue derrière les postes : elle sépare l\'aire de trafic de l\'aire de manœuvre, réservée aux permis M, R et P.'],
+    ['m07',[-32,.1,10],'La bande dégagée d\'obstacles','La bande aéronautique, de part et d\'autre de la voie : elle protège l\'aéronef. Tout ce qui s\'y trouve est un obstacle.'],
+    ['m08',[-48.6,2.6,4.6],'Le stop routier','Un repère visuel sur la route de service : après le stop, vous êtes dans la bande dégagée d\'obstacles.'],
+    ['m09',[-41,2.4,-1.6],'Le véhicule jaune','Arrêté après le stop, dans la bande : pour l\'avion qui roule, c\'est un obstacle. On s\'arrête avant le stop, jamais après.']];
+   for(let i=0;i<RP.length;i++){const [id,p,t,sub]=RP[i];L.dock().set('Repère '+(i+1)+' sur 5','Cliquez sur le repère qui s\'allume.');
+    const T=await target(p,'Repère '+(i+1),{n:i+1});T.kill('ok');L.dock(false);L.a.set(...p);await sayS(id,[at(id,.02,()=>L.set((i+1)+'. '+t,sub))])}
+   jlog('7 h 33','La frontière : cinq repères vus');L.dock().set('La frontière','Voie avion, ligne de sécurité, bande dégagée d\'obstacles, stop routier : avec un permis T, on s\'arrête avant le stop.');
+   await sayS('m10');planeOn=false;L.kill();return await fin()}
   if(part==='zecdeb'){
    const L=tag([-118,3,21.5],{dx:-40,dy:-60});L.set('Un poste au bord du cheminement','Un avion y stationne.');
    await contV('Rouler');await drive(-155);
