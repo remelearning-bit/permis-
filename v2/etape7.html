@@ -31,6 +31,7 @@ html,body{margin:0;height:100%;overflow:hidden;background:var(--ciel);font-famil
 .lab.big{width:min(500px,42vw)}
 .sml{position:absolute;left:0;top:0;z-index:3;font-weight:700;font-size:var(--B);white-space:nowrap;pointer-events:none;transition:opacity .4s;background:#fff;padding:4px 10px;border-radius:999px;box-shadow:0 2px 8px rgba(38,60,82,.14)}
 .sml.hid{opacity:0}
+#vid{position:fixed;inset:0;z-index:40;background:#e8ebed;display:flex;align-items:center;justify-content:center;padding:16px 16px 64px;opacity:0;pointer-events:none;transition:opacity .4s}#vid.on{opacity:1;pointer-events:auto}#vid .c{width:min(1100px,100%);display:flex;flex-direction:column;align-items:center;gap:8px}#vid h2{margin:0 0 6px;color:var(--marine);font-size:clamp(20px,2.2vw,30px);align-self:flex-start}#vid video{width:100%;max-height:66vh;border-radius:14px;background:#1d2329}#vid .cr{margin:0;font-size:14px;color:#5d6f80}
 .act{pointer-events:auto;display:inline-flex;align-items:center;gap:10px;margin-top:18px;padding:13px 24px;border:0;border-radius:999px;background:var(--orangeV);color:#fff;font:700 var(--B)/1 Barlow,system-ui,sans-serif;cursor:pointer}
 .act:active{transform:scale(.97)}
 /* le repère à cliquer : immobile, il ne s'active qu'une fois la consigne affichée */
@@ -647,6 +648,12 @@ async function coactivite(prev){await next('Vers le cheminement',[-28,0,22]);pre
  await Promise.all([d1,d2,d4]);[tracteur,tapis,van2].forEach(v=>v.visible=false);
  await say('z16',[[.03,()=>L.card('1 minute = 600 €',"Une minute de retard au départ de l'avion : six cents euros de pénalité, imputés par la compagnie à la société concernée. Et le créneau de départ peut être modifié.",{a:null})]]);
  return L}
+/* films du support (diapos 202 et 218), en plein écran ; on continue quand le film est fini */
+async function filmV(L,src,title,h){let o=document.getElementById('vid');if(!o){o=document.createElement('div');o.id='vid';document.body.appendChild(o)}
+ o.innerHTML=`<div class="c"><h2>${title}</h2><video src="../video/${src}.mp4" poster="../video/${src}.jpg" controls playsinline preload="auto"></video><p class="cr">Film du support de formation</p><button class="act" style="visibility:hidden">Continuer</button></div>`;
+ o.classList.add('on');const v=o.querySelector('video'),b=o.querySelector('.act');try{await v.play()}catch(e){}
+ if(!FAST)await new Promise(r=>{v.onended=r;if(Q.has('pass'))setTimeout(r,2500)});
+ b.style.visibility='visible';await new Promise(r=>b.onclick=r);v.pause();o.classList.remove('on');jlog(h,'Film : '+title.replace(/^Le film : /,''));return L}
 async function vigie(prev){await next('Vers le poste voisin',[-30,0,30]);prev.kill();camion.visible=false;await go('vigie');step('vigie');
  // un avion arrive sur le poste voisin : le placeur le guide, on s'arrête
  placeur.position.set(-42,0,24.8);placeur.rotation.y=Math.PI;placeur.visible=true;Object.assign(ST2,{beacon:true,engines:true});A2.cale.forEach(c=>c.visible=false);
@@ -850,7 +857,7 @@ async function main(){
  let L=await tour();
  if(EXTRAIT){L=await frontiere(L);L=await coactivite(L);L=await vigie(L);L=await zec(L);L=await classer(L);L=await urgence(L);L.kill();step('fin');await go('haut',2500);
   label([0,0,-6],{big:1,lead:false}).title('Étape 7 · extrait').card("Fin de l'extrait",'La version complète enchaîne aussi l\'interzec, les cônes, le périmètre de sécurité collision, l\'avitaillement, la passerelle, le stationnement et les questions.');return}
- L=await frontiere(L);L=await coactivite(L);L=await vigie(L);L=await zec(L);L=await classer(L);L=await interzec(L);L=await cones(L);L=await psc(L);L=await entrer(L);L=await perim(L);L=await psiP(L);L=await incidents(L);L=await urgence(L);L=await zep(L);L=await interdit(L);L=await stat(L);
+ L=await frontiere(L);L=await coactivite(L);L=await filmV(L,'film-coactivite','Le film : circuler en coactivité','7 h 06');L=await vigie(L);L=await zec(L);L=await classer(L);L=await interzec(L);L=await cones(L);L=await psc(L);L=await entrer(L);L=await perim(L);L=await psiP(L);L=await filmV(L,'film-avitaillement','Le film : l\'avitaillement','7 h 21');L=await incidents(L);L=await urgence(L);L=await zep(L);L=await interdit(L);L=await stat(L);
  const sc=await quiz(L);await fin(sc)}
 window.V2={get QS(){return QS},get au(){return curAudio},go,P,cam,scene,setPlane,placePlane,tgts,get here(){return here}};
 main();
