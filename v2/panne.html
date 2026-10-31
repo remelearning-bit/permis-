@@ -295,7 +295,7 @@ async function main(){
  stopPlane();
  await part('u07',3,[[.02,()=>L.card('Si un avion arrive',"Sortir du véhicule avec ses équipements, et croiser les bras en direction du pilote pour signaler sa présence.")]]);
  await wait(1200);
- L.kill();const E=label([0,0,0],{fixed:1}).title('Fin de la démonstration').html('<p class="s">Le même contenu que l\'écran actuel, vécu à la première personne.</p><a class="act" href="?">Rejouer</a>');window.__done=1}
+ L.kill();const E=label([0,0,0],{fixed:1}).title('Fin de la démonstration').html('<p class="s">Le même contenu que l\'écran actuel, vécu à la première personne.</p><a class="act" href="?">Rejouer</a>');window.__done=1;if(parent!==window){E.kill();parent.postMessage('panne-fin','*')}}
 window.V2={THREE,cam,scene,avion,veh,agent:null};
 main();
 </script>
