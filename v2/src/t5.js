@@ -265,12 +265,13 @@ async function traversee(part='feux'){
    avion.visible=true;avion.position.z=-260;planeOn=true;
    const L=tag([0,.1,-40],{dx:-40,dy:-70});L.dock().set('La frontière, en trois dimensions','Faites glisser pour tourner autour.');
    await sayS('m04');
-   const RP=[['m05',[0,.2,-44],'La voie de circulation avion','Ligne axiale jaune : la circulation des aéronefs. Jamais avec un permis T ; l\'avion qui roule a la priorité absolue.'],
+   const RP=[['m05',[0,.2,-44],'La voie de circulation avion','Ligne axiale jaune. Avec un permis T, on la traverse seulement aux traversées marquées de tiretets. Priorité absolue aux avions et aux véhicules de service de l\'aire de manœuvre.'],
     ['m06',[-19.5,.1,-44],'La ligne de sécurité','Ligne blanche continue derrière les postes : elle sépare l\'aire de trafic de l\'aire de manœuvre, réservée aux permis M, R et P.'],
     ['m07',[-32,.1,10],'La bande dégagée d\'obstacles','La bande aéronautique, de part et d\'autre de la voie : elle protège l\'aéronef. Tout ce qui s\'y trouve est un obstacle.'],
     ['m08',[-48.6,2.6,4.6],'Le stop routier','Un repère visuel sur la route de service : après le stop, vous êtes dans la bande dégagée d\'obstacles.'],
-    ['m09',[-41,2.4,-1.6],'Le véhicule jaune','Arrêté après le stop, dans la bande : pour l\'avion qui roule, c\'est un obstacle. On s\'arrête avant le stop, jamais après.']];
-   for(let i=0;i<RP.length;i++){const [id,p,t,sub]=RP[i];L.dock().set('Repère '+(i+1)+' sur 5','Cliquez sur le repère qui s\'allume.');
+    ['m09',[-41,2.4,-1.6],'Le véhicule jaune','Il ne s\'est pas arrêté au stop : il est dans la bande dégagée d\'obstacles. Même s\'il laisse passer l\'avion, il reste un obstacle. Les stops délimitent la bande.']];
+   const centre=async p=>{const a0=C.clone(),a1=new THREE.Vector3(p[0],0,p[2]),n=FAST?2:36;for(let k=1;k<=n;k++){const u=k/n,e=u<.5?2*u*u:1-Math.pow(-2*u+2,2)/2;C.lerpVectors(a0,a1,e);place();await wait(16)}};
+   for(let i=0;i<RP.length;i++){const [id,p,t,sub]=RP[i];await centre(p);L.dock().set('Repère '+(i+1)+' sur 5','Cliquez sur le repère qui s\'allume.');
     const T=await target(p,'Repère '+(i+1),{n:i+1});T.kill('ok');L.dock(false);L.a.set(...p);await sayS(id,[at(id,.02,()=>L.set((i+1)+'. '+t,sub))])}
    jlog('7 h 33','La frontière : cinq repères vus');L.dock().set('La frontière','Voie avion, ligne de sécurité, bande dégagée d\'obstacles, stop routier : avec un permis T, on s\'arrête avant le stop.');
    await sayS('m10');planeOn=false;L.kill();return await fin()}

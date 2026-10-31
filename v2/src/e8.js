@@ -4,7 +4,7 @@
 const H8='Étape 8 · L\'aire de manœuvre';const H5=H8;
 const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c8:'Image du film du support'};
+var CAPS={c8:'Photo du support REM Formation'};
 
 async function infoS(d){step();if(d.head)head(H8+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title(d.cap);
@@ -38,7 +38,7 @@ const bandes=S('stopadp','Les bandes dégagées d\'obstacles',['m13'],[['m13',.0
 
 /* 7. les questions d'entraînement (diapo 232) */
 async function questions(){step();head(H8+' · '+HH('7 h 38'),"Questions d'entraînement");ALT.q8=1;const two=(TRY.q8||0)%2;
- const Q=two?[{bk:[1,5],fixed:1,q:"Vous êtes arrêté sur la route de service, après le stop routier. Pour l'avion qui roule sur la voie :",o:[["Je suis un obstacle : je suis dans la bande dégagée d'obstacles.",1,"Après le stop, tout ce qui se trouve dans la bande est un obstacle. On s'arrête avant le stop."],["Je ne gêne pas, je suis sur la route de service.",0,"Si : après le stop, la route de service est dans la bande dégagée d'obstacles. Vous êtes un obstacle."],["Je ne gêne que la nuit.",0,"De jour comme de nuit : après le stop, vous êtes dans la bande, donc un obstacle."]]},
+ const Q=two?[{bk:[1,5],fixed:1,q:"Vous êtes arrêté sur la route de service, après le stop routier. Pour l'avion qui roule sur la voie :",o:[["Je suis un obstacle : je suis dans la bande dégagée d'obstacles.",1,"Après le stop, tout ce qui se trouve dans la bande est un obstacle. On s'arrête avant le stop."],["Je ne gêne pas, je suis sur la route de service.",0,"Si : après le stop, la route de service est dans la bande dégagée d'obstacles. Vous êtes un obstacle."]]},
    {bk:[1,4],fixed:1,q:"La ligne de sécurité sépare :",o:[["Deux postes de stationnement avion.",0,"Non : elle sépare l'aire de trafic de l'aire de manœuvre."],["L'aire de trafic de l'aire de manœuvre.",1,"Une ligne blanche continue, derrière les postes. Avec un permis T, on ne la franchit pas."],["Le cheminement véhicule du cheminement piéton.",0,"Non : elle sépare l'aire de trafic de l'aire de manœuvre."]]}]
   :[{line:'m14',bk:[1,5],fixed:1,ph:'q8a380',q:"Le véhicule jaune arrêté sur le cheminement véhicule constitue-t-il un obstacle pour cet A380 ?",o:[["Non.",0,"Si : il est dans la bande dégagée d'obstacles de la voie. Pour l'avion, c'est un obstacle."],["Oui.",1,"Arrêté après le stop, dans la bande dégagée d'obstacles : c'est un obstacle pour l'avion."]]},
    {line:'m15',bk:[5],fixed:1,q:"À quoi servent les bandes aéronautiques, ou bandes de voie de circulation avion ?",o:[["Elles sont destinées à assurer la protection d'un aéronef contre les obstacles.",1,"La bande dégagée d'obstacles protège l'aéronef qui roule."],["Elles permettent de mesurer la distance entre un point de stationnement avion et une piste.",0,"Non : elles ne mesurent rien, elles protègent l'avion des obstacles."],["Elles permettent d'assurer la livraison du catering à bord des avions.",0,"Rien à voir : les bandes aéronautiques protègent l'aéronef contre les obstacles."]]}];
@@ -69,5 +69,5 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .qimg .fig img{display:block;width:100%}
 @media (max-width:700px){.qimg{grid-template-columns:1fr;gap:12px}.qimg .fig img{max-height:22vh;width:auto;max-width:100%;margin:0 auto}}
 </style>`);
-runSeq([['Couverture',cover],['La frontière, en trois dimensions',()=>traversee('man')],['Le film : les servitudes',servitudes],['Prévenir les incursions',prevenir],
+runSeq([['Couverture',cover],['La frontière, en trois dimensions',()=>{const c=document.getElementById('cap');if(c)c.classList.remove('on');return traversee('man')}],['Le film : les servitudes',servitudes],['Prévenir les incursions',prevenir],
  ['Rappel : la ligne de sécurité',ligne],['Les bandes dégagées d\'obstacles',bandes],['Voie avion ou cheminement véhicule ?',balisage],["Questions d'entraînement",questions],['Fin de l\'étape 8',fin]]);

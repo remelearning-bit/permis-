@@ -32,6 +32,10 @@ R={
 "s17":("D","Tout événement qui peut avoir un impact sur la sécurité se déclare. Une fuite importante à l'avitaillement. Un point de stationnement dangereux pour un bus ou un camion. Un choc contre un avion. Un problème de dégivrage. Un chargement incorrect. Du matériel renversé par le souffle. Un franchissement non autorisé de la piste."),
 "s18":("D","Comment notifier. Par la fiche de notification d'événement, en quatre volets. Ou en ligne, sur le Safety Portal, ouvert à tous les partenaires sur demande d'ouverture de compte. Et pour les références réglementaires de l'aéroport, l'extranet opérationnel du Groupe Aéroports de Paris, accessible à tout titulaire d'un badge rouge."),
 "u12":("D","Ce que coûte l'ignorance d'un objet intrus. Gonesse, le vingt-cinq juillet deux mille. Au décollage, le Concorde roule sur une lamelle métallique perdue par un autre avion. Une minute vingt plus tard, il s'écrase. Cent treize personnes sont mortes. Cent neuf à bord, quatre au sol."),
+"m05":("D","Un. La voie de circulation avion, avec sa ligne axiale jaune. Avec un permis T, vous ne la traversez qu'aux traversées marquées, avec leurs tiretets décalés blancs et noirs. Priorité absolue aux avions et aux véhicules de service qui circulent sur l'aire de manœuvre."),
+"m09":("D","Cinq. Le véhicule jaune ne s'est pas arrêté au stop. Il est dans la bande dégagée d'obstacles. Même s'il laisse passer l'avion, il reste un obstacle. Respectez les stops : ils délimitent la bande."),
+"m12":("D","Rappel. La ligne de sécurité est une ligne blanche continue, derrière les postes de stationnement avion. Elle sépare l'aire de trafic de l'aire de manœuvre. Avec un permis T, on ne la franchit pas."),
+"m03":("D","C'est une incursion. On va voir où est la ligne, et ce qu'est un obstacle. Cliquez pour voir la frontière."),
 }
 if __name__=='__main__':
   n=sum(len(t) for w,t in R.values());print(len(R),'répliques',n,'caractères')
