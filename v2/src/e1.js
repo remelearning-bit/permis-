@@ -152,9 +152,9 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
  for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=nb(it.t);fb.className='qfb2';fb.innerHTML='';
   bw.classList.remove('lock');bks.forEach(b=>b.classList.remove('ko','ok'));
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
-  const g=bks.find(x=>x.dataset.k===it.b);drop(g,it);
+  const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);drop(g,it);
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
-  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.ok)}
+  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
