@@ -796,7 +796,7 @@ async function epi(){step();head(H6+' · '+HH('6 h 52'),'Les équipements de pro
  const T=(k,t,s)=>`<div class="it ep" id="ep-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="s">${nb(s)}</p></div>`;
  vue(`<div class="epw">${T('gilet','Gilet haute visibilité','Jaune ou orange, au logo de l\'entreprise. Obligatoire en permanence sur l\'aire de mouvement.')}
   ${T('casque','Casque antibruit','Obligatoire dans les zones exposées à des bruits intensifs.')}
-  ${T('chaussures','Chaussures de sécurité','Obligatoires en zone d\'évolution contrôlée.')}
+  ${T('chaussures','Chaussures de sécurité','Obligatoires sur toute l\'aire de trafic.')}
   ${T('autres','Et selon vos missions','D\'autres équipements peuvent être requis par vos règles internes.')}</div>`);
  await sayS('g04',[W('g04','gilet',()=>show('#ep-gilet',true)),W('g04','casque',()=>show('#ep-casque',true)),W('g04','chaussures',()=>show('#ep-chaussures',true))]);
  await sayS('g05',[at('g05',.05,()=>show('#ep-autres',true))]);undim();
@@ -805,18 +805,18 @@ async function epi(){step();head(H6+' · '+HH('6 h 52'),'Les équipements de pro
 /* 3. à vous : je le porte quand ? */
 const EPI1=[{t:"Le gilet haute visibilité au logo de l'entreprise.",b:"t",ok:"En permanence sur l'aire de mouvement."},
  {t:"Le casque antibruit.",b:"z",ok:"Dans les zones exposées à des bruits intensifs."},
- {t:"Les chaussures de sécurité.",b:"z",ok:"Obligatoires en zone d'évolution contrôlée."},
+ {t:"Les chaussures de sécurité.",b:"t",ok:"Obligatoires sur toute l'aire de trafic."},
  {t:"Mon badge, apparent.",b:"t",ok:"Toujours apparent : sinon, 150 € d'amende et/ou 6 jours de retrait du titre."},
  {t:"Les lunettes de protection.",b:"z",ok:"Selon vos missions et les règles internes."}];
 const EPI2=[{t:"Le gilet, jaune ou orange.",b:"t",ok:"Obligatoire en permanence sur l'aire de mouvement."},
  {t:"Le titre de circulation, porté bien visible.",b:"t",ok:"Toujours apparent sur l'aire de mouvement."},
  {t:"Les gants.",b:"z",ok:"Selon vos missions et les règles internes."},
  {t:"Le casque antibruit.",b:"z",ok:"Obligatoire dans les zones exposées à des bruits intensifs."},
- {t:"Les chaussures de sécurité.",b:"z",ok:"Obligatoires en zone d'évolution contrôlée."}];
+ {t:"Les chaussures de sécurité.",b:"t",ok:"Obligatoires sur toute l'aire de trafic."}];
 async function trier(){step();head(H6+' · '+HH('6 h 55'),'Avant de descendre : je porte ? Cliquez sur la bonne colonne');
  vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Cet équipement, je le porte :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('g06');
- const E=await sortV(alt('epi',EPI1,EPI2),[['t',"Toujours, sur l'aire de mouvement",'check2'],['z','Selon la zone ou la mission','pin']],{label:'Élément',id:'epi'});
+ const E=await sortV(alt('epi',EPI1,EPI2),[['t',"Toujours",'check2'],['z','Selon la zone ou la mission','pin']],{label:'Élément',id:'epi'});
  jlog('6 h 55',`Avant de descendre : 5 éléments${errTxt(E)}`);return gate('epi',E,5,[1,2],'Avant de descendre',3)}
 
 /* 4. le badge (diapo 191) */
@@ -825,7 +825,7 @@ const badge=S('badge','Le badge',['g07'],[['g07',.25,'Le titre de circulation a�
 /* 5. la stérilité de la cabine (diapo 192) : à vous de rendre la cabine silencieuse */
 async function cabine(){step();head(H6+' · '+HH('6 h 56'),'La stérilité de la cabine');
  const T=(k,t)=>`<div class="it cb on" id="cb-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="st">Allumé</p><button class="act off">Éteindre</button></div>`;
- vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique')}${T('storno','Le storno, le talkie-walkie')}${T('tel','Le téléphone portable')}</div><div class="cbm it" id="cbm"></div></div>`);
+ vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique')}${T('storno','Le talkie-walkie (storno)')}${T('tel','Le téléphone portable')}</div><div class="cbm it" id="cbm"></div></div>`);
  await sayS('g08',[W('g08','radio',()=>show('#cb-radio',true)),W('g08','talkie',()=>show('#cb-storno',true)),W('g08','portable',()=>show('#cb-tel',true))]);undim();
  const m=$c('#cbm');m.textContent='À vous : éteignez tout ce qui peut vous distraire.';show('#cbm');
  const bs=[...VZ.querySelectorAll('.cb .act')];bs.forEach(b=>b.classList.remove('off'));
@@ -849,12 +849,12 @@ const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'L
 /* 8. les cheminements piétons (diapo 195) */
 const pietons=S('piet1','Les cheminements piétons',['g14','g15'],[['g14',.05,'Traverser une voie avion à pied','Dans le cheminement piéton : bande blanche continue de part et d\'autre, avec hologramme, ou zébras blancs.'],
  ['g14',.43,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
- ['g15',.3,'Interdit à pied sur une voie avion','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swap:['g14',.42,'piet2'],tm:'7 h 01'});
+ ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swap:['g14',.42,'piet2'],tm:'7 h 01'});
 
 /* 9. les questions d'entraînement (diapo 196) */
 async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;
  const Q=two?[{bk:[5],fixed:1,q:"Où peut-on fumer ou vapoter ?",o:[["Seulement aux endroits réservés à cet effet.",1,"Fumer ou vapoter, seulement aux endroits réservés à cet effet."],["Sur l'aire de trafic, loin des avions.",0,"Non : interdiction absolue de fumer sur les aires de mouvement."],["Partout, s'il n'y a pas d'avion à proximité.",0,"Non : interdiction absolue de fumer sur les aires de mouvement."]]},
-   {bk:[7],fixed:1,q:"Un piéton peut-il circuler sur une voie de circulation avion ?",o:[["Oui, s'il porte son gilet haute visibilité.",0,"Le gilet ne suffit pas : à pied, la circulation sur la voie avion est interdite."],["Oui, de jour seulement.",0,"Le jour ne change rien : à pied, la circulation sur la voie avion est interdite, sauf accompagnement."],["Non, sauf sous la surveillance et l'accompagnement d'un véhicule autorisé.",1,"Pour sécuriser l'avion à l'arrivée ou au départ de son poste."]]}]
+   {bk:[7],fixed:1,q:"À pied, comment traverse-t-on une voie de circulation avion ?",o:[["N'importe où, avec le gilet haute visibilité.",0,"Le gilet ne suffit pas : on traverse dans le cheminement piéton, et nulle part ailleurs."],["Dans le cheminement piéton : bande blanche continue de part et d'autre, avec hologramme, ou zébras blancs.",1,"Dans le cheminement piéton, sans accompagnement. Circuler à pied sur la voie, elle, est interdite."],["Jamais : il faut toujours l'accompagnement d'un véhicule.",0,"Non : la traversée par un cheminement piéton se fait sans accompagnement. L'accompagnement, c'est pour circuler à pied sur la voie."]]}]
     :[{line:'g16',bk:[5],fixed:1,q:"Peut-on fumer sur l'aire de trafic ?",o:[["Oui.",0,"Non : interdiction absolue, chapitre 3, article 43."],["Non.",1,"Interdiction absolue sur les aires de mouvement. Fumer ou vapoter, seulement aux endroits réservés à cet effet."]]},
    {line:'g17',bk:[7],fixed:1,q:"La circulation des piétons sur l'aire de mouvement est :",o:[["Strictement interdite.",0,"Non : elle est autorisée, sous conditions, dans les cheminements piétons et avec les équipements."],["Autorisée sous certaines conditions.",1,"Dans les cheminements piétons, avec le gilet et les équipements ; jamais sur une voie avion sans accompagnement."],["Autorisée, de jour seulement, avec port d'un vêtement haute visibilité.",0,"Le gilet est nécessaire, mais la condition n'est pas le jour : ce sont les cheminements et les règles de sécurité."]]}];
  return quiz('q6',Q,'7 h 02',"Questions d'entraînement",[1],8,true)}
