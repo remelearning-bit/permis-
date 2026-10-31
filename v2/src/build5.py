@@ -7,7 +7,7 @@ e5src=open('/home/claude/w/e5.js',encoding='utf-8').read()
 # la traversée à feux en scène 3D (écran témoin validé par Cat) remplace l'écran photo du dispositif lumineux
 t5=(open('/home/claude/w/avion5.js',encoding='utf-8').read()+open('/home/claude/w/t5.js',encoding='utf-8').read()).replace("' · 5 h 58'","' · 6 h 12'").replace("jlog('5 h 58'","jlog('6 h 12'").replace("jlog('5 h 59'","jlog('6 h 13'")
 k=e5src.index('runSeq([');assert "['Le dispositif lumineux',feux]" in e5src
-e5src=e5src[:k]+t5+'\n'+e5src[k:].replace("['Le dispositif lumineux',feux]","['Le dispositif lumineux',()=>traversee('feux')]").replace("['Zone 30',zone30]","['Zone 30',()=>traversee('zone30')]").replace("['Le marquage au sol : les couleurs',couleurs]","['Le marquage au sol : les couleurs',()=>traversee('couleurs')]").replace("['Les cheminements véhicules',chemins]","['Les cheminements véhicules',()=>traversee('chemins')]")
+e5src=e5src[:k]+t5+'\n'+e5src[k:].replace("['Le dispositif lumineux',feux]","['Le dispositif lumineux',()=>traversee('feux')]").replace("['Le marquage au sol : les couleurs',couleurs]","['Le marquage au sol : les couleurs',()=>traversee('couleurs')]").replace("['Les cheminements véhicules',chemins]","['Les cheminements véhicules',()=>traversee('chemins')]")
 js=common+e5src
 lines=open('/home/claude/w/e5lines.json',encoding='utf-8').read()
 img={};dim={}
