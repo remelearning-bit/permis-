@@ -15,11 +15,11 @@ const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o}
 
 /* 1. la couverture */
 async function cover(){step();await photo('c8',FAST?10:1200);setCam({zoom:1.08});
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 8 · 7 h 30').card('L\'aire de manœuvre','Une seule idée : elle vous est interdite.');
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 8 · 7 h 30').card('L\'aire de manœuvre','Elle vous est interdite.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
- await sayS('m01',[at('m01',.4,()=>L.card('Réservée aux permis M, R et P','Pistes et voies de circulation avion. Le permis T s\'arrête à la ligne de sécurité.'))]);
+ await sayS('m01',[at('m01',.4,()=>L.card('Pistes : permis P. Voies avion : permis M, R et P','Le permis T s\'arrête à la ligne de sécurité.'))]);
  await sayS('m02',[at('m02',.02,()=>L.card('« Et si je la franchis sans le vouloir ? »','Xavier'))]);
- await sayS('m03',[at('m03',.02,()=>L.card('C\'est une incursion','Ce que toute la plateforme veut éviter.'))]);
+ await sayS('m03',[at('m03',.02,()=>L.card('C\'est une incursion','Vous allez voir où passe la ligne.'))]);
  await cont(L,'Voir la frontière');L.kill();return null}
 
 /* 3. un film du support, en plein écran ; on continue quand il est fini */
@@ -32,7 +32,7 @@ const servitudes=()=>film('film-servitudes','film-servitudes','Le film : les ser
 const balisage=()=>film('film-balisage','film-balisage','Voie avion ou cheminement véhicule ?','Film du support de formation','7 h 37');
 
 /* 4 à 6. les écrans sur photo */
-const prevenir=S('zoneint','Prévenir les incursions',['m11'],[['m11',.05,'Sur piste et sur voie de circulation avion','La zone est interdite au permis T, réservée aux permis M, R et P.'],['m11',.55,'En cas de doute','Le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, 01 48 16 47 55.']],'Prévenir les incursions',{tm:'7 h 35'});
+const prevenir=S('zoneint','Prévenir les incursions',['m11'],[['m11',.05,'Sur piste et sur voie de circulation avion','Interdite au permis T. Les pistes sont réservées au permis P, les voies de circulation avion aux permis M, R et P.'],['m11',.55,'En cas de doute','Le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, 01 48 16 47 55.']],'Prévenir les incursions',{tm:'7 h 35'});
 const ligne=S('ligne8','Rappel : la ligne de sécurité',['m12'],[['m12',.05,'Une ligne blanche continue','Derrière les postes de stationnement avion.'],['m12',.45,'Elle sépare deux zones','L\'aire de trafic et l\'aire de manœuvre. Avec un permis T, on ne la franchit pas.']],'La ligne de sécurité',{tm:'7 h 35'});
 const bandes=S('stopadp','Les bandes dégagées d\'obstacles',['m13'],[['m13',.03,'Les bandes aéronautiques','Ou bandes dégagées d\'obstacles, de part et d\'autre de la voie de circulation avion.'],['m13',.3,'Le stop routier','Sur la route de service : un repère visuel pour savoir si votre véhicule est hors de la bande.'],['m13',.7,'Après le stop','Tout ce qui s\'y trouve est dans la bande, et constitue un obstacle.']],'Les bandes dégagées d\'obstacles',{tm:'7 h 36'});
 
@@ -54,7 +54,7 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
 
 /* 8. fin de l'étape */
 async function fin(){step();head('Étape 8 terminée · 7 h 40','Huitième case cochée');
- vue(`<div class="hero">${bigIc('shield')}<p class="cap">Vous savez où vous arrêter</p><p class="sub">Avant le stop routier, jamais après. La ligne de sécurité ne se franchit pas.</p>
+ vue(`<div class="hero nph"><p class="cap">Vous savez où vous arrêter</p><p class="sub">Avant le stop routier, jamais après. La ligne de sécurité ne se franchit pas.</p>
   <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('m16');

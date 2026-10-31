@@ -6,7 +6,7 @@ var CAPS={c5b:'Photo du support REM Formation'};
 
 /* 1. la couverture */
 async function cover(){step();await photo('c5b',FAST?10:1200);setCam({zoom:1.08});
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 5, suite · 6 h 25').card("Les risques sur l'aire de mouvement","Et les bonnes attitudes.");
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 5, suite · 6 h 25').card("Les risques sur l'aire de mouvement et les bonnes attitudes","");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  for(const id of ['k01','k02','k03']){if(LINES[id].w==='X')await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier'))]);else await sayS(id)}
  await cont(L,'Reprendre la route');L.kill();return null}

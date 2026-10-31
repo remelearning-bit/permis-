@@ -8,7 +8,7 @@ var CAPS={c10:'Image du parcours REM Formation'};
 
 async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.head);
  if(d.ph){await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff()}
- else{await vzOff();vue(`<div class="hero nph">${bigIc(d.ic||'shield')}<p class="cap">${nb(d.cap)}</p></div>`)}
+ else{await vzOff();vue(`<div class="hero nph"><p class="cap">${nb(d.cap)}</p></div>`)}
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){const hk=d.swap&&d.swap[0]===id?[at(id,d.swap[1],()=>photo(d.swap[2],FAST?10:700))]:[];
   if(LINES[id].w==='X'){await sayS(id,[...hk,at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
@@ -21,9 +21,9 @@ const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o}
 async function cover(){step();await photo('c10',FAST?10:1200);setCam({zoom:1.08});
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 10 · 7 h 55').card('L\'amélioration continue de la sécurité','Comment on apprend de ce qui s\'est passé.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
- await sayS('s01',[at('s01',.3,()=>L.card('Trois sujets','Le système de gestion de la sécurité, les facteurs humains, les notifications.'))]);
+ await sayS('s01',[at('s01',.3,()=>L.card('Le programme de l\'étape 10','Le système de gestion de la sécurité, les facteurs humains, les notifications.'))]);
  await sayS('s02',[at('s02',.02,()=>L.card('« Et si c\'est moi qui ai fait l\'erreur ? »','Xavier'))]);
- await sayS('s03',[at('s03',.02,()=>L.card('C\'est précisément le sujet',''))]);
+ await sayS('s03',[at('s03',.02,()=>L.card('C\'est le sujet de l\'étape','Notifier protège, sauf manquement délibéré.'))]);
  await cont(L,'Dernière étape');L.kill();return null}
 
 /* 2. le système de gestion de la sécurité (diapos 250 à 255) */
@@ -42,7 +42,7 @@ const RISK2=[{t:"Un conteneur posé au sol, hors des racks.",b:"r",ok:"Les conte
  {t:"Un chariot à bagages dont le frein n'a pas été enclenché.",b:"r",ok:"C'est une situation à risque."},
  {t:"Des conteneurs entreposés sur un chariot porte-conteneurs.",b:"c",ok:"Un emplacement prévu à cet effet."}];
 async function risque(){step();head(H10+' · '+HH('7 h 57'),'Situation à risque ? Cliquez sur la bonne colonne');
- vue(`<div class="hero">${bigIc('warn')}<p class="cap">${nb("Cette situation est :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Cette situation est :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('s05');
  const E=await sortV(alt('risk',RISK1,RISK2),[['r','À risque','warn'],['c','Correcte','check2']],{label:'Situation',id:'risk'});
  jlog('7 h 57',`Situation à risque : 6 situations${errTxt(E)}`);return gate('risk',E,6,[1],'Situation à risque',2)}
@@ -96,7 +96,7 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
 /* 6. pour obtenir le permis, et la fin du parcours */
 const permis=S('permis10','Pour obtenir le permis',['s21'],[['s21',.05,'Au Bureau Local de Sûreté','Les attestations de formation permis T, théorique et pratique, pour obtenir le titre définitif.'],['s21',.6,'L\'Annexe 8','La demande d\'autorisation de conduite.'],['s21',.82,'L\'Annexe 7','La grille de la formation pratique.']],'Pour obtenir le permis',{tm:'8 h 08'});
 async function fin(){step();head('Étape 10 terminée · 8 h 10','Dixième case cochée');
- vue(`<div class="hero">${bigIc('shield')}<p class="cap">Votre permis est complet</p><p class="sub">Stop, priorité aux avions. Un objet intrus, on le ramasse. Un événement, on le notifie. La sécurité, c'est vous.</p>
+ vue(`<div class="hero nph"><p class="cap">Votre permis est complet</p>
   <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de la matinée</p><ul class="jl">${jhtml(true)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('s22');await sayS('s23');await sayS('s24');

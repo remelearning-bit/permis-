@@ -15,11 +15,11 @@ const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o}
 
 /* 1. la couverture */
 async function cover(){step();await photo('c9',FAST?10:1200);setCam({zoom:1.08});
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 9 · 7 h 40').card('Les procédures d\'urgence','Collision, panne, incendie, objets intrus, drones, conducteur perdu.');
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 9 · 7 h 40').card('Les procédures d\'urgence','Ce qu\'on fait, et qui on appelle, en cas d\'urgence.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
- await sayS('u01',[at('u01',.35,()=>L.card('Ce qui peut arriver','Une collision, une panne sur la voie avion, un incendie, un blessé. Les objets intrus, les drones. Un conducteur perdu.'))]);
+ await sayS('u01',[at('u01',.35,()=>L.card('Ce qui peut arriver','L\'étape traite la collision, la panne sur la voie avion, l\'incendie, le blessé, les objets intrus, les drones et le conducteur perdu.'))]);
  await sayS('u02',[at('u02',.02,()=>L.card('« Qui j\'appelle, en premier ? »','Xavier'))]);
- await sayS('u03',[at('u03',.02,()=>L.card('C\'est toute la question','Vous saurez répondre à la fin.'))]);
+ await sayS('u03',[at('u03',.02,()=>L.card('Cela dépend de la situation','L\'étape vous donne le bon numéro pour chacune.'))]);
  await cont(L,'Commencer');L.kill();return null}
 
 /* 2. la collision (diapo 235) */
@@ -33,7 +33,7 @@ async function panne(){step();head(H9+' · '+HH('7 h 42'),'En panne sur la voie 
  const f=document.createElement('iframe');f.src='panne.html';f.id='pf';f.allow='autoplay';document.body.appendChild(f);
  await new Promise(r=>{const h=e=>{if(e.data==='panne-fin'){removeEventListener('message',h);r()}};addEventListener('message',h)});
  f.remove();jlog('7 h 42','Panne sur la voie avion : prévenir, feux de détresse, sortir et croiser les bras');
- vue(`<div class="hero">${bigIc('warn')}<p class="cap">En panne sur la voie avion</p><div class="p9">
+ vue(`<div class="hero nph"><p class="cap">En panne sur la voie avion</p><div class="p9">
   <p><b>Avertir</b> le centre opérationnel côté piste, position exacte : il fait stopper les avions dans la zone.</p>
   <p><b>Rester sur place</b> si on ne peut pas pousser le véhicule hors des bandes aéronautiques : on attend le dépannage ou le Flyco, feux de détresse allumés.</p>
   <p><b>Si un avion arrive</b> : sortir du véhicule avec ses équipements, et croiser les bras en direction du pilote.</p></div></div>`);

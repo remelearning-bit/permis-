@@ -36,6 +36,10 @@ R={
 "m09":("D","Cinq. Le véhicule jaune ne s'est pas arrêté au stop. Il est dans la bande dégagée d'obstacles. Même s'il laisse passer l'avion, il reste un obstacle. Respectez les stops : ils délimitent la bande."),
 "m12":("D","Rappel. La ligne de sécurité est une ligne blanche continue, derrière les postes de stationnement avion. Elle sépare l'aire de trafic de l'aire de manœuvre. Avec un permis T, on ne la franchit pas."),
 "m03":("D","C'est une incursion. On va voir où est la ligne, et ce qu'est un obstacle. Cliquez pour voir la frontière."),
+"u01":("D","Sept heures quarante. Cette étape traite des situations d'urgence. Une collision, une panne sur la voie avion, un incendie, un blessé. Les objets intrus, les drones. Et un conducteur perdu."),
+"m01":("D","Sept heures trente. L'aire de manœuvre vous est interdite. Les pistes sont réservées au permis P. Les voies de circulation avion, aux permis M, R et P. Le permis T s'arrête à la ligne de sécurité."),
+"m11":("D","Prévenir les incursions sur piste et sur voie de circulation avion. La zone est interdite au permis T. Les pistes sont réservées au permis P, les voies de circulation avion aux permis M, R et P. En cas de doute, le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, zéro un, quarante-huit, seize, quarante-sept, cinquante-cinq."),
+"s24":("D","Maintenant, l'évaluation finale : vingt et une questions, quatre-vingts pour cent de bonnes réponses. Puis la pratique, sur la plateforme, dans les quarante jours."),
 }
 if __name__=='__main__':
   n=sum(len(t) for w,t in R.values());print(len(R),'répliques',n,'caractères')

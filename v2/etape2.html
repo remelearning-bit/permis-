@@ -140,7 +140,7 @@ body.subs #cap{bottom:auto;top:16px}
 #vbtn .act{margin:0}
 .it{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
 .it.in{opacity:1;transform:none}
-.it.in.dim{opacity:.26}
+.it.in.dim{opacity:.7}.hero.nph{align-items:flex-start;text-align:left;max-width:min(980px,100%);margin:0 auto}.hero.nph .cap{font-size:clamp(26px,3.4vw,46px);line-height:1.12;text-align:left}.hero.nph .sub{text-align:left}
 .row{display:flex;gap:clamp(18px,3vw,48px);align-items:stretch;justify-content:center;width:100%}
 .col{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0}
 #vz .big{font-weight:800;font-size:clamp(56px,9vw,150px);line-height:.95;letter-spacing:-.02em;color:var(--marine);font-variant-numeric:tabular-nums}
@@ -492,7 +492,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .lic .ls{display:flex;flex-direction:column;justify-content:center;gap:10px}.lic .ls i{height:3px;border-radius:2px;background:var(--marine);opacity:.55}
 .conds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(12px,2vh,22px);max-width:560px;text-align:left}
 .conds li{display:flex;gap:16px;align-items:flex-start;font-size:clamp(18px,1.6vw,25px);font-weight:600;line-height:1.25}
-.conds li b{flex:none;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);border-radius:50%;background:var(--marine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em}
+.conds li b{display:none}.chk.plain li b{display:none}.chk.plain li{opacity:.4;transition:opacity .4s}.chk.plain li.on{opacity:1}
 .conds li small{display:block;font-weight:400;font-size:.78em;color:#33475b;margin-top:3px}
 .ttl{font-weight:700;font-size:clamp(24px,2.4vw,38px);line-height:1.12;margin:0 0 clamp(14px,3vh,28px);text-align:left}
 .sq21{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(6px,.8vw,10px);width:min(430px,78vw)}
@@ -569,7 +569,7 @@ body.subs #vz .stage,body.subs #vz .stage.vb{bottom:150px}
 .ax .fl .sh{display:none}
 .qfb{font-weight:700;font-size:var(--B);margin:12px 0 0;min-height:1.4em;text-align:center}.qfb.ok{color:var(--vert)}.qfb.ko{color:var(--orange)}
 @media (max-width:700px){
- #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:15px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
+ #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:16px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
  .road i{width:28px;height:28px;font-size:13px;border-width:2px}.road b{min-width:3px}
  .chain{flex-direction:column}.chain .ar{width:100%;height:30px}.chain .ar svg{transform:rotate(90deg);width:30px}
  .chain .nd{flex-direction:row;text-align:left;gap:14px;padding:16px}.chain .nd .ic{width:44px;height:44px;flex:none}.chain .nd .k{font-size:30px}.pin{left:auto;right:12px;transform:none;top:-13px;font-size:14px}
@@ -824,7 +824,7 @@ const at2=(id,frac,fn)=>[frac,fn];
 async function ouverture(){step();await mapReady;mapOn();
  // vue inclinée, à douze kilomètres : le centre de l'aéroport est loin devant
  Object.assign(mc,{Z:Z0,c:A.slice(),tilt:T0,sx:MW/2,sy:CH*.62-CH+MH});dirty=true;
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 2 · 5 h 20').card('3 250 hectares. Où passe la frontière ?',"À cheval sur trois départements : le Val-d'Oise, la Seine-et-Marne et la Seine-Saint-Denis.");
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 2 · 5 h 20').card('3 250 hectares : où passe la limite entre côté ville et côté piste ?',"À cheval sur trois départements : le Val-d'Oise, la Seine-et-Marne et la Seine-Saint-Denis.");
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await cont(L,"C'est parti");
  await sayS('r1');

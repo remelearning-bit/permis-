@@ -140,7 +140,7 @@ body.subs #cap{bottom:auto;top:16px}
 #vbtn .act{margin:0}
 .it{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
 .it.in{opacity:1;transform:none}
-.it.in.dim{opacity:.26}
+.it.in.dim{opacity:.7}.hero.nph{align-items:flex-start;text-align:left;max-width:min(980px,100%);margin:0 auto}.hero.nph .cap{font-size:clamp(26px,3.4vw,46px);line-height:1.12;text-align:left}.hero.nph .sub{text-align:left}
 .row{display:flex;gap:clamp(18px,3vw,48px);align-items:stretch;justify-content:center;width:100%}
 .col{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0}
 #vz .big{font-weight:800;font-size:clamp(56px,9vw,150px);line-height:.95;letter-spacing:-.02em;color:var(--marine);font-variant-numeric:tabular-nums}
@@ -492,7 +492,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .lic .ls{display:flex;flex-direction:column;justify-content:center;gap:10px}.lic .ls i{height:3px;border-radius:2px;background:var(--marine);opacity:.55}
 .conds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(12px,2vh,22px);max-width:560px;text-align:left}
 .conds li{display:flex;gap:16px;align-items:flex-start;font-size:clamp(18px,1.6vw,25px);font-weight:600;line-height:1.25}
-.conds li b{flex:none;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);border-radius:50%;background:var(--marine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em}
+.conds li b{display:none}.chk.plain li b{display:none}.chk.plain li{opacity:.4;transition:opacity .4s}.chk.plain li.on{opacity:1}
 .conds li small{display:block;font-weight:400;font-size:.78em;color:#33475b;margin-top:3px}
 .ttl{font-weight:700;font-size:clamp(24px,2.4vw,38px);line-height:1.12;margin:0 0 clamp(14px,3vh,28px);text-align:left}
 .sq21{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(6px,.8vw,10px);width:min(430px,78vw)}
@@ -569,7 +569,7 @@ body.subs #vz .stage,body.subs #vz .stage.vb{bottom:150px}
 .ax .fl .sh{display:none}
 .qfb{font-weight:700;font-size:var(--B);margin:12px 0 0;min-height:1.4em;text-align:center}.qfb.ok{color:var(--vert)}.qfb.ko{color:var(--orange)}
 @media (max-width:700px){
- #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:15px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
+ #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:16px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
  .road i{width:28px;height:28px;font-size:13px;border-width:2px}.road b{min-width:3px}
  .chain{flex-direction:column}.chain .ar{width:100%;height:30px}.chain .ar svg{transform:rotate(90deg);width:30px}
  .chain .nd{flex-direction:row;text-align:left;gap:14px;padding:16px}.chain .nd .ic{width:44px;height:44px;flex:none}.chain .nd .k{font-size:30px}.pin{left:auto;right:12px;transform:none;top:-13px;font-size:14px}
@@ -691,10 +691,10 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .sortw .qc{width:min(760px,100%);margin:0 auto}
 .bks{display:grid;gap:clamp(10px,1.4vw,20px);width:100%}
 .bk{pointer-events:auto;cursor:pointer;background:#fff;border:3px solid var(--orangeV);border-radius:16px;padding:12px 14px;font:inherit;color:var(--marine);display:flex;flex-direction:column;align-items:center;gap:6px;min-height:110px;transition:all .3s;text-align:center}
-.bk .lb{margin:0;font-size:clamp(16px,1.35vw,21px)}
+.bk .lb{margin:0;font-size:clamp(18px,1.5vw,24px);font-weight:700}
 .bk .ic{width:40px;height:40px}
 .bk ul{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;width:100%}
-.bk li{font-size:15px;line-height:1.25;font-weight:600;background:#fff;border:2px solid var(--marine);border-radius:8px;padding:5px 8px;text-align:left;animation:cin .45s ease both}
+.bk li{font-size:16px;line-height:1.25;font-weight:600;background:#fff;border:2px solid var(--marine);border-radius:8px;padding:5px 8px;text-align:left;animation:cin .45s ease both}
 .bk.ko{border-color:var(--orangeV);border-width:4px;background:#fff;opacity:.6}
 .bk.ok{border-color:var(--vert);border-width:4px;background:#fff}
 .bks.lock .bk{pointer-events:none;border-color:#c9d1d7}
@@ -718,7 +718,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  .tiles{grid-template-columns:1fr 1fr;gap:8px}.tile{flex-direction:row;text-align:left;padding:8px 10px;gap:10px}.tile .ic{width:30px;height:30px;flex:none}.tile .lb{font-size:15px}
  .ladder .rg{grid-template-columns:1fr;gap:4px;padding:10px 14px}
  .ph4{grid-template-columns:1fr 1fr;gap:10px}.ph4 .fig{height:96px}.ph4 .tx{display:none}
- .bk{min-height:0;padding:8px 6px}.bk ul{display:none}.bk .cnt2{display:block}.bk .ic{width:28px;height:28px}.bk .lb{font-size:15px}
+ .bk{min-height:0;padding:8px 6px}.bk ul{display:none}.bk .cnt2{display:block}.bk .ic{width:28px;height:28px}.bk .lb{font-size:17px}
  .bks{grid-template-columns:1fr 1fr!important}
  .stage.fr.in>*{animation:none!important}
  .tiles{grid-template-columns:1fr 1fr!important}
@@ -735,7 +735,7 @@ const img=(k,cap='')=>`<figure class="fig"><img src="${IMG[k]}" alt="">${cap?`<f
 // ranger des éléments dans des colonnes : une seule réponse par élément ; la bonne colonne reçoit l'élément, et chaque réponse est expliquée
 async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)items=mix(o.id,items);
  vue(`<div class="sortw"><div class="qc" id="sq"><p class="n"></p><p class="q"></p><p class="qfb2" id="sfb"></p></div>
-  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}">${ic?IC[ic]:''}<p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div></div>`);
+  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}"><p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div></div>`);
  const st=cur(),bks=[...st.querySelectorAll('.bk')],fb=st.querySelector('#sfb'),bw=st.querySelector('#bks');let E=0;
  const drop=(g,it)=>{g.classList.add('ok');g.querySelector('ul').insertAdjacentHTML('beforeend',`<li>${nb(it.s||it.t)}</li>`);const n=g.querySelectorAll('li').length;g.querySelector('.cnt2').textContent=`${n} rangé${n>1?'s':''}`};
  for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=nb(it.t);fb.className='qfb2';fb.innerHTML='';
@@ -928,7 +928,7 @@ const V2=[{t:"Le volant.",b:"o",ok:"Il fait partie de la vérification quotidien
  {t:"Les nouveaux dommages extérieurs.",b:"o",ok:"On fait le tour du véhicule pour les repérer, chaque jour."},
  {t:"Le laissez-passer véhicule.",b:"n",ok:"C'est le titre d'accès du véhicule, présenté au poste d'accès. Ce n'est pas un point de l'état du véhicule."}];
 async function avant(){step();head(H4+' · 5 h 55','Avant de partir ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Je le vérifie avant d'utiliser le véhicule, ou pas ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Je le vérifie avant d'utiliser le véhicule, ou pas ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await contV('Commencer');
  const E=await sortV(alt('av',V1,V2),[['o','Je le vérifie','check2'],['n','Pas dans la vérification du véhicule','warn']],{label:'Élément',id:'av'});
  jlog('5 h 55',`Avant de partir : 6 éléments${errTxt(E)}`);return gate('av',E,6,[2,3],'Avant de partir',5)}
@@ -963,7 +963,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .n12 li b{flex:none;width:30px;height:30px;border-radius:8px;background:var(--marine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
 .duo3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2vw,26px);width:100%;max-width:1180px}
 .duo3 .card2 .tx{max-width:none;margin:0}
-@media (max-width:700px){.n12 ol{grid-template-columns:1fr;gap:6px}.n12 li{font-size:15px}.n12 li b{width:24px;height:24px;font-size:12px}.duo3{grid-template-columns:1fr;gap:8px}.duo3 .card2{padding:12px 14px}.duo3 .card2 svg{display:none}.duo3 .card2 .lb{margin:0 0 4px}.duo3 .card2 .tx{font-size:15px}}
+@media (max-width:700px){.n12 ol{grid-template-columns:1fr;gap:6px}.n12 li{font-size:16px}.n12 li b{width:24px;height:24px;font-size:12px}.duo3{grid-template-columns:1fr;gap:8px}.duo3 .card2{padding:12px 14px}.duo3 .card2 svg{display:none}.duo3 .card2 .lb{margin:0 0 4px}.duo3 .card2 .tx{font-size:16px}}
 </style>`);
 runSeq([['Couverture',cover],['Le tour du véhicule',tour],['On récapitule',recap],['La vérification quotidienne',quotidien],['Si quelque chose ne va pas',horsService],['Avant de partir ? À vous',avant],['Question',question],["Fin de l'étape",fin]]);
 

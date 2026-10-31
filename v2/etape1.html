@@ -140,7 +140,7 @@ body.subs #cap{bottom:auto;top:16px}
 #vbtn .act{margin:0}
 .it{opacity:0;transform:translateY(12px);transition:opacity .55s ease,transform .55s ease}
 .it.in{opacity:1;transform:none}
-.it.in.dim{opacity:.26}
+.it.in.dim{opacity:.7}.hero.nph{align-items:flex-start;text-align:left;max-width:min(980px,100%);margin:0 auto}.hero.nph .cap{font-size:clamp(26px,3.4vw,46px);line-height:1.12;text-align:left}.hero.nph .sub{text-align:left}
 .row{display:flex;gap:clamp(18px,3vw,48px);align-items:stretch;justify-content:center;width:100%}
 .col{display:flex;flex-direction:column;align-items:center;text-align:center;flex:1;min-width:0}
 #vz .big{font-weight:800;font-size:clamp(56px,9vw,150px);line-height:.95;letter-spacing:-.02em;color:var(--marine);font-variant-numeric:tabular-nums}
@@ -492,7 +492,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .lic .ls{display:flex;flex-direction:column;justify-content:center;gap:10px}.lic .ls i{height:3px;border-radius:2px;background:var(--marine);opacity:.55}
 .conds{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:clamp(12px,2vh,22px);max-width:560px;text-align:left}
 .conds li{display:flex;gap:16px;align-items:flex-start;font-size:clamp(18px,1.6vw,25px);font-weight:600;line-height:1.25}
-.conds li b{flex:none;width:clamp(34px,3vw,44px);height:clamp(34px,3vw,44px);border-radius:50%;background:var(--marine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.8em}
+.conds li b{display:none}.chk.plain li b{display:none}.chk.plain li{opacity:.4;transition:opacity .4s}.chk.plain li.on{opacity:1}
 .conds li small{display:block;font-weight:400;font-size:.78em;color:#33475b;margin-top:3px}
 .ttl{font-weight:700;font-size:clamp(24px,2.4vw,38px);line-height:1.12;margin:0 0 clamp(14px,3vh,28px);text-align:left}
 .sq21{display:grid;grid-template-columns:repeat(7,1fr);gap:clamp(6px,.8vw,10px);width:min(430px,78vw)}
@@ -569,7 +569,7 @@ body.subs #vz .stage,body.subs #vz .stage.vb{bottom:150px}
 .ax .fl .sh{display:none}
 .qfb{font-weight:700;font-size:var(--B);margin:12px 0 0;min-height:1.4em;text-align:center}.qfb.ok{color:var(--vert)}.qfb.ko{color:var(--orange)}
 @media (max-width:700px){
- #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:15px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
+ #vz .stage{overflow-y:auto;pointer-events:auto}#vz .stage>*{margin-top:auto;margin-bottom:auto}.chain{margin-top:16px}.permis ol{grid-auto-flow:row;grid-template-rows:none}.permis .T{display:block!important;font-size:40px;border-width:4px;padding:4px 10px;justify-self:start}.pmini{gap:5px;flex-wrap:nowrap}.pmini i{width:24px;height:24px;font-size:12px;border-radius:6px}.pmini b{font-size:22px;padding:3px 8px;margin-right:4px}#fc1{font-size:20px!important}.lgx{display:none}.jcard{padding:14px 16px}.jcard .jl li{font-size:16px;padding:2px 0}.ax .fl .lg{display:none}.ax .fl .sh{display:inline}#vz .stage.tall{bottom:12px}
  .road i{width:28px;height:28px;font-size:13px;border-width:2px}.road b{min-width:3px}
  .chain{flex-direction:column}.chain .ar{width:100%;height:30px}.chain .ar svg{transform:rotate(90deg);width:30px}
  .chain .nd{flex-direction:row;text-align:left;gap:14px;padding:16px}.chain .nd .ic{width:44px;height:44px;flex:none}.chain .nd .k{font-size:30px}.pin{left:auto;right:12px;transform:none;top:-13px;font-size:14px}
@@ -632,6 +632,7 @@ Object.assign(IC,{
  key:'<svg class="ic" viewBox="0 0 48 48"><circle cx="15" cy="24" r="8"/><path d="M23 24h20M37 24v7M31 24v5"/></svg>'});
 document.head.insertAdjacentHTML('beforeend',`<style>
 .hd1 .k{color:var(--pierre)}
+.plan{list-style:none;margin:0 auto;padding:0;display:flex;flex-direction:column;gap:clamp(10px,2.2vh,22px);width:100%;max-width:920px}.plan li{font-size:clamp(20px,2.1vw,32px);font-weight:600;color:var(--marine);line-height:1.25;display:flex;gap:18px;align-items:baseline}.plan .no{font-weight:800;min-width:1.1em}.plan.infl{gap:clamp(6px,1.4vh,14px)}.plan.infl li{background:none;box-shadow:none!important;padding:0;flex-direction:row;align-items:baseline;text-align:left;position:static;font-size:clamp(18px,1.8vw,27px);opacity:.35;transition:opacity .4s}.plan.infl li.in{opacity:1}.plan.infl li.now{opacity:1;font-weight:800}.plan .dl{opacity:0;transition:opacity .4s}.plan .dl.in{opacity:1}
 .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,30px);width:100%;max-width:1100px}
 .parts .pt{background:#fff;border-radius:18px;box-shadow:0 8px 28px rgba(38,60,82,.12);padding:clamp(18px,2.2vw,30px) clamp(12px,1.4vw,20px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
 .parts .pt .no{font-weight:800;font-size:clamp(30px,3.2vw,50px);line-height:1}
@@ -691,10 +692,10 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .sortw .qc{width:min(760px,100%);margin:0 auto}
 .bks{display:grid;gap:clamp(10px,1.4vw,20px);width:100%}
 .bk{pointer-events:auto;cursor:pointer;background:#fff;border:3px solid var(--orangeV);border-radius:16px;padding:12px 14px;font:inherit;color:var(--marine);display:flex;flex-direction:column;align-items:center;gap:6px;min-height:110px;transition:all .3s;text-align:center}
-.bk .lb{margin:0;font-size:clamp(16px,1.35vw,21px)}
+.bk .lb{margin:0;font-size:clamp(18px,1.5vw,24px);font-weight:700}
 .bk .ic{width:40px;height:40px}
 .bk ul{list-style:none;margin:4px 0 0;padding:0;display:flex;flex-direction:column;gap:5px;width:100%}
-.bk li{font-size:15px;line-height:1.25;font-weight:600;background:#fff;border:2px solid var(--marine);border-radius:8px;padding:5px 8px;text-align:left;animation:cin .45s ease both}
+.bk li{font-size:16px;line-height:1.25;font-weight:600;background:#fff;border:2px solid var(--marine);border-radius:8px;padding:5px 8px;text-align:left;animation:cin .45s ease both}
 .bk.ko{border-color:var(--orangeV);border-width:4px;background:#fff;opacity:.6}
 .bk.ok{border-color:var(--vert);border-width:4px;background:#fff}
 .bks.lock .bk{pointer-events:none;border-color:#c9d1d7}
@@ -718,7 +719,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
  .tiles{grid-template-columns:1fr 1fr;gap:8px}.tile{flex-direction:row;text-align:left;padding:8px 10px;gap:10px}.tile .ic{width:30px;height:30px;flex:none}.tile .lb{font-size:15px}
  .ladder .rg{grid-template-columns:1fr;gap:4px;padding:10px 14px}
  .ph4{grid-template-columns:1fr 1fr;gap:10px}.ph4 .fig{height:96px}.ph4 .tx{display:none}
- .bk{min-height:0;padding:8px 6px}.bk ul{display:none}.bk .cnt2{display:block}.bk .ic{width:28px;height:28px}.bk .lb{font-size:15px}
+ .bk{min-height:0;padding:8px 6px}.bk ul{display:none}.bk .cnt2{display:block}.bk .ic{width:28px;height:28px}.bk .lb{font-size:17px}
  .bks{grid-template-columns:1fr 1fr!important}
  .stage.fr.in>*{animation:none!important}
  .tiles{grid-template-columns:1fr 1fr!important}
@@ -735,7 +736,7 @@ const img=(k,cap='')=>`<figure class="fig"><img src="${IMG[k]}" alt="">${cap?`<f
 // ranger des éléments dans des colonnes : une seule réponse par élément ; la bonne colonne reçoit l'élément, et chaque réponse est expliquée
 async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)items=mix(o.id,items);
  vue(`<div class="sortw"><div class="qc" id="sq"><p class="n"></p><p class="q"></p><p class="qfb2" id="sfb"></p></div>
-  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}">${ic?IC[ic]:''}<p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div></div>`);
+  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}"><p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div></div>`);
  const st=cur(),bks=[...st.querySelectorAll('.bk')],fb=st.querySelector('#sfb'),bw=st.querySelector('#bks');let E=0;
  const drop=(g,it)=>{g.classList.add('ok');g.querySelector('ul').insertAdjacentHTML('beforeend',`<li>${nb(it.s||it.t)}</li>`);const n=g.querySelectorAll('li').length;g.querySelector('.cnt2').textContent=`${n} rangé${n>1?'s':''}`};
  for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=nb(it.t);fb.className='qfb2';fb.innerHTML='';
@@ -749,14 +750,14 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
 
 /* 1. la couverture et les quatre parties */
 async function cover(){step();await photo('aerien',FAST?10:1200);setCam({zoom:1.08});
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 1 · 5 h 00').card('La réglementation et les règles à respecter sur Roissy','Cinq heures, prise de service. Avant de toucher un volant : ce qui encadre tout le reste.');
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 1 · 5 h 00').card('La réglementation et les règles à respecter sur Roissy','Cinq heures, prise de service. Avant de prendre le volant, les textes qui fixent les règles.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}L.kill();return null}
 const PARTS=[['1','Le contexte réglementaire et les consignes','book'],['2','Les sanctions','euro'],['3','Les acteurs du contrôle','eye'],['4',"L'obtention de l'autorisation de conduite",'card']];
 async function quatre(){step();head(H1,'Prise de service');
  vue(`<div class="hero"><p class="huge" id="h5">5 h 00</p><p class="cap">Prise de service</p><p class="sub">Avant de toucher un volant : ce qui encadre tout le reste.</p></div>`);
- const pv=`<div class="parts">${PARTS.map((p,i)=>`<div class="pt it" id="pp${i}">${IC[p[2]]}<div class="no">${p[0]}</div><p class="lb">${nb(p[1])}</p></div>`).join('')}</div>`;
- await sayS('e01',[W('e01','Quatre parties',()=>{head(H1,'Quatre parties');vue(pv)}),W('e01','Le contexte',()=>show('#pp0',true)),W('e01','Les sanctions',()=>show('#pp1',true)),W('e01','Les acteurs',()=>show('#pp2',true)),W('e01','Et comment',()=>show('#pp3',true))]);undim();
- vue(`<div class="hero">${pv.replace(/class="pt it"/g,'class="pt it in"')}<p class="sub it" id="xs" style="font-weight:700;color:var(--marine);margin-top:clamp(12px,3vh,26px)">Le terrain, oui. Mais tout en découle, les sanctions en premier.</p><div class="xb it" id="xq">${bub('Xavier','Dense. Et si je m\'en passe ? Au volant, ce qui compte, c\'est le terrain.')}</div></div>`);
+ const pv=`<ol class="plan">${PARTS.map((p,i)=>`<li class="it" id="pp${i}"><span class="no">${p[0]}</span><span>${nb(p[1])}</span></li>`).join('')}</ol>`;
+ await sayS('e01',[W('e01','Quatre parties',()=>{head(H1,'Le programme de l\'étape 1');vue(pv)}),W('e01','Le contexte',()=>show('#pp0',true)),W('e01','Les sanctions',()=>show('#pp1',true)),W('e01','Les acteurs',()=>show('#pp2',true)),W('e01','Et comment',()=>show('#pp3',true))]);undim();
+ vue(`<div class="hero">${pv.replace(/class="pt it"/g,'class="pt it in"')}<p class="sub it" id="xs" style="font-weight:700;color:var(--marine);margin-top:clamp(12px,3vh,26px)">Les règles du terrain viennent de ces textes, et les sanctions aussi.</p><div class="xb it" id="xq">${bub('Xavier','Dense. Et si je m\'en passe ? Au volant, ce qui compte, c\'est le terrain.')}</div></div>`);
  await sayS('e02',[at('e02',.02,()=>show('#xq'))]);
  await sayS('e03',[at('e03',.02,()=>{$c('#xq').style.display='none';show('#xs');show('#pp1',true)})]);undim();
  await contV('Commencer');return null}
@@ -785,7 +786,7 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   W('e10','Il oblige',()=>show('#a2'),-.01),
   W('e10','en dehors',()=>show('#a3')),
   W('e10','Pour simplifier',()=>{show('#zall');const t=$c('#a3');if(t)t.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers (PARIF).")})]);
- vue(`<div class="hero">${bigIc('build')}<p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
  const ABS=`<div class="axes" style="max-width:1040px"><div class="ax" id="xb"><p class="tl">Cessation d'activité : sans circuler sur l'aire de mouvement</p><div class="tr">
   <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
   <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
@@ -799,7 +800,7 @@ const ZON=["La zone d'évolution contrôlée (ZEC)","Le périmètre de sécurit�
 async function mpa(){step();head('1 · Le contexte réglementaire',"Les mesures particulières d'application");
  vue(`<div class="duo2"><div class="card2 it" id="m1">${IC.user}<p class="lb">Qui les prend ?</p><p class="big2" style="font-size:clamp(30px,3.4vw,52px)">Le directeur d'aéroport</p><p class="tx" style="max-width:none;margin:0">Il complète l'arrêté, quand c'est nécessaire. Ces mesures collent au terrain.</p></div>
   <div class="card2 it" id="m2">${IC.car}<p class="lb">Sur quoi ?</p><p class="tx" style="max-width:none;margin:0;font-size:clamp(18px,1.6vw,25px);font-weight:600;color:var(--marine)">Les règles de sécurité de circulation et de stationnement sur l'aire de mouvement.</p></div></div>`);
- const ZL=`<div class="hero"><p class="cap" style="margin-bottom:clamp(8px,2vh,20px)">Elles portent aussi sur :</p><ul class="chk">${ZON.map((z,i)=>`<li id="zz${i}"><b>${CHECK}</b>${nb(z)}</li>`).join('')}</ul></div>`;
+ const ZL=`<div class="hero"><p class="cap" style="margin-bottom:clamp(8px,2vh,20px)">Elles portent aussi sur :</p><ul class="chk plain">${ZON.map((z,i)=>`<li id="zz${i}"><b>${CHECK}</b>${nb(z)}</li>`).join('')}</ul></div>`;
  await sayS('e12',[W('e12','le directeur',()=>show('#m1',true)),W('e12','Elles portent',()=>show('#m2',true)),W('e12','La zone',()=>vue(ZL)),
   ...['La zone','Le périmètre de sécurité collision','Le périmètre de sécurité incendie','La zone particulièrement','La zone d\'évolution de passerelle','Et les couloirs'].map((w,i)=>W('e12',w,()=>on('#zz'+i,'on'),.005))]);
  await contV();return null}
@@ -808,7 +809,7 @@ async function mpa(){step();head('1 · Le contexte réglementaire',"Les mesures 
 const PV=[.12,.45],PE=[.43,.48],PM=[.78,.46];
 var CAPS={hd3:'Illustration',permis4:'',panneau:''};
 async function definitions(){step();await photo('hd3',FAST?10:500);setCam(PORT()?{mode:'contain'}:{zoom:1.08});await vzOff();
- const L=label([0,0,0],{lead:false}).title('Trois mots à connaître');
+ const L=label([0,0,0],{lead:false}).title('Véhicule, engin, matériel');
  await sayS('e13',[at('e13',.02,()=>L.card('De quoi on parle','Les mesures particulières définissent trois mots.')),
   W('e13','Un véhicule',()=>L.card('Un véhicule','Un mobile autotracté immatriculé, conformément au code de la route.',{a:pt(...PV)})),
   W('e13','Un engin',()=>L.card('Un engin',"Un mobile autotracté non immatriculé, présent côté piste pour le transport aérien, l'entretien ou le fonctionnement de l'aérodrome.",{a:pt(...PE)})),
@@ -873,7 +874,7 @@ const QF2=[{t:"Tenir à jour la liste des centres agréés et des formateurs hab
  {t:"Recevoir le courriel d'information du Groupe ADP sur un changement qui touche la conduite.",s:'Le courriel du Groupe ADP',b:"cs",ok:"Le correspondant sécurité : le Groupe ADP l'adresse à tous les correspondants sécurité des employeurs."},
  {t:"Définir les principes du dispositif de formation et en assurer le suivi.",s:'Les principes du dispositif',b:"adp",ok:"Le Groupe ADP pilote le dispositif : il en définit les principes et en assure le suivi."}];
 async function quiFait(){step();head('1 · Le contexte réglementaire','Qui fait quoi ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">Une mission : qui s'en charge ?</p><p class="sub">Cliquez sur la bonne colonne. La mission s'y range.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Une mission : qui s'en charge ?</p><p class="sub">Cliquez sur la bonne colonne. La mission s'y range.</p></div>`);
  await sayS('e20');
  const E=await sortV(alt('qf',[{t:"Agréer les centres de formation.",s:'Agréer les centres',b:"adp",ok:"Le Groupe ADP pilote le dispositif : il agrée les centres de formation, et évalue les formateurs en vue de leur habilitation.",h:"Pas celui-ci. Qui pilote tout le dispositif ?"},
   {t:"Attester que l'activité du salarié nécessite l'autorisation de conduite.",s:'Attester le besoin',b:"emp",ok:"L'employeur l'atteste, et s'assure de la formation du salarié.",h:"Pas celui-ci. Qui connaît l'activité du salarié ?"},
@@ -886,17 +887,17 @@ async function quiFait(){step();head('1 · Le contexte réglementaire','Qui fait
 
 /* 8. les sanctions */
 const INF=[['belt','La ceinture non attachée','La ceinture'],['radio','La cabine non stérile : radio allumée ou téléphone','La cabine'],['test','Un éthylotest ou un dépistage positif','Un éthylotest'],['stop','Un stop non respecté','Un stop'],['yield','Un refus de priorité','Un refus'],['speed','Un excès de vitesse','Un excès'],['vest','Le gilet haute visibilité non porté','Le gilet'],['badge','Le badge, ou CIA, non apparent en zone de sûreté à accès réglementé','Et le badge']];
-async function sanctions(){step();head('2 · Les sanctions','Trois registres');
+async function sanctions(){step();head('2 · Les sanctions','Les sanctions possibles');
  vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(16px,3vh,30px)"><div class="parts" style="grid-template-columns:repeat(3,1fr);max-width:960px">
   <div class="pt it" id="s1">${IC.doc}<p class="lb">Les sanctions administratives</p></div><div class="pt it" id="s2">${IC.quiz}<p class="lb">Les procès-verbaux</p></div><div class="pt it" id="s3">${IC.build}<p class="lb">Les sanctions pénales</p></div></div>
-  <p class="cap it" id="s4" style="font-size:clamp(20px,2vw,30px);text-align:center;margin:0">Ils coexistent, ils ne s'excluent pas.</p></div>`);
+  <p class="cap it" id="s4" style="font-size:clamp(20px,2vw,30px);text-align:center;margin:0">Une même infraction peut entraîner les trois.</p></div>`);
  await sayS('e21',[W('e21','sanctions administratives',()=>show('#s1')),W('e21','des procès',()=>show('#s2')),W('e21','et des sanctions',()=>show('#s3')),W('e21','Les trois',()=>show('#s4')),
   W('e21',"C'est la Gendarmerie",()=>vue(`<div class="side"><div>${img('gta')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">La Gendarmerie des transports aériens</p><p class="sub" style="text-align:left">Les infractions commises peuvent être sanctionnées par elle.</p></div></div>`))]);
  head('2 · Les sanctions','Les infractions relevées');
- vue(`<div class="tiles">${INF.map((f,i)=>`<div class="tile" id="tf${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}</p>${i===2?'<span class="tag" id="dl">Un délit</span>':''}</div>`).join('')}</div>`);
+ vue(`<ul class="plan infl">${INF.map((f,i)=>`<li class="tile" id="tf${i}"><span>${nb(f[1])}${i===2?'<span class="dl" id="dl"> : c\'est un délit.</span>':''}</span></li>`).join('')}</ul>`);
  let prev=null;const lit=i=>{if(prev!==null)$c('#tf'+prev).classList.remove('now');const t=$c('#tf'+i);t.classList.add('in','now');prev=i};
  await sayS('e22',[...INF.map((f,i)=>W('e22',f[2],()=>lit(i),.005)),W('e22','là, c\'est',()=>on('#dl')),
-  W('e22','Cent cinquante',()=>vue(`<div class="hero">${bigIc('badge')}<p class="huge" id="m150">0 €</p><p class="cap">Et/ou 6 jours de suspension</p><p class="sub">Pour le badge non apparent en zone de sûreté à accès réglementé.</p></div>`)),
+  W('e22','Cent cinquante',()=>vue(`<div class="hero nph"><p class="huge" id="m150">0 €</p><p class="cap">Et/ou 6 jours de suspension</p><p class="sub">Pour le badge non apparent en zone de sûreté à accès réglementé.</p></div>`)),
   W('e22','Cent cinquante',()=>countTo('#m150',150,1400,v=>Math.round(v)+' €'),-.01)]);
  await contV();
  head('2 · Les sanctions','Le rappel affiché sur la plateforme');
@@ -915,14 +916,14 @@ async function retrait(){step();head('2 · Les sanctions',"L'autorisation de con
  vue(`<div class="duo2"><div class="card2 it" id="t1">${IC.cal}<p class="big2" style="font-size:clamp(34px,3.8vw,60px)">Suspendue</p></div><div class="card2 it" id="t2">${IC.key}<p class="big2" style="font-size:clamp(34px,3.8vw,60px)">Retirée</p><p class="tx" style="max-width:none;margin:0">Temporairement ou définitivement.</p></div></div><p class="sub it" id="t3" style="position:absolute;left:0;right:0;bottom:0;text-align:center;max-width:none">${nb("Le Groupe ADP décide, dans le cadre de son système de gestion de la sécurité, selon l'arrêté préfectoral 2026-00286.")}</p>`);
  const CV=`<div class="side" style="grid-template-columns:1fr"><div><p class="cap" style="text-align:left;margin:0 0 clamp(10px,2vh,22px)">Dans quels cas ?</p><ul class="conds">${CAS.map((c,i)=>`<li id="k${i}"><b>${i+1}</b><span>${nb(c[0])}${c[1]?`<small>${nb(c[1])}</small>`:''}</span></li>`).join('')}</ul></div></div>`;
  await sayS('e23',[at('e23',.02,()=>show('#t1')),W('e23','Ou retirée',()=>show('#t2')),W('e23',"C'est le Groupe",()=>show('#t3')),W('e23','Dans quels',()=>vue(CV)),...CAS.map((c,i)=>W('e23',c[2],()=>on('#k'+i),.005))]);
- vue(`<div class="hero">${bigIc('doc')}<p class="cap">Une décision motivée</p><p class="sub">Avec les délais et les voies de recours. Le Groupe ADP en assure la traçabilité et l'archivage, dans le respect des règles de confidentialité et de protection des données personnelles.</p><div class="xb it" id="xr">${bub('Xavier','Et on me retire le permis du jour au lendemain, sans pouvoir m\'expliquer ?')}</div></div>`);
+ vue(`<div class="hero nph"><p class="cap">Une décision motivée</p><p class="sub">Avec les délais et les voies de recours. Le Groupe ADP en assure la traçabilité et l'archivage, dans le respect des règles de confidentialité et de protection des données personnelles.</p><div class="xb it" id="xr">${bub('Xavier','Et on me retire le permis du jour au lendemain, sans pouvoir m\'expliquer ?')}</div></div>`);
  await contV();await sayS('e24');await sayS('e24c',[at('e24c',.02,()=>show('#xr'))]);
  vue(`<div class="duo2"><div class="card2 it" id="u1"><p class="lb">Sauf urgence</p><p class="big2">15 jours</p><p class="tx" style="max-width:none;margin:0">Vous êtes avisé des mesures envisagées, et vous disposez de quinze jours pour faire part de vos observations, écrites ou orales.</p></div>
   <div class="card2 it" id="u2"><p class="lb">En cas d'urgence</p><p class="big2">1 mois</p><p class="tx" style="max-width:none;margin:0">Suspension immédiate, un mois au maximum, reconductible si les circonstances l'exigent.</p></div></div>`);
  await sayS('e24b',[at('e24b',.02,()=>show('#u1',true)),W('e24b',"En cas d'urgence",()=>show('#u2',true)),
-  W('e24b','Et le Groupe',()=>vue(`<div class="hero">${bigIc('eye')}<p class="cap">La Direction de la sécurité de l'aviation civile Nord est informée</p><p class="sub">Le Groupe ADP lui transmet toute information susceptible de conduire à une sanction.</p></div>`))]);
+  W('e24b','Et le Groupe',()=>vue(`<div class="hero nph"><p class="cap">La Direction de la sécurité de l'aviation civile Nord est informée</p><p class="sub">Le Groupe ADP lui transmet toute information susceptible de conduire à une sanction.</p></div>`))]);
  await pause(2000);
- vue(`<div class="hero">${bigIc('shield')}<p class="cap">Le système de gestion de la sécurité</p><p class="sub">Il ne sert pas qu'à notifier : il a aussi un volet sanction. Vous le retrouverez à l'étape 10.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Le système de gestion de la sécurité</p><p class="sub">Il ne sert pas qu'à notifier : il a aussi un volet sanction. Vous le retrouverez à l'étape 10.</p></div>`);
  await contV();return null}
 const INF2=[{t:"Je téléphone en roulant.",b:"i",ok:"Cabine non stérile : téléphone ou radio allumée, c'est une infraction."},
  {t:"Je roule sans attacher ma ceinture.",b:"i",ok:"La ceinture non attachée fait partie des infractions relevées."},
@@ -931,7 +932,7 @@ const INF2=[{t:"Je téléphone en roulant.",b:"i",ok:"Cabine non stérile : tél
  {t:"Je ne porte pas mon gilet haute visibilité.",b:"i",ok:"Le gilet haute visibilité non porté fait partie des infractions relevées."},
  {t:"Mon badge est porté de façon apparente.",b:"n",ok:"C'est l'obligation. L'infraction, c'est le badge non apparent : 150 € d'amende et/ou 6 jours de suspension."}];
 async function infraction(){step();head('2 · Les sanctions','Infraction ou pas ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">Six situations : infraction, ou pas ?</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Six situations : infraction, ou pas ?</p></div>`);
  await sayS('e25');
  const E=await sortV(alt('inf',[{t:"Je roule avec la radio allumée.",b:"i",ok:"Cabine non stérile : radio allumée ou téléphone, c'est une infraction.",h:"Pas tout à fait. Comment doit rester la cabine ?"},
   {t:"Mon badge est dans ma poche, en zone de sûreté à accès réglementé.",b:"i",ok:"Badge, ou carte d'identification aéroportuaire (CIA), non apparent : 150 € d'amende et/ou 6 jours de suspension.",h:"Pas tout à fait. Dans la poche, le badge est-il apparent ?"},
@@ -944,10 +945,10 @@ async function infraction(){step();head('2 · Les sanctions','Infraction ou pas 
 
 /* 10. les acteurs du contrôle */
 async function prefet(){step();head('3 · Les acteurs du contrôle','Qui contrôle ?');
- vue(`<div class="hero">${bigIc('route')}<p class="cap">Les acteurs sur la piste</p><p class="sub">Ceux de l'État, vous les connaissez par la formation sûreté du badge. Ici, vous découvrez les acteurs sur la piste.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Les acteurs sur la piste</p><p class="sub">Ceux de l'État, vous les connaissez par la formation sûreté du badge. Ici, vous découvrez les acteurs sur la piste.</p></div>`);
  const FAM=`<div class="duo2"><div class="card2 it" id="f1">${IC.build}<p class="lb">Les services de l'État</p></div><div class="card2 it" id="f2">${IC.plane}<p class="lb">Le personnel du Groupe ADP</p></div></div>`;
- await sayS('e26',[W('e26','Deux familles',()=>{head('3 · Les acteurs du contrôle',"Deux familles d'acteurs");vue(FAM)}),W('e26','les services',()=>show('#f1')),W('e26','et le personnel',()=>show('#f2')),W('e26',"D'abord l'État",()=>show('#f1',true)),
-  W('e26','Le préfet',()=>vue(`<div class="hero">${bigIc('build')}<p class="cap">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><p class="sub">Il a autorité en matière de conduite en zone côté piste.</p><p class="sub it" id="pf">Il en fixe les modalités par arrêté préfectoral : elles sont opposables à tout intervenant. C'est de lui que vient l'arrêté du début.</p></div>`)),
+ await sayS('e26',[W('e26','Deux familles',()=>{head('3 · Les acteurs du contrôle',"Qui contrôle sur la plateforme");vue(FAM)}),W('e26','les services',()=>show('#f1')),W('e26','et le personnel',()=>show('#f2')),W('e26',"D'abord l'État",()=>show('#f1',true)),
+  W('e26','Le préfet',()=>vue(`<div class="hero nph"><p class="cap">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><p class="sub">Il a autorité en matière de conduite en zone côté piste.</p><p class="sub it" id="pf">Il en fixe les modalités par arrêté préfectoral : elles sont opposables à tout intervenant. C'est de lui que vient l'arrêté du début.</p></div>`)),
   W('e26','Il en fixe',()=>show('#pf'))]);
  await pause();return null}
 const MIS=[['Renseigner',"Prévenir les troubles à l'ordre public, lutter contre le terrorisme."],['Protéger',"Les aéronefs d'État à l'arrivée et au départ : garde, contrôle des personnes, des bagages, du fret et de l'avitaillement."],['Contrôler',"Les personnes et les véhicules admis côté piste, et leurs titres d'accès."],['Sanctionner',"Saisie et retrait des autorisations de circuler, en cas d'infraction au code de la route ou de manquement à l'arrêté préfectoral."]];
@@ -959,7 +960,7 @@ async function gta(){step();head('3 · Les acteurs du contrôle','La Gendarmerie
   <div class="card2 it in">${IC.card}<p class="lb">Un permis retenu</p><p class="big2" style="font-size:clamp(34px,3.6vw,56px)">72 heures</p><p class="tx" style="max-width:none;margin:0">Dans les 72 heures, il est transmis à l'exploitant, le Groupe ADP, qui le restitue à l'employeur, ou à l'agence d'intérim s'il s'agit d'un intérimaire.</p></div></div>`);
  await contV();return null}
 async function dsac(){step();head('3 · Les acteurs du contrôle',"La Direction de la sécurité de l'aviation civile Nord");
- vue(`<div class="hero">${bigIc('eye')}<p class="cap">L'autorité de surveillance</p><p class="sub">Elle mène des audits réglementaires.</p><p class="sub it" id="d1">Elle s'assure que le Groupe ADP et toutes les parties prenantes de la formation respectent la réglementation et le dispositif en place.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">L'autorité de surveillance</p><p class="sub">Elle mène des audits réglementaires.</p><p class="sub it" id="d1">Elle s'assure que le Groupe ADP et toutes les parties prenantes de la formation respectent la réglementation et le dispositif en place.</p></div>`);
  await sayS('e28',[W('e28','Elle s\'assure',()=>show('#d1')),
   W('e28','À retenir',()=>vue(`<div class="duo2"><div class="card2 it in">${IC.shield}<p class="lb">La gendarmerie</p><p class="big2" style="font-size:clamp(28px,3vw,46px)">Contrôle sur le terrain</p></div><div class="card2 it in">${IC.eye}<p class="lb">La Direction de la sécurité de l'aviation civile Nord</p><p class="big2" style="font-size:clamp(28px,3vw,46px)">Surveille le système</p></div></div>`))]);
  head('3 · Les acteurs du contrôle','Les échelons');
@@ -980,7 +981,7 @@ const ACT2=[{t:"Renseigner : prévenir les troubles à l'ordre public et lutter 
  {t:"Délivrer l'autorisation de conduite permis T.",s:"Délivrer l'autorisation",b:"adp",ok:"Le Groupe ADP : il la délivre sur la base de la demande d'autorisation, l'annexe 8."},
  {t:"Désigner, par arrêté, le Groupe ADP pour définir le dispositif de délivrance de l'autorisation de conduite.",s:'Désigner le Groupe ADP',b:"pre",ok:"Le préfet : c'est l'arrêté préfectoral qui désigne le Groupe ADP."}];
 async function acteurs(){step();head('3 · Les acteurs du contrôle','Qui fait quoi côté piste ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">Une mission : quel acteur la porte ?</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Une mission : quel acteur la porte ?</p></div>`);
  await sayS('e31');
  const E=await sortV(alt('act',[{t:"Fixer par arrêté les modalités de circulation sur l'aire de mouvement.",s:'Fixer les modalités par arrêté',b:"pre",ok:"Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires fixe ces modalités par arrêté.",h:"Pas celui-ci. D'où vient l'arrêté du début ?"},
   {t:"Contrôler les personnes et les véhicules admis côté piste.",s:'Contrôler sur le terrain',b:"gta",ok:"La Gendarmerie des transports aériens contrôle sur le terrain.",h:"Pas celui-ci. Qui contrôle sur le terrain ?"},
@@ -1003,7 +1004,7 @@ async function autorisations(){step();await photo('permis4',FAST?10:400);setCam(
  camTo({mode:'contain'},1200);
  await sayS('e34',[at('e34',.02,()=>L.card('Xavier','« Moi, c\'est le T. Si je dois traverser une voie avion pour rejoindre un poste, je fais comment ? »',{a:pt(.17,.28)}))]);
  L.kill();
- vue(`<div class="hero"><p class="huge" style="font-size:clamp(70px,9vw,140px)">T</p><p class="cap">Le T, c'est l'aire de trafic, sauf ses voies de circulation avion</p><ul class="chk" style="margin-top:clamp(8px,2vh,20px)"><li id="tt1"><b>${CHECK}</b>${nb('Les cheminements véhicules et les routes de service autorisés au permis T')}</li><li id="tt2"><b>${CHECK}</b>${nb('Les traversées de voies de circulation avion délimitées par des marquages au sol')}</li><li id="tt3"><b>${CHECK}</b>${nb('Les postes de stationnement avion, dans le cadre de vos activités')}</li></ul></div>`);
+ vue(`<div class="hero"><p class="huge" style="font-size:clamp(70px,9vw,140px)">T</p><p class="cap">Le T, c'est l'aire de trafic, sauf ses voies de circulation avion</p><ul class="chk plain" style="margin-top:clamp(8px,2vh,20px)"><li id="tt1"><b>${CHECK}</b>${nb('Les cheminements véhicules et les routes de service autorisés au permis T')}</li><li id="tt2"><b>${CHECK}</b>${nb('Les traversées de voies de circulation avion délimitées par des marquages au sol')}</li><li id="tt3"><b>${CHECK}</b>${nb('Les postes de stationnement avion, dans le cadre de vos activités')}</li></ul></div>`);
  head("4 · L'autorisation de conduite",'Ce que permet le T');
  await sayS('e35',[W('e35','Il vous permet',()=>on('#tt1','on')),W('e35','Sur les traversées',()=>on('#tt2','on')),W('e35','Et sur les postes',()=>on('#tt3','on')),
   W('e35',"L'autorisation est",()=>vue(`<div class="side"><div>${img('hd5','Illustration')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">Délivrée par le Groupe ADP</p><p class="sub" style="text-align:left">Elle reste liée à votre activité : si vous changez de poste, le besoin est réexaminé.</p></div></div>`))]);
@@ -1055,9 +1056,9 @@ async function annexes(){step();await photo('annexe8',FAST?10:400);setCam({mode:
 /* 12. au Bureau Local de Sûreté : cinq questions, autant d'essais que voulu */
 async function quizBLS(){step();head('Au Bureau Local de Sûreté · 5 h 19','Cinq questions, celles du chapitre');
  const Q=[{id:'e40',q:"La circulation sur les aires de trafic de l'aéroport Paris-Charles de Gaulle est réglementée par :",o:[["L'arrêté préfectoral et les mesures particulières d'application de l'arrêté préfectoral en vigueur à Paris-Charles de Gaulle, le code de la route",1,"L'arrêté préfectoral et ses mesures particulières d'application, et le code de la route."],["Le code de l'aviation civile",0,"Pas celui-ci. Repensez aux trois référentiels qui s'imposent au volant."],["La sécurité aéroportuaire",0,"Pas celle-ci : ce n'est pas un texte. Repensez aux trois référentiels."]]},
-  {id:'e41',q:"Le permis de conduire civil est-il obligatoire pour se présenter à la formation autorisation de conduite permis T ?",o:[["Oui",1,"C'est un prérequis : permis français en cours de validité, ou permis étranger valable en France, dans la catégorie du véhicule utilisé."],["Non",0,"Pas tout à fait. Rappelez-vous le préambule : un prérequis, pas une option."]]},
-  {id:'e42',q:"Quelle est la sanction en cas de carte d'identification aéroportuaire (CIA) non apparente ?",fixed:1,o:[["Une amende de 150 €",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Une suspension de 6 jours",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Les deux : 150 € d'amende et/ou 6 jours de suspension",1,"Les deux peuvent tomber : 150 € d'amende et/ou 6 jours de suspension. Un badge dans la poche ne suffit pas."]]},
-  {id:'e43',q:"Quelle est l'autorité chargée de la surveillance et du respect des règles de circulation « côté piste » ?",o:[["La police aux frontières",0,"Erreur classique. Repensez à qui contrôle sur le terrain."],["La Gendarmerie des transports aériens",1,"La Gendarmerie des transports aériens surveille, contrôle et sanctionne sur l'aire de mouvement. La Direction de la sécurité de l'aviation civile Nord, elle, surveille le système."],["La douane",0,"Pas celle-ci. Repensez aux quatre missions : renseigner, protéger, contrôler, sanctionner."]]},
+  {id:'e41',q:"Le permis de conduire civil est-il obligatoire pour se présenter à la formation autorisation de conduite permis T ?",o:[["Oui",1,"C'est un prérequis : permis français en cours de validité, ou permis étranger valable en France, dans la catégorie du véhicule utilisé."],["Non",0,"Pas tout à fait. Le permis de conduire est un prérequis du permis T."]]},
+  {id:'e42',q:"Quelle est la sanction en cas de carte d'identification aéroportuaire (CIA) non apparente ?",fixed:1,o:[["Une amende de 150 €",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Une suspension de 6 jours",0,"Oui, mais pas seulement. Il y a une autre sanction possible."],["Les deux : 150 € d'amende et/ou 6 jours de suspension",1,"Les deux peuvent tomber : 150 € d'amende et/ou 6 jours de suspension."]]},
+  {id:'e43',q:"Quelle est l'autorité chargée de la surveillance et du respect des règles de circulation « côté piste » ?",o:[["La police aux frontières",0,"Pas celle-ci. Repensez à qui contrôle sur le terrain."],["La Gendarmerie des transports aériens",1,"La Gendarmerie des transports aériens surveille, contrôle et sanctionne sur l'aire de mouvement. La Direction de la sécurité de l'aviation civile Nord, elle, surveille le système."],["La douane",0,"Pas celle-ci. Repensez aux quatre missions : renseigner, protéger, contrôler, sanctionner."]]},
   {id:'e44',q:"Lorsque je réussis mon permis T, où dois-je le récupérer ?",o:[["Au Bureau Local de Sûreté",1,"Bâtiment Pluton, 6 place de Berlin, à l'accueil des professionnels."],["À la gendarmerie",0,"Pas là. Repensez à l'endroit où l'on dépose les demandes."],["Au bureau de piste",0,"Pas là. Repensez à l'endroit où l'on dépose les demandes."]]}];
  vue(`<div style="position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:center"><div class="qc" id="bq" style="width:min(680px,100%)"><p class="n"></p><p class="q"></p></div></div>`);
  VZ.insertAdjacentHTML('afterbegin',`<div class="bg" id="bgb" style="background-image:url(${IMG.hd7})"></div>`);

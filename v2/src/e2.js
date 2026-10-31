@@ -158,7 +158,7 @@ const at2=(id,frac,fn)=>[frac,fn];
 async function ouverture(){step();await mapReady;mapOn();
  // vue inclinée, à douze kilomètres : le centre de l'aéroport est loin devant
  Object.assign(mc,{Z:Z0,c:A.slice(),tilt:T0,sx:MW/2,sy:CH*.62-CH+MH});dirty=true;
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 2 · 5 h 20').card('3 250 hectares. Où passe la frontière ?',"À cheval sur trois départements : le Val-d'Oise, la Seine-et-Marne et la Seine-Saint-Denis.");
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 2 · 5 h 20').card('3 250 hectares : où passe la limite entre côté ville et côté piste ?',"À cheval sur trois départements : le Val-d'Oise, la Seine-et-Marne et la Seine-Saint-Denis.");
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await cont(L,"C'est parti");
  await sayS('r1');

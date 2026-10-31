@@ -67,7 +67,7 @@ const V2=[{t:"Le volant.",b:"o",ok:"Il fait partie de la vérification quotidien
  {t:"Les nouveaux dommages extérieurs.",b:"o",ok:"On fait le tour du véhicule pour les repérer, chaque jour."},
  {t:"Le laissez-passer véhicule.",b:"n",ok:"C'est le titre d'accès du véhicule, présenté au poste d'accès. Ce n'est pas un point de l'état du véhicule."}];
 async function avant(){step();head(H4+' · 5 h 55','Avant de partir ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Je le vérifie avant d'utiliser le véhicule, ou pas ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Je le vérifie avant d'utiliser le véhicule, ou pas ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await contV('Commencer');
  const E=await sortV(alt('av',V1,V2),[['o','Je le vérifie','check2'],['n','Pas dans la vérification du véhicule','warn']],{label:'Élément',id:'av'});
  jlog('5 h 55',`Avant de partir : 6 éléments${errTxt(E)}`);return gate('av',E,6,[2,3],'Avant de partir',5)}
@@ -102,6 +102,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .n12 li b{flex:none;width:30px;height:30px;border-radius:8px;background:var(--marine);color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px}
 .duo3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(14px,2vw,26px);width:100%;max-width:1180px}
 .duo3 .card2 .tx{max-width:none;margin:0}
-@media (max-width:700px){.n12 ol{grid-template-columns:1fr;gap:6px}.n12 li{font-size:15px}.n12 li b{width:24px;height:24px;font-size:12px}.duo3{grid-template-columns:1fr;gap:8px}.duo3 .card2{padding:12px 14px}.duo3 .card2 svg{display:none}.duo3 .card2 .lb{margin:0 0 4px}.duo3 .card2 .tx{font-size:15px}}
+@media (max-width:700px){.n12 ol{grid-template-columns:1fr;gap:6px}.n12 li{font-size:16px}.n12 li b{width:24px;height:24px;font-size:12px}.duo3{grid-template-columns:1fr;gap:8px}.duo3 .card2{padding:12px 14px}.duo3 .card2 svg{display:none}.duo3 .card2 .lb{margin:0 0 4px}.duo3 .card2 .tx{font-size:16px}}
 </style>`);
 runSeq([['Couverture',cover],['Le tour du véhicule',tour],['On récapitule',recap],['La vérification quotidienne',quotidien],['Si quelque chose ne va pas',horsService],['Avant de partir ? À vous',avant],['Question',question],["Fin de l'étape",fin]]);

@@ -39,18 +39,18 @@ async function cover(){step();await photo('c6',FAST?10:1200);setCam({zoom:1.08})
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('g01');
  await sayS('g02',[at('g02',.02,()=>L.card('« Le gilet, je l\'ai. »','Xavier'))]);
- await sayS('g03',[at('g03',.02,()=>L.card('C\'est un début','Les équipements, le badge, la cabine, les interdictions, les passagers, les piétons.'))]);
+ await sayS('g03',[at('g03',.02,()=>L.card('Le gilet ne suffit pas','Les équipements, le badge, la cabine, les interdictions, les passagers, les piétons.'))]);
  await cont(L,'Démarrer');L.kill();return null}
 
 /* 2. les équipements de protection individuelle (diapos 189, 190) */
 async function epi(){step();head(H6+' · '+HH('6 h 52'),'Les équipements de protection individuelle');
  const T=(k,t,s)=>`<div class="it ep" id="ep-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="s">${nb(s)}</p></div>`;
- vue(`<div class="epw">${T('gilet','Gilet haute visibilité','Jaune ou orange, au logo de l\'entreprise. Obligatoire en permanence sur l\'aire de mouvement.')}
+ vue(`<div class="epw solo">${T('gilet','Gilet haute visibilité','Jaune ou orange, au logo de l\'entreprise. Obligatoire en permanence sur l\'aire de mouvement.')}
   ${T('casque','Casque antibruit','Obligatoire dans les zones exposées à des bruits intensifs.')}
   ${T('chaussures','Chaussures de sécurité','Obligatoires sur toute l\'aire de trafic.')}
   ${T('autres','Et selon vos missions','D\'autres équipements peuvent être requis par vos règles internes.')}</div>`);
  await sayS('g04',[W('g04','gilet',()=>show('#ep-gilet',true)),W('g04','casque',()=>show('#ep-casque',true)),W('g04','chaussures',()=>show('#ep-chaussures',true))]);
- await sayS('g05',[at('g05',.05,()=>show('#ep-autres',true))]);undim();
+ await sayS('g05',[at('g05',.05,()=>show('#ep-autres',true))]);undim();VZ.querySelector('.epw').classList.remove('solo');
  jlog('6 h 52','Les équipements de protection individuelle');await contV();return null}
 
 /* 3. à vous : je le porte quand ? */
@@ -65,7 +65,7 @@ const EPI2=[{t:"Le gilet, jaune ou orange.",b:"t",ok:"Obligatoire en permanence 
  {t:"Le casque antibruit.",b:"z",ok:"Obligatoire dans les zones exposées à des bruits intensifs."},
  {t:"Les chaussures de sécurité.",b:"t",ok:"Obligatoires sur toute l'aire de trafic."}];
 async function trier(){step();head(H6+' · '+HH('6 h 55'),'Avant de descendre : je porte ? Cliquez sur la bonne colonne');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Cet équipement, je le porte :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Cet équipement, je le porte :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('g06');
  const E=await sortV(alt('epi',EPI1,EPI2),[['t',"Toujours",'check2'],['z','Selon la zone ou la mission','pin']],{label:'Élément',id:'epi'});
  jlog('6 h 55',`Avant de descendre : 5 éléments${errTxt(E)}`);return gate('epi',E,5,[1,2],'Avant de descendre',3)}
@@ -98,12 +98,12 @@ Object.assign(ART,{
  retrait:'<svg viewBox="0 0 200 200"><rect x="34" y="56" width="132" height="88" rx="10" fill="#fff" stroke="#263C52" stroke-width="5"/><rect x="48" y="72" width="34" height="42" rx="4" fill="#dfe4e7" stroke="#263C52" stroke-width="3"/><path d="M94 80h56M94 96h56M94 112h40" stroke="#8a949d" stroke-width="5" stroke-linecap="round"/><path d="M60 40l80 120" stroke="#c4161c" stroke-width="12" stroke-linecap="round"/></svg>'});
 async function interdit(){step();head(H6+' · '+HH('6 h 58'),'Les interdictions');
  const T=(k,t,s)=>`<div class="it ep" id="in-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="s">${nb(s)}</p></div>`;
- vue(`<div class="epw">${T('fumer','Interdiction absolue de fumer','Sur les aires de mouvement, chapitre 3, article 43 de l\'arrêté préfectoral. Fumer ou vapoter seulement aux endroits réservés à cet effet.')}
-  ${T('alcool','Ni alcool','Interdit de consommer de l\'alcool.')}
-  ${T('subst','Jamais sous l\'influence','De médicaments ou de substances psychoactives qui agissent sur la vigilance, substances illicites comprises.')}
-  ${T('retrait','Contrôle positif au volant','Alcool ou substance : retrait immédiat du titre de circulation.')}</div>`);
+ vue(`<div class="epw solo">${T('fumer','Il est absolument interdit de fumer','Sur les aires de mouvement, chapitre 3, article 43 de l\'arrêté préfectoral. Fumer ou vapoter seulement aux endroits réservés à cet effet.')}
+  ${T('alcool','Il est interdit de consommer de l\'alcool','')}
+  ${T('subst','On ne conduit jamais sous l\'influence','De médicaments ou de substances psychoactives qui agissent sur la vigilance, substances illicites comprises.')}
+  ${T('retrait','Un contrôle positif entraîne le retrait','Alcool ou substance au volant : retrait immédiat du titre de circulation.')}</div>`);
  await sayS('g11',[W('g11','fumer',()=>show('#in-fumer',true)),W('g11','alcool',()=>show('#in-alcool',true)),W('g11','médicaments',()=>show('#in-subst',true))]);
- await sayS('g12',[at('g12',.05,()=>show('#in-retrait',true))]);undim();
+ await sayS('g12',[at('g12',.05,()=>show('#in-retrait',true))]);undim();VZ.querySelector('.epw').classList.remove('solo');
  jlog('6 h 58','Les interdictions : tabac, alcool, substances');await contV();return null}
 
 /* 7. le déplacement des passagers (diapo 194) */
@@ -135,7 +135,7 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
 
 /* 10. fin de l'étape */
 async function fin(){step();head('Étape 6 terminée · 7 h 05','Sixième case cochée');
- vue(`<div class="hero">${bigIc('shield')}<p class="cap">Prêt à approcher de l'avion</p><p class="sub">Les équipements, le badge apparent, la cabine silencieuse, les interdictions, les passagers, les piétons.</p>
+ vue(`<div class="hero nph"><p class="cap">Prêt à approcher de l'avion</p><p class="sub">Les équipements, le badge apparent, la cabine silencieuse, les interdictions, les passagers, les piétons.</p>
   <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('g18');
@@ -144,18 +144,21 @@ const NEXT='etape7.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 .epw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,28px);width:100%;max-width:1240px}
 .ep,.cb{background:#fff;border-radius:16px;padding:clamp(12px,2vh,22px);box-shadow:0 6px 22px rgba(38,60,82,.10);align-items:center;text-align:center}
-.ep .art,.cb .art{width:min(100%,160px);aspect-ratio:1;margin:0 auto}.ep .art svg,.cb .art svg{width:100%;height:100%;display:block}
+.ep .art,.cb .art{width:min(100%,160px);aspect-ratio:1;margin:0 auto}
+.epw.solo{display:block;max-width:1000px}.epw.solo .ep{display:none}.epw.solo .ep.in:not(.dim){display:grid;grid-template-columns:minmax(150px,280px) 1fr;gap:clamp(16px,3vw,44px);align-items:center;text-align:left;margin:0 auto;padding:clamp(16px,2.4vw,32px)}.epw.solo .ep .art{width:100%;max-width:280px}.epw.solo .ep .t{font-size:clamp(24px,2.6vw,38px)}.epw.solo .ep .s{font-size:clamp(18px,1.6vw,24px);color:#33475b}
+@media (max-width:700px){.epw.solo .ep.in:not(.dim){grid-template-columns:1fr;text-align:center}.epw.solo .ep .art{max-width:150px}.epw.solo .ep .t{font-size:22px}.epw.solo .ep .s{font-size:17px}}
+.ep .art svg,.cb .art svg{width:100%;height:100%;display:block}
 .ep .t,.cb .t{font-weight:700;font-size:clamp(18px,1.6vw,24px);color:var(--marine);margin:0}
 .ep .s{font-size:clamp(15px,1.2vw,18px);color:#3d4d5c;margin:0;line-height:1.35}
 .it.dim{opacity:.38}
 .cbw{display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px);width:100%;max-width:1100px}
 .cbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,28px);width:100%}
 .cb .scr{fill:#5b6168;transition:fill .4s}.cb.on .scr{fill:#F2C200}
-.cb .why{grid-column:2;margin:0;font-size:14px;color:#3d4d5c;line-height:1.3}.cb .why:empty{display:none}.cb .st{margin:0;font-weight:700;font-size:15px;color:#5d6f80}.cb.on .st{color:var(--marine)}
+.cb .why{grid-column:2;margin:0;font-size:16px;color:#33475b;line-height:1.3}.cb .why:empty{display:none}.cb .st{margin:0;font-weight:700;font-size:15px;color:#5d6f80}.cb.on .st{color:var(--marine)}
 .cb .act{pointer-events:auto}.cb .act.off{visibility:hidden}
 .cbm{font-size:clamp(18px,1.6vw,24px);font-weight:600;color:var(--marine);text-align:center;margin:0;min-height:1.4em}
 .cbm .okc{color:var(--vert,#2E8B57)}.cbm .who{font-weight:500;color:#5d6f80;font-size:.8em;margin-left:6px}
-@media (max-width:700px){.epw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ep{padding:8px;gap:4px}.ep .art{width:min(100%,92px)}.ep .t{font-size:15px}.ep .s{font-size:14px}
+@media (max-width:700px){.epw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ep{padding:8px;gap:4px}.ep .art{width:min(100%,92px)}.ep .t{font-size:17px}.ep .s{font-size:16px}
  .cbs{grid-template-columns:1fr;gap:8px}.cb{display:grid;grid-template-columns:64px 1fr auto;grid-template-rows:auto auto;column-gap:12px;row-gap:0;text-align:left;padding:8px 12px}
  .cb .art{grid-row:1/4;width:64px}.cb .t{font-size:16px;align-self:end}.cb .st{grid-column:2;align-self:start}.cb .act{grid-row:1/4;grid-column:3;align-self:center;font-size:15px;padding:9px 14px}.cbm{font-size:16px}}
 </style>`);

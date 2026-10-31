@@ -11,7 +11,7 @@ async function cover(){step();await photo('c5a',FAST?10:1200);setCam({zoom:1.08}
  await sayS('c01');
  await sayS('c02',[at('c02',.02,()=>L.card('« Le code de la route, je le connais déjà. »','Xavier'))]);
  await sayS('c03',[at('c03',.02,()=>L.card("Il s'applique ici aussi","Et l'arrêté préfectoral ajoute ses règles : chapitre 3, article 27, adapter sa conduite aux risques et aux points sensibles.")),
-  W('c03','Deux parties',()=>L.card('Deux parties','Les principes généraux, puis les risques sur l\'aire de mouvement et les bonnes attitudes.'))]);
+  W('c03','Deux parties',()=>L.card('Le programme de l\'étape 5','Les principes généraux, puis les risques sur l\'aire de mouvement et les bonnes attitudes.'))]);
  await cont(L,'Démarrer');L.kill();return null}
 
 /* un écran sur photo : chaque carte arrive quand la voix en parle ; Xavier est cité */
@@ -68,7 +68,7 @@ const PASSE2=[{t:"Une route de service en ligne continue sur la carte.",b:"o",ok
  {t:"Le tunnel GE, avec un engin de 4,50 m de haut.",b:"n",ok:"La hauteur y est limitée à 4,30 m : vous ne passez pas."},
  {t:"Un cheminement en zone 30, à 30 km/h.",b:"o",ok:"Toute la plateforme est en zone 30 : à cette vitesse, vous passez."}];
 async function passe(){step();head(H5+' · 6 h 09','Je passe, ou je ne passe pas ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Avec mon permis T, je passe ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Avec mon permis T, je passe ?")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('c25');
  const E=await sortV(alt('pas',PASSE1,PASSE2),[['o','Je passe','check2'],['n','Je ne passe pas','warn']],{label:'Situation',id:'pas'});
  jlog('6 h 09',`Je passe ou je ne passe pas : 6 situations${errTxt(E)}`);return gate('pas',E,6,[4,7,9,10],'Je passe ou je ne passe pas',11)}
@@ -91,7 +91,7 @@ const ZB2=[{t:"On n'y circule pas pendant que la passerelle se déplace.",b:"pas
  {t:"On y accompagne les personnes à mobilité réduite.",b:"pmr",ok:"Les zébras bleus sur fond blanc, au niveau des aérogares."},
  {t:"La passerelle s'y gare.",b:"pass",ok:"Le carré blanc rayé de noir : l'emplacement de stationnement de la passerelle."}];
 async function zebras(){step();head(H5+' · 6 h 13','Les zébras : qui est quoi ? À vous');
- vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Ce marquage signale…")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">${nb("Ce marquage signale…")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('c35');
  const E=await sortV(alt('zb',ZB1,ZB2),ZEB,{label:'Marquage',id:'zb'});
  jlog('6 h 13',`Les zébras et leurs couleurs${errTxt(E)}`);return gate('zb',E,5,[14,15,16],'Les zébras',17)}
@@ -124,7 +124,7 @@ async function questions(){step();head(H5+' · 6 h 22',"Questions d'entraînemen
 
 /* 7. fin de la première partie */
 async function fin(){step();head('Étape 5 · 6 h 25','Les principes sont posés');
- vue(`<div class="hero">${bigIc('route')}<p class="cap">La case cinq n'est pas encore cochée</p><p class="sub">Il reste la seconde partie : les risques sur l'aire de mouvement et les bonnes attitudes.</p>
+ vue(`<div class="hero nph"><p class="cap">La case cinq n'est pas encore cochée</p><p class="sub">Il reste la seconde partie : les risques sur l'aire de mouvement et les bonnes attitudes.</p>
   <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('c64');

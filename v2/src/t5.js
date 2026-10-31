@@ -266,7 +266,7 @@ async function traversee(part='feux'){
    const L=tag([0,.1,-40],{dx:-40,dy:-70});L.dock().set('La frontière, en trois dimensions','Faites glisser pour tourner autour.');
    await sayS('m04');
    const RP=[['m05',[0,.2,-44],'La voie de circulation avion','Ligne axiale jaune. Avec un permis T, on la traverse seulement aux traversées marquées de tiretets. Priorité absolue aux avions et aux véhicules de service de l\'aire de manœuvre.'],
-    ['m06',[-19.5,.1,-44],'La ligne de sécurité','Ligne blanche continue derrière les postes : elle sépare l\'aire de trafic de l\'aire de manœuvre, réservée aux permis M, R et P.'],
+    ['m06',[-19.5,.1,-44],'La ligne de sécurité','Ligne blanche continue derrière les postes : elle sépare l\'aire de trafic de l\'aire de manœuvre. Pistes : permis P. Voies de circulation avion : permis M, R et P.'],
     ['m07',[-32,.1,10],'La bande dégagée d\'obstacles','La bande aéronautique, de part et d\'autre de la voie : elle protège l\'aéronef. Tout ce qui s\'y trouve est un obstacle.'],
     ['m08',[-48.6,2.6,4.6],'Le stop routier','Un repère visuel sur la route de service : après le stop, vous êtes dans la bande dégagée d\'obstacles.'],
     ['m09',[-41,2.4,-1.6],'Le véhicule jaune','Il ne s\'est pas arrêté au stop : il est dans la bande dégagée d\'obstacles. Même s\'il laisse passer l\'avion, il reste un obstacle. Les stops délimitent la bande.']];

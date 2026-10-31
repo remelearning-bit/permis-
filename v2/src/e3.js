@@ -15,7 +15,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .hrs{width:100%;max-width:1100px;display:flex;flex-direction:column;gap:clamp(12px,2.2vh,22px)}
 .hrs .row2{display:grid;grid-template-columns:clamp(110px,12vw,170px) 1fr;gap:16px;align-items:center;opacity:.25;transition:opacity .45s}
 .hrs .row2.in{opacity:1}
-.hrs .nm{font-weight:800;font-size:clamp(18px,1.7vw,26px)}.hrs .nm small{display:block;font-weight:600;font-size:14px;color:#5d6b78}
+.hrs .nm{font-weight:800;font-size:clamp(18px,1.7vw,26px)}.hrs .nm small{display:block;font-weight:600;font-size:15px;color:#5d6b78}
 .hrs .tr2{position:relative;height:clamp(30px,4.4vh,42px);background:#dfe5e9;border-radius:10px}
 .hrs .op{position:absolute;top:0;bottom:0;background:var(--marine);border-radius:10px;transform-origin:left center;transform:scaleX(0);transition:transform 1.1s ease}
 .hrs .row2.in .op{transform:none}
@@ -42,18 +42,18 @@ async function film(src,cred){const vv=$('#vv'),vid=$('#vid');const c=$('#vcred'
 /* 1. la couverture */
 var CAPS={aerien3:'Photo du support REM Formation'};
 async function cover(){step();await photo('aerien3',FAST?10:1200);setCam({zoom:1.1});
- const L=label([0,0,0],{big:1,lead:false}).title('Étape 3 · 5 h 30').card("L'accès au côté piste","On quitte le côté ville. Côté piste, on n'entre pas n'importe où, ni n'importe comment.");
+ const L=label([0,0,0],{big:1,lead:false}).title('Étape 3 · 5 h 30').card("L'accès au côté piste","Pour entrer côté piste, il faut des titres spéciaux et passer par un point de contrôle.");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
- await sayS('a01',[W('a01','Il faut',()=>L.card('Des titres spéciaux','Et des points de passage précis.'))],{zoom:1.08});
+ await sayS('a01',[W('a01','Il faut',()=>L.card('Des titres spéciaux, des points de passage précis','Les personnes et les véhicules y sont contrôlés.'))],{zoom:1.08});
  await sayS('a02',[at('a02',.02,()=>L.card('« Et au volant, on passe où ? »','Xavier'))]);
  await sayS('a03',[at('a03',.02,()=>L.card("Par un poste d'accès routier",'Avec inspection filtrage. On y va, et on prépare les papiers en route.'))]);
  await cont(L,"Rejoindre le poste d'accès");L.kill();return null}
 
 /* 2. les points d'accès */
 async function points(){step();head(H3,"Les points d'accès");
- vue(`<div class="hero">${bigIc('badge')}<p class="cap">Des titres spéciaux</p><p class="sub">L'accès au côté piste les nécessite.</p><p class="sub it" id="p1" style="font-weight:700;color:var(--marine)">Et il ne peut avoir lieu qu'en des points précis, où l'on contrôle les personnes et les véhicules : l'inspection filtrage.</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">Des titres spéciaux</p><p class="sub">L'accès au côté piste les nécessite.</p><p class="sub it" id="p1" style="font-weight:700;color:var(--marine)">Et il ne peut avoir lieu qu'en des points précis, où l'on contrôle les personnes et les véhicules : l'inspection filtrage.</p></div>`);
  const DUO=`<div class="duo2"><div class="card2 it" id="q1">${IC.user}<p class="lb">À pied</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'inspection filtrage</p><p class="lb" style="margin:0">PIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle des personnes.</p></div>
-  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="lb" style="margin:0">PARIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle du conducteur et du véhicule.</p><span class="pin it" id="q3">C'est là que vous allez</span></div></div>`;
+  <div class="card2 it" id="q2" style="position:relative">${IC.car}<p class="lb">En véhicule</p><p class="big2" style="font-size:clamp(24px,2.6vw,40px)">Le poste d'accès routier avec inspection filtrage</p><p class="lb" style="margin:0">PARIF</p><p class="tx" style="max-width:none;margin:0">Le contrôle du conducteur et du véhicule.</p><p class="tx it" id="q3" style="font-weight:700;color:var(--marine);margin:8px 0 0;max-width:none">C'est là que vous allez.</p></div></div>`;
  await sayS('a04',[W('a04','Il ne peut',()=>show('#p1')),W('a04','À pied',()=>{vue(DUO);show('#q1',true)}),W('a04','En véhicule',()=>show('#q2',true)),W('a04',"c'est là",()=>show('#q3'))]);
  undim();await pause();return null}
 
@@ -82,7 +82,7 @@ async function kit(){step();head(H3,'Ce que le conducteur doit avoir');
  await sayS('a08',KIT2.map((f,i)=>W('a08',f[2],()=>on('#ku'+i),.005)));
  await pause(2000);return null}
 async function boite(){step();head('Au poste d\'accès · 5 h 34','La boîte à gants');
- vue(`<div class="hero">${bigIc('doc')}<p class="cap">L'agent de contrôle demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
+ vue(`<div class="hero nph"><p class="cap">L'agent de contrôle demande les papiers</p><p class="sub">Pour chaque document : je le présente, ou il n'a rien à faire là ?</p></div>`);
  await sayS('a09');
  const E=await sortV([{t:"Mon titre de circulation aéroportuaire.",b:"p",ok:"Obligatoire : il fait partie de ce que tout conducteur doit avoir sur lui.",h:"Pas tout à fait. Repensez aux neuf choses à avoir sur soi."},
   {t:"Ma carte de carburant.",b:"n",ok:"Elle n'est pas un document de circulation.",h:"Pas tout à fait. Est-elle dans la liste des neuf ?"},
