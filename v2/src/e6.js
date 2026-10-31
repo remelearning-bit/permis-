@@ -89,9 +89,22 @@ async function cabine(){step();head(H6+' · '+HH('6 h 56'),'La stérilité de la
  await sayS('g10',[at('g10',.05,()=>{m.innerHTML='<b>Vous répondez une fois le véhicule à l\'arrêt.</b>'})]);
  jlog('6 h 56','Cabine silencieuse : radio, talkie-walkie, téléphone éteints');await contV();return null}
 
-/* 6. les interdictions (diapo 193) */
-const interdit=S('interdit','Les interdictions',['g11','g12'],[['g11',.12,'Interdiction absolue de fumer','Sur les aires de mouvement, chapitre 3, article 43. Fumer ou vapoter seulement aux endroits réservés à cet effet.'],
- ['g11',.62,'Ni alcool','Campagne de sécurité routière, novembre 2021 : 25 % des personnes contrôlées en écart, une alcoolémie de 1,45 mg/L.'],['g11',.8,'Ni sous l\'influence de médicaments ou de substances psychoactives','Qui agissent sur la vigilance. Substances illicites comprises.'],['g12',.3,'Un contrôle positif au volant','Alcool ou substance : retrait immédiat du titre de circulation.']],'Les interdictions',{tm:'6 h 58'});
+/* 6. les interdictions (diapo 193) : trois pictogrammes d'interdiction dessinés, puis la sanction */
+const NO=(inner)=>`<svg viewBox="0 0 200 200">${inner}<circle cx="100" cy="100" r="80" fill="none" stroke="#c4161c" stroke-width="14"/><path d="M44 44l112 112" stroke="#c4161c" stroke-width="14"/></svg>`;
+Object.assign(ART,{
+ fumer:NO('<rect x="40" y="94" width="96" height="18" rx="3" fill="#f4f1ea" stroke="#263C52" stroke-width="4"/><rect x="136" y="94" width="20" height="18" fill="#8a949d" stroke="#263C52" stroke-width="4"/><path d="M146 84c-8-10 8-16 0-28" fill="none" stroke="#8a949d" stroke-width="5" stroke-linecap="round"/>'),
+ alcool:NO('<path d="M74 52h52c0 34-10 52-26 56-16-4-26-22-26-56z" fill="#dfe4e7" stroke="#263C52" stroke-width="5" stroke-linejoin="round"/><path d="M100 108v36M80 148h40" stroke="#263C52" stroke-width="6" stroke-linecap="round"/>'),
+ subst:NO('<rect x="58" y="80" width="84" height="40" rx="20" fill="#dfe4e7" stroke="#263C52" stroke-width="5" transform="rotate(-30 100 100)"/><path d="M100 76v48" stroke="#263C52" stroke-width="5" transform="rotate(-30 100 100)"/>'),
+ retrait:'<svg viewBox="0 0 200 200"><rect x="34" y="56" width="132" height="88" rx="10" fill="#fff" stroke="#263C52" stroke-width="5"/><rect x="48" y="72" width="34" height="42" rx="4" fill="#dfe4e7" stroke="#263C52" stroke-width="3"/><path d="M94 80h56M94 96h56M94 112h40" stroke="#8a949d" stroke-width="5" stroke-linecap="round"/><path d="M60 40l80 120" stroke="#c4161c" stroke-width="12" stroke-linecap="round"/></svg>'});
+async function interdit(){step();head(H6+' · '+HH('6 h 58'),'Les interdictions');
+ const T=(k,t,s)=>`<div class="it ep" id="in-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="s">${nb(s)}</p></div>`;
+ vue(`<div class="epw">${T('fumer','Interdiction absolue de fumer','Sur les aires de mouvement, chapitre 3, article 43 de l\'arrêté préfectoral. Fumer ou vapoter seulement aux endroits réservés à cet effet.')}
+  ${T('alcool','Ni alcool','Interdit de consommer de l\'alcool.')}
+  ${T('subst','Jamais sous l\'influence','De médicaments ou de substances psychoactives qui agissent sur la vigilance, substances illicites comprises.')}
+  ${T('retrait','Contrôle positif au volant','Alcool ou substance : retrait immédiat du titre de circulation.')}</div>`);
+ await sayS('g11',[W('g11','fumer',()=>show('#in-fumer',true)),W('g11','alcool',()=>show('#in-alcool',true)),W('g11','médicaments',()=>show('#in-subst',true))]);
+ await sayS('g12',[at('g12',.05,()=>show('#in-retrait',true))]);undim();
+ jlog('6 h 58','Les interdictions : tabac, alcool, substances');await contV();return null}
 
 /* 7. le déplacement des passagers (diapo 194) */
 const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'Les cheminements des passagers','Indiqués par l\'agent de la zone d\'évolution contrôlée ou l\'agent d\'embarquement.'],['g13',.3,'Sur l\'aire de trafic','Des lignes blanches continues et un hologramme. Ils croisent les voies avion ou longent les postes, comme au terminal 2G.'],
