@@ -10,8 +10,8 @@ const HH=t=>t.replace(/ /g,'\u00a0');
 async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
-  if(d.swap&&d.swap[0]===id)await sayS(id,[...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null}))),at(id,d.swap[1],()=>photo(d.swap[2],FAST?10:900))]);
-  else await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
+  const sw=(d.swaps||(d.swap?[d.swap]:[])).filter(x=>x[0]===id);
+  await sayS(id,[...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null}))),...sw.map(x=>at(id,x[1],()=>photo(x[2],FAST?10:900)))])}
  if(d.end)d.end(L);await cont(L);L.kill();return null}
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
@@ -75,8 +75,8 @@ const badge=S('badge','Le badge',['g07'],[['g07',.25,'Le titre de circulation a�
 
 /* 5. la stérilité de la cabine (diapo 192) : à vous de rendre la cabine silencieuse */
 async function cabine(){step();head(H6+' · '+HH('6 h 56'),'La stérilité de la cabine');
- const T=(k,t)=>`<div class="it cb on" id="cb-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="st">Allumé</p><button class="act off">Éteindre</button></div>`;
- vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique')}${T('storno','Le talkie-walkie (storno)')}${T('tel','Le téléphone portable')}</div><div class="cbm it" id="cbm"></div></div>`);
+ const T=(k,t,w)=>`<div class="it cb on" id="cb-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="why">${nb(w)}</p><p class="st">Allumé</p><button class="act off">Éteindre</button></div>`;
+ vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique','')}${T('storno','Le talkie-walkie (storno)','Pour ne pas être distrait par un appel vocal de la régulation.')}${T('tel','Le téléphone portable','Pour ne pas être distrait par un appel.')}</div><div class="cbm it" id="cbm"></div></div>`);
  await sayS('g08',[W('g08','radio',()=>show('#cb-radio',true)),W('g08','talkie',()=>show('#cb-storno',true)),W('g08','portable',()=>show('#cb-tel',true))]);undim();
  const m=$c('#cbm');m.textContent='À vous : éteignez tout ce qui peut vous distraire.';show('#cbm');
  const bs=[...VZ.querySelectorAll('.cb .act')];bs.forEach(b=>b.classList.remove('off'));
@@ -113,7 +113,7 @@ const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'L
 /* 8. les cheminements piétons (diapo 195) */
 const pietons=S('piet1','Les cheminements piétons',['g14','g15'],[['g14',.05,'Traverser une voie avion à pied','Dans le cheminement piéton : bande blanche continue de part et d\'autre, avec hologramme, ou zébras blancs.'],
  ['g14',.43,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
- ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swap:['g14',.42,'piet2'],tm:'7 h 01'});
+ ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swaps:[['g14',.42,'piet2'],['g14',.68,'piet1']],tm:'7 h 01'});
 
 /* 9. les questions d'entraînement (diapo 196) */
 async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;
@@ -151,13 +151,13 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .cbw{display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px);width:100%;max-width:1100px}
 .cbs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(12px,2vw,28px);width:100%}
 .cb .scr{fill:#5b6168;transition:fill .4s}.cb.on .scr{fill:#F2C200}
-.cb .st{margin:0;font-weight:700;font-size:15px;color:#5d6f80}.cb.on .st{color:var(--marine)}
+.cb .why{grid-column:2;margin:0;font-size:14px;color:#3d4d5c;line-height:1.3}.cb .why:empty{display:none}.cb .st{margin:0;font-weight:700;font-size:15px;color:#5d6f80}.cb.on .st{color:var(--marine)}
 .cb .act{pointer-events:auto}.cb .act.off{visibility:hidden}
 .cbm{font-size:clamp(18px,1.6vw,24px);font-weight:600;color:var(--marine);text-align:center;margin:0;min-height:1.4em}
 .cbm .okc{color:var(--vert,#2E8B57)}.cbm .who{font-weight:500;color:#5d6f80;font-size:.8em;margin-left:6px}
 @media (max-width:700px){.epw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ep{padding:8px;gap:4px}.ep .art{width:min(100%,92px)}.ep .t{font-size:15px}.ep .s{font-size:14px}
  .cbs{grid-template-columns:1fr;gap:8px}.cb{display:grid;grid-template-columns:64px 1fr auto;grid-template-rows:auto auto;column-gap:12px;row-gap:0;text-align:left;padding:8px 12px}
- .cb .art{grid-row:1/3;width:64px}.cb .t{font-size:16px;align-self:end}.cb .st{align-self:start}.cb .act{grid-row:1/3;grid-column:3;align-self:center;font-size:15px;padding:9px 14px}.cbm{font-size:16px}}
+ .cb .art{grid-row:1/4;width:64px}.cb .t{font-size:16px;align-self:end}.cb .st{grid-column:2;align-self:start}.cb .act{grid-row:1/4;grid-column:3;align-self:center;font-size:15px;padding:9px 14px}.cbm{font-size:16px}}
 </style>`);
 runSeq([['Couverture',cover],['Les équipements de protection individuelle',epi],['Le badge',badge],['Avant de descendre : je porte ? À vous',trier],
  ['La stérilité de la cabine',cabine],['Les interdictions',interdit],['Le déplacement des passagers',passagers],['Les cheminements piétons',pietons],
