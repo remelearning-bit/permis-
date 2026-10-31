@@ -24,7 +24,7 @@ def b14(r=60):
   d.ellipse((0,0,s-1,s-1),fill=(255,255,255),outline=RED,width=int(s*.1))
   f=F(700,int(s*.48));tw=d.textlength('50',font=f);d.text(((s-tw)/2,s*.2),'50',font=f,fill=INK)
   return im.resize((2*r,2*r),Image.LANCZOS)
-m=Image.open('/home/claude/rev/ppimg/d101_1.jpg').convert('RGB')
+m=Image.open('d101_1_sans_rose.png').convert('RGB')
 ImageDraw.Draw(m).rectangle((1625,0,1920,228),fill=(255,255,255))
 m=m.crop((10,30,1920,1062))
 # fond blanc franc, contraste léger
