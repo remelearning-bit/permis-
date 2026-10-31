@@ -1088,6 +1088,8 @@ async function traversee(part='feux'){
   const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.8),STOPM);m.rotation.x=-Math.PI/2;m.rotation.z=-Math.PI/2;m.position.set(-81.4,.075,0);scene.add(m);
   // l'avion stationné sur le poste voisin, moteurs arrêtés, feux éteints
   {const a=makeAirliner(glowTex);a.userData.beacons.forEach(b=>a.remove(b));a.traverse(o=>{if(o.userData.taxi)o.visible=false});a.rotation.y=Math.PI;a.position.set(-76,0,-42);scene.add(a);blob(9,40,a,0,-1);blob(36,9,a,0,2)}
+  {const ap2=new THREE.Mesh(new THREE.PlaneGeometry(56,40),mat(BETON));ap2.rotation.x=-Math.PI/2;ap2.position.set(-76,.029,40);scene.add(ap2);strip(-76,10,-76,60,.3,JAUNE,.071);
+   const a=makeAirliner(glowTex);a.userData.beacons.forEach(b=>a.remove(b));a.traverse(o=>{if(o.userData.taxi)o.visible=false});a.position.set(-76,0,42);scene.add(a);blob(9,40,a,0,-1);blob(36,9,a,0,2)}
   van=new THREE.Group();scene.add(van);const VB=0xf3f4f2;
   box(4.9,1.9,2.0,VB,0,1.35,0,van);box(1.2,.9,1.96,0x2f3a44,2.2,1.75,0,van);box(5.0,.3,2.04,0x9aa3ab,0,.45,0,van);
   [[1.6,1],[1.6,-1],[-1.6,1],[-1.6,-1]].forEach(([x,z])=>{const w=cyl(.36,.36,.24,0x23282d,x,.36,z,van,16);w.rotation.x=Math.PI/2});
@@ -1117,6 +1119,9 @@ async function traversee(part='feux'){
  /* notre véhicule : on voit l'intérieur, à la première personne */
  const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128,zecdeb:-205}[part],0,0);
  blob(3,6,veh); // on est dans le véhicule : on n'en voit que le tableau de bord
+ const BODY=new THREE.Group();veh.add(BODY);BODY.visible=false;
+ box(4.7,1.5,1.95,0xf3f4f2,-.2,1.45,0,BODY);box(4.8,.55,2.0,MARINE,-.2,.55,0,BODY);box(.9,.8,1.9,0x2f3a44,1.95,1.75,0,BODY);
+ [[1.4,1],[1.4,-1],[-1.6,1],[-1.6,-1]].forEach(([x,z])=>{const w=cyl(.36,.36,.24,0x23282d,x,.36,z,BODY,16);w.rotation.x=Math.PI/2});
  const IN=new THREE.Group();veh.add(IN);const DASH=0x8d97a0;
  const dash=box(.5,.12,1.9,DASH,1.55,1.0,0,IN);box(.05,.05,1.9,DASH,1.8,1.12,0,IN);
  const CAB=new THREE.Group();IN.add(CAB);box(.06,.06,1.9,DASH,1.3,2.03,0,CAB);[-.93,.93].forEach(z=>{const p=box(.05,.95,.05,DASH,1.57,1.6,z,CAB);p.rotation.z=.5});box(1.9,.45,.05,0x8a949d,.45,.92,-.97,CAB);
@@ -1249,11 +1254,20 @@ async function traversee(part='feux'){
    await wait(FAST?50:3500);await look(ahead(),1300);L.a.set(-130,.1,1.5);L.set('Zone inactive','Circulation autorisée : on repart.');await drive(-90);
    L.dock().set('Zone qui déborde','Active : arrêt obligatoire au cédez-le-passage avion. Inactive : on passe.');L.kill();return await fin()}
   if(part==='dstop'){
-   const L=tag([-81.4,.1,0],{dx:-40,dy:-80});L.set('Vers la voie avion','Deux stops avant de traverser.');
+   // d'abord vu d'en haut : les deux postes voisins, les deux stops, la voie avion ; puis on descend dans la cabine
+   const AER={x:-168,y:30,z:16},AT=new THREE.Vector3(-58,0,-3);
+   IN.visible=false;BODY.visible=true;seatOff={...AER};camT.copy(AT);
+   const L=tag([-60,.1,0],{dx:-40,dy:-80});L.set('Le double stop','Vu d\'en haut, avant de prendre le volant.');
+   await sayS('c41',[at('c41',.02,()=>{L.a.set(-30,.1,0);L.set('Deux stops consécutifs','Pour traverser une voie de circulation avion.')}),
+    at('c41',.32,()=>{L.a.set(-81.4,.1,0);L.set('Premier stop','Je vérifie les postes voisins : il protège l\'arrivée et le départ des aéronefs.')}),
+    at('c41',.72,()=>{L.a.set(-48.4,.1,0);L.set('Second stop','J\'attends que celui de devant ait traversé : il protège la voie avion.')})]);
+   L.set('Au volant','On y va.');
+   {const a={...AER},A0=AT.clone(),s0=new THREE.Vector3(veh.position.x+.42,1.62,-.45);
+    await anim(3800,t=>{const e=ease(t);seatOff={x:a.x+(s0.x-a.x)*e,y:a.y+(s0.y-a.y)*e,z:a.z+(s0.z-a.z)*e};const b=new THREE.Vector3(...ahead());camT.lerpVectors(A0,b,e);if(t>.8){BODY.visible=false;IN.visible=true}});
+    seatOff=null;camT.set(...ahead())}
+   L.a.set(-81.4,.1,0);L.set('Vers le premier stop','');
    await contV('Rouler jusqu\'au premier stop');await drive(-86);
-   await sayS('c41',[at('c41',.02,()=>L.set('Deux stops consécutifs','Pour traverser une voie de circulation avion.')),
-    at('c41',.32,()=>{L.a.set(-76,.1,-12);L.set('Le premier stop','Il protège l\'arrivée et le départ des aéronefs sur les postes voisins.');look([-72,1,-36],1700)}),
-    at('c41',.72,()=>{L.a.set(-48.4,.1,0);L.set('Le second stop','Il protège la voie de circulation avion.');look(ahead(),1500)})]);
+   L.set('Premier stop','On marque l\'arrêt.');
    await sayS('c42',[at('c42',.02,()=>{L.a.set(-81.4,.1,0);L.set('Au premier stop','On marque l\'arrêt.')}),
     at('c42',.16,()=>{L.a.set(-76,3,-22);L.set('Un aéronef attendu ?','On vérifie les postes voisins avant d\'avancer.');look([-74,2,-40],1600)}),
     at('c42',.42,()=>{L.a.set(-48.4,.1,0);L.set('Puis le second stop','On s\'y avance.');look(ahead(),1200);drive(-55)}),
