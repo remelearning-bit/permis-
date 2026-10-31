@@ -6,7 +6,8 @@ Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" 
 var CAPS={c6:'Image du parcours REM Formation'};
 
 /* les écrans sur photo : chaque carte arrive quand la voix en parle */
-async function infoS(d){step();if(d.head)head(H6,d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+const HH=t=>t.replace(/ /g,'\u00a0');
+async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   if(d.swap&&d.swap[0]===id)await sayS(id,[...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null}))),at(id,d.swap[1],()=>photo(d.swap[2],FAST?10:900))]);
@@ -42,7 +43,7 @@ async function cover(){step();await photo('c6',FAST?10:1200);setCam({zoom:1.08})
  await cont(L,'Démarrer');L.kill();return null}
 
 /* 2. les équipements de protection individuelle (diapos 189, 190) */
-async function epi(){step();head(H6+' · 6 h 52','Les équipements de protection individuelle');
+async function epi(){step();head(H6+' · '+HH('6 h 52'),'Les équipements de protection individuelle');
  const T=(k,t,s)=>`<div class="it ep" id="ep-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="s">${nb(s)}</p></div>`;
  vue(`<div class="epw">${T('gilet','Gilet haute visibilité','Jaune ou orange, au logo de l\'entreprise. Obligatoire en permanence sur l\'aire de mouvement.')}
   ${T('casque','Casque antibruit','Obligatoire dans les zones exposées à des bruits intensifs.')}
@@ -56,54 +57,56 @@ async function epi(){step();head(H6+' · 6 h 52','Les équipements de protection
 const EPI1=[{t:"Le gilet haute visibilité au logo de l'entreprise.",b:"t",ok:"En permanence sur l'aire de mouvement."},
  {t:"Le casque antibruit.",b:"z",ok:"Dans les zones exposées à des bruits intensifs."},
  {t:"Les chaussures de sécurité.",b:"z",ok:"Obligatoires en zone d'évolution contrôlée."},
- {t:"Mon badge, apparent.",b:"t",ok:"Toujours apparent : sinon, 150 € d'amende et ou 6 jours de retrait du titre."},
+ {t:"Mon badge, apparent.",b:"t",ok:"Toujours apparent : sinon, 150 € d'amende et/ou 6 jours de retrait du titre."},
  {t:"Les lunettes de protection.",b:"z",ok:"Selon vos missions et les règles internes."}];
 const EPI2=[{t:"Le gilet, jaune ou orange.",b:"t",ok:"Obligatoire en permanence sur l'aire de mouvement."},
  {t:"Le titre de circulation, porté bien visible.",b:"t",ok:"Toujours apparent sur l'aire de mouvement."},
  {t:"Les gants.",b:"z",ok:"Selon vos missions et les règles internes."},
- {t:"Le casque antibruit, près d'un bruit intensif.",b:"z",ok:"Obligatoire dans les zones exposées à des bruits intensifs."},
- {t:"Les chaussures de sécurité, en zone d'évolution contrôlée.",b:"z",ok:"Obligatoires en zone d'évolution contrôlée."}];
-async function trier(){step();head(H6+' · 6 h 53','Avant de descendre : je porte ? À vous');
+ {t:"Le casque antibruit.",b:"z",ok:"Obligatoire dans les zones exposées à des bruits intensifs."},
+ {t:"Les chaussures de sécurité.",b:"z",ok:"Obligatoires en zone d'évolution contrôlée."}];
+async function trier(){step();head(H6+' · '+HH('6 h 55'),'Avant de descendre : je porte ? Cliquez sur la bonne colonne');
  vue(`<div class="hero">${bigIc('quiz')}<p class="cap">${nb("Cet équipement, je le porte :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('g06');
- const E=await sortV(alt('epi',EPI1,EPI2),[['t',"Toujours, sur l'aire de mouvement",'check2'],['z','Selon la zone ou la mission','pin']],{label:'Équipement',id:'epi'});
- jlog('6 h 53',`Avant de descendre : 5 équipements${errTxt(E)}`);return gate('epi',E,5,[1],'Avant de descendre',2)}
+ const E=await sortV(alt('epi',EPI1,EPI2),[['t',"Toujours, sur l'aire de mouvement",'check2'],['z','Selon la zone ou la mission','pin']],{label:'Élément',id:'epi'});
+ jlog('6 h 55',`Avant de descendre : 5 éléments${errTxt(E)}`);return gate('epi',E,5,[1,2],'Avant de descendre',3)}
 
 /* 4. le badge (diapo 191) */
-const badge=S('badge','Le badge',['g07'],[['g07',.25,'Le titre de circulation aéroportuaire','Votre badge, porté apparent.'],['g07',.6,'Absent ou caché','150 € d\'amende et ou 6 jours de retrait du titre.']],'Le badge');
+const badge=S('badge','Le badge',['g07'],[['g07',.25,'Le titre de circulation aéroportuaire','Votre badge, porté apparent.'],['g07',.6,'Absent ou caché','150 € d\'amende et/ou 6 jours de retrait du titre.']],'Le badge',{tm:'6 h 54'});
 
 /* 5. la stérilité de la cabine (diapo 192) : à vous de rendre la cabine silencieuse */
-async function cabine(){step();head(H6+' · 6 h 56','La stérilité de la cabine');
+async function cabine(){step();head(H6+' · '+HH('6 h 56'),'La stérilité de la cabine');
  const T=(k,t)=>`<div class="it cb on" id="cb-${k}"><div class="art">${ART[k]}</div><p class="t">${nb(t)}</p><p class="st">Allumé</p><button class="act off">Éteindre</button></div>`;
- vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique')}${T('storno','Le talkie-walkie')}${T('tel','Le téléphone portable')}</div><p class="cbm it" id="cbm"></p></div>`);
+ vue(`<div class="cbw"><div class="cbs">${T('radio','La radio, la musique')}${T('storno','Le storno, le talkie-walkie')}${T('tel','Le téléphone portable')}</div><div class="cbm it" id="cbm"></div></div>`);
  await sayS('g08',[W('g08','radio',()=>show('#cb-radio',true)),W('g08','talkie',()=>show('#cb-storno',true)),W('g08','portable',()=>show('#cb-tel',true))]);undim();
  const m=$c('#cbm');m.textContent='À vous : éteignez tout ce qui peut vous distraire.';show('#cbm');
  const bs=[...VZ.querySelectorAll('.cb .act')];bs.forEach(b=>b.classList.remove('off'));
  await new Promise(r=>{let n=0;const upd=()=>{const left=bs.filter(b=>!b.disabled);hand(left[0]||null);if(!left.length)r()};
   bs.forEach(b=>b.onclick=()=>{const c=b.closest('.cb');c.classList.remove('on');c.querySelector('.st').textContent='Éteint';b.disabled=true;b.classList.add('off');upd()});upd()});
- hand(null);m.innerHTML='<b class="okc">Cabine silencieuse.</b> Rien pour vous distraire au volant.';
+ hand(null);m.innerHTML='<b class="okc">Cabine silencieuse.</b> Rien pour vous distraire au volant.';await wait(FAST?50:1400);
+ m.innerHTML='<div class="qc" id="cbq" style="width:min(640px,100%);margin:0 auto"><p class="q">Un message arrive pendant que vous roulez. Vous répondez :</p></div>';
+ await pick(null,[['0','Tout de suite, en roulant'],['1','Une fois le véhicule à l\'arrêt']],'1','Une fois le véhicule à l\'arrêt : on ne répond jamais en roulant.',{0:'Non : en roulant, vous ne répondez pas. Vous répondez une fois le véhicule à l\'arrêt.'},'Continuer',{once:false,retry:true,host:$c('#cbq')});
  await sayS('g09',[at('g09',.02,()=>{m.innerHTML='« Et si la régulation m\'appelle ? » <span class="who">Xavier</span>'})]);
  await sayS('g10',[at('g10',.05,()=>{m.innerHTML='<b>Vous répondez une fois le véhicule à l\'arrêt.</b>'})]);
  jlog('6 h 56','Cabine silencieuse : radio, talkie-walkie, téléphone éteints');await contV();return null}
 
 /* 6. les interdictions (diapo 193) */
-const interdit=S('interdit','Les interdictions',['g11','g12'],[['g11',.12,'Interdiction absolue de fumer','Sur les aires de mouvement, chapitre 3, article 43 de l\'arrêté. Fumer ou vapoter seulement aux endroits réservés.'],
- ['g11',.62,'Ni alcool',''],['g11',.8,'Ni médicaments, ni substances','Qui agissent sur la vigilance.'],['g12',.3,'Un contrôle positif au volant','Alcool ou substance : retrait immédiat du titre de circulation.']],'Les interdictions');
+const interdit=S('interdit','Les interdictions',['g11','g12'],[['g11',.12,'Interdiction absolue de fumer','Sur les aires de mouvement, chapitre 3, article 43. Fumer ou vapoter seulement aux endroits réservés à cet effet.'],
+ ['g11',.62,'Ni alcool','Campagne de sécurité routière, novembre 2021 : 25 % des personnes contrôlées en écart, une alcoolémie de 1,45 mg/L.'],['g11',.8,'Ni sous l\'influence de médicaments ou de substances psychoactives','Qui agissent sur la vigilance. Substances illicites comprises.'],['g12',.3,'Un contrôle positif au volant','Alcool ou substance : retrait immédiat du titre de circulation.']],'Les interdictions',{tm:'6 h 58'});
 
 /* 7. le déplacement des passagers (diapo 194) */
-const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'Les cheminements des passagers','Indiqués par l\'agent de zone ou l\'agent d\'embarquement.'],['g13',.3,'Sur l\'aire de trafic','Des lignes blanches continues et un hologramme. Ils croisent les voies avion ou longent les postes, comme au terminal 2G.'],
- ['g13',.68,'Au large','Les passagers restent à distance de l\'avion, contournent les cônes de Lübeck, et suivent les instructions de l\'agent.']],'Les passagers',{swap:['g13',.66,'pass2']});
+const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'Les cheminements des passagers','Indiqués par l\'agent de la zone d\'évolution contrôlée ou l\'agent d\'embarquement.'],['g13',.3,'Sur l\'aire de trafic','Des lignes blanches continues et un hologramme. Ils croisent les voies avion ou longent les postes, comme au terminal 2G.'],
+ ['g13',.68,'À l\'embarquement ou au débarquement au large','À distance suffisante de l\'avion. Les cônes de Lübeck, s\'il y en a, se contournent : ils signalent des ailes à moins de 3,10 m. Les passagers suivent l\'agent de la zone d\'évolution contrôlée ou l\'agent de la compagnie.']],'Les passagers',{swap:['g13',.66,'pass2'],tm:'7 h 00'});
 
 /* 8. les cheminements piétons (diapo 195) */
 const pietons=S('piet1','Les cheminements piétons',['g14','g15'],[['g14',.05,'Traverser une voie avion à pied','Dans le cheminement piéton : bande blanche continue de part et d\'autre, avec hologramme, ou zébras blancs.'],
- ['g14',.36,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
- ['g15',.3,'Interdit à pied sur une voie avion','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swap:['g14',.34,'piet2']});
+ ['g14',.43,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
+ ['g15',.3,'Interdit à pied sur une voie avion','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swap:['g14',.42,'piet2'],tm:'7 h 01'});
 
 /* 9. les questions d'entraînement (diapo 196) */
-async function questions(){step();head(H6+' · 7 h 02',"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;
- const Q=two?[{bk:[5],fixed:1,q:"Où peut-on fumer ou vapoter ?",o:[["Sur l'aire de trafic, loin des avions.",0,"Non : interdiction absolue de fumer sur les aires de mouvement."],["Seulement aux endroits réservés, hors des aires de mouvement.",1,"Fumer ou vapoter, seulement aux endroits réservés à cet effet."],["Dans son véhicule, vitres fermées.",0,"Non : le véhicule sur l'aire de mouvement ne fait pas exception. Interdiction absolue."]]},
-   {bk:[7],fixed:1,q:"Un piéton peut-il circuler sur une voie de circulation avion ?",o:[["Oui, s'il porte son gilet haute visibilité.",0,"Le gilet ne suffit pas : à pied, la voie avion est interdite."],["Non, sauf sous la surveillance et l'accompagnement d'un véhicule autorisé.",1,"Pour sécuriser l'avion à l'arrivée ou au départ de son poste."],["Oui, de jour seulement.",0,"Le jour ne change rien : à pied, la voie avion est interdite, sauf accompagnement."]]}]
-  :[{line:'g16',bk:[5],fixed:1,q:"Peut-on fumer sur l'aire de trafic ?",o:[["Oui.",0,"Non : interdiction absolue, chapitre 3, article 43."],["Non.",1,"Fumer ou vapoter, seulement aux endroits réservés, hors des aires de mouvement."]]},
+async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;
+ const Q=two?[{bk:[5],fixed:1,q:"Où peut-on fumer ou vapoter ?",o:[["Seulement aux endroits réservés à cet effet.",1,"Fumer ou vapoter, seulement aux endroits réservés à cet effet."],["Sur l'aire de trafic, loin des avions.",0,"Non : interdiction absolue de fumer sur les aires de mouvement."],["Partout, s'il n'y a pas d'avion à proximité.",0,"Non : interdiction absolue de fumer sur les aires de mouvement."]]},
+   {bk:[7],fixed:1,q:"Un piéton peut-il circuler sur une voie de circulation avion ?",o:[["Oui, s'il porte son gilet haute visibilité.",0,"Le gilet ne suffit pas : à pied, la circulation sur la voie avion est interdite."],["Oui, de jour seulement.",0,"Le jour ne change rien : à pied, la circulation sur la voie avion est interdite, sauf accompagnement."],["Non, sauf sous la surveillance et l'accompagnement d'un véhicule autorisé.",1,"Pour sécuriser l'avion à l'arrivée ou au départ de son poste."]]}]
+    :[{line:'g16',bk:[5],fixed:1,q:"Peut-on fumer sur l'aire de trafic ?",o:[["Oui.",0,"Non : interdiction absolue, chapitre 3, article 43."],["Non.",1,"Interdiction absolue sur les aires de mouvement. Fumer ou vapoter, seulement aux endroits réservés à cet effet."]]},
    {line:'g17',bk:[7],fixed:1,q:"La circulation des piétons sur l'aire de mouvement est :",o:[["Strictement interdite.",0,"Non : elle est autorisée, sous conditions, dans les cheminements piétons et avec les équipements."],["Autorisée sous certaines conditions.",1,"Dans les cheminements piétons, avec le gilet et les équipements ; jamais sur une voie avion sans accompagnement."],["Autorisée, de jour seulement, avec port d'un vêtement haute visibilité.",0,"Le gilet est nécessaire, mais la condition n'est pas le jour : ce sont les cheminements et les règles de sécurité."]]}];
  return quiz('q6',Q,'7 h 02',"Questions d'entraînement",[1],8,true)}
 
@@ -119,7 +122,7 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
 
 /* 10. fin de l'étape */
 async function fin(){step();head('Étape 6 terminée · 7 h 05','Sixième case cochée');
- vue(`<div class="hero">${bigIc('shield')}<p class="cap">Gilet, badge, cabine silencieuse</p><p class="sub">Vous pouvez approcher de l'avion.</p>
+ vue(`<div class="hero">${bigIc('shield')}<p class="cap">Prêt à approcher de l'avion</p><p class="sub">Les équipements, le badge apparent, la cabine silencieuse, les interdictions, les passagers, les piétons.</p>
   <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('g18');
@@ -128,7 +131,7 @@ const NEXT='etape7.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 .epw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(12px,2vw,28px);width:100%;max-width:1240px}
 .ep,.cb{background:#fff;border-radius:16px;padding:clamp(12px,2vh,22px);box-shadow:0 6px 22px rgba(38,60,82,.10);align-items:center;text-align:center}
-.ep .art,.cb .art{width:min(100%,190px);aspect-ratio:1}.ep .art svg,.cb .art svg{width:100%;height:100%;display:block}
+.ep .art,.cb .art{width:min(100%,160px);aspect-ratio:1;margin:0 auto}.ep .art svg,.cb .art svg{width:100%;height:100%;display:block}
 .ep .t,.cb .t{font-weight:700;font-size:clamp(18px,1.6vw,24px);color:var(--marine);margin:0}
 .ep .s{font-size:clamp(15px,1.2vw,18px);color:#3d4d5c;margin:0;line-height:1.35}
 .it.dim{opacity:.38}
@@ -139,10 +142,10 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .cb .act{pointer-events:auto}.cb .act.off{visibility:hidden}
 .cbm{font-size:clamp(18px,1.6vw,24px);font-weight:600;color:var(--marine);text-align:center;margin:0;min-height:1.4em}
 .cbm .okc{color:var(--vert,#2E8B57)}.cbm .who{font-weight:500;color:#5d6f80;font-size:.8em;margin-left:6px}
-@media (max-width:700px){.epw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ep{padding:8px;gap:4px}.ep .art{width:min(100%,92px)}.ep .t{font-size:15px}.ep .s{font-size:12.5px}
+@media (max-width:700px){.epw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.ep{padding:8px;gap:4px}.ep .art{width:min(100%,92px)}.ep .t{font-size:15px}.ep .s{font-size:14px}
  .cbs{grid-template-columns:1fr;gap:8px}.cb{display:grid;grid-template-columns:64px 1fr auto;grid-template-rows:auto auto;column-gap:12px;row-gap:0;text-align:left;padding:8px 12px}
  .cb .art{grid-row:1/3;width:64px}.cb .t{font-size:16px;align-self:end}.cb .st{align-self:start}.cb .act{grid-row:1/3;grid-column:3;align-self:center;font-size:15px;padding:9px 14px}.cbm{font-size:16px}}
 </style>`);
-runSeq([['Couverture',cover],['Les équipements de protection individuelle',epi],['Avant de descendre : je porte ? À vous',trier],['Le badge',badge],
+runSeq([['Couverture',cover],['Les équipements de protection individuelle',epi],['Le badge',badge],['Avant de descendre : je porte ? À vous',trier],
  ['La stérilité de la cabine',cabine],['Les interdictions',interdit],['Le déplacement des passagers',passagers],['Les cheminements piétons',pietons],
  ["Questions d'entraînement",questions],['Fin de l\'étape 6',fin]]);
