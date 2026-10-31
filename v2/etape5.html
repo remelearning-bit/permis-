@@ -996,7 +996,7 @@ function makeAirliner(glowTex,o={}){
    blancs et noirs). Voix existantes c36, c37, c38. Vue à la première personne, comme « En panne sur la voie avion ». */
 async function traversee(part='feux'){
  // un seul monde pour tout le trajet de l'étape 5 ; chaque écran est un lieu (part) : zone30, couleurs, chemins, feux
- const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion']};
+ const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion'],dstop:['6 h 13','Le double stop']};
  step();head(H5+' · '+HD[part][0],HD[part][1]);if(innerWidth<700)headOff();
  const host=document.createElement('div');host.id='trav';host.innerHTML='<canvas></canvas><svg class="ld"></svg><div class="ui"></div>';document.body.appendChild(host);
  const cv=host.querySelector('canvas'),ldv=host.querySelector('.ld'),UI=host.querySelector('.ui');
@@ -1032,14 +1032,15 @@ async function traversee(part='feux'){
  // dans la traversée : les tiretets décalés, blancs et noirs (diapo 163)
  for(const zz of [-3.4,3.4]){strip(-44.5,zz,44.5,zz,.56,NOIR,.066);for(let x=-44.5;x<44.5;x+=1.5){strip(x,zz-.13,x+.75,zz-.13,.22,BLANC,.07);strip(x+.75,zz+.13,x+1.5,zz+.13,.22,BLANC,.07)}}
  // la ligne d'effet, et le STOP peint avant elle
+ let STOPM=null;
   {const c=document.createElement('canvas');c.width=512;c.height=256;const g=c.getContext('2d');g.fillStyle=ROUGE_CSS;
   const o=[[150,8],[362,8],[504,70],[504,186],[362,248],[150,248],[8,186],[8,70]];g.beginPath();o.forEach(([x,y],i)=>i?g.lineTo(x,y):g.moveTo(x,y));g.closePath();g.fill();
   g.fillStyle='#fbfbf8';g.font='bold 150px Barlow, Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('STOP',256,136);
-  const tx=new THREE.CanvasTexture(c);tx.anisotropy=8;const sm=new THREE.MeshLambertMaterial({map:tx,transparent:true});
+  const tx=new THREE.CanvasTexture(c);tx.anisotropy=8;const sm=new THREE.MeshLambertMaterial({map:tx,transparent:true});STOPM=sm;
   for(const [x,rz] of [[-48.4,-Math.PI/2],[48.4,Math.PI/2]]){const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.8),sm);m.rotation.x=-Math.PI/2;m.rotation.z=rz;m.position.set(x,.075,0);scene.add(m)}}
  /* les feux de protection de traversée, encastrés dans la chaussée, sur la ligne d'effet */
  const FEUX=[],glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,30);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
- for(const fx of [-44.5,44.5])for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
+ for(const fx of (part==='dstop'?[]:[-44.5,44.5]))for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(1,1,1);s.position.set(fx,.25,z);scene.add(s);FEUX.push({d,s})}
  let feu='off',feuT=0;const COUL={rouge:0xff2a1a,orange:0xff8c1a};
  const setFeu=f=>{feu=f;feuT=performance.now()};
@@ -1073,8 +1074,27 @@ async function traversee(part='feux'){
   strip(-148,8,-148,66,.3,JAUNE,.07);
   const fl=new THREE.Shape();fl.moveTo(0,-.35);fl.lineTo(3,-.35);fl.lineTo(3,-.8);fl.lineTo(4.6,0);fl.lineTo(3,.8);fl.lineTo(3,.35);fl.lineTo(0,.35);fl.closePath();
   const fm=new THREE.Mesh(new THREE.ShapeGeometry(fl),mat(BLANC));fm.rotation.x=-Math.PI/2;fm.position.set(-140,.07,0);scene.add(fm)}
+
+ /* ---- lieu « double stop » (diapos 130 et 131) : le premier stop, avant la voie d'accès d'un poste avion (ligne jaune), protège l'arrivée et le départ des aéronefs ;
+    le second, avant la voie avion, protège la voie ; un véhicule nous précède dans la traversée ---- */
+ let van=null;
+ if(part==='dstop'){
+  const ap=new THREE.Mesh(new THREE.PlaneGeometry(56,58),mat(BETON));ap.rotation.x=-Math.PI/2;ap.position.set(-76,.03,-36);scene.add(ap);
+  strip(-76,-62,-76,-4.2,.3,JAUNE,.07);strip(-76,4.2,-76,10,.3,JAUNE,.07);
+  {const t=new THREE.Mesh(new THREE.PlaneGeometry(60,44),mat(BETON));t.rotation.x=-Math.PI/2;t.position.set(-49,.028,26);scene.add(t)}
+  const arc=[];for(let k=0;k<=24;k++){const a=k/24*Math.PI/2;arc.push([-76+76*(1-Math.cos(a)),10+34*Math.sin(a)])}
+  for(let k=0;k<arc.length-1;k++)strip(arc[k][0],arc[k][1],arc[k+1][0],arc[k+1][1],.3,JAUNE,.07);
+  strip(-76,-4.2,-76,4.2,.3,JAUNE,.072);
+  const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.8),STOPM);m.rotation.x=-Math.PI/2;m.rotation.z=-Math.PI/2;m.position.set(-81.4,.075,0);scene.add(m);
+  // l'avion stationné sur le poste voisin, moteurs arrêtés, feux éteints
+  {const a=makeAirliner(glowTex);a.userData.beacons.forEach(b=>a.remove(b));a.traverse(o=>{if(o.userData.taxi)o.visible=false});a.rotation.y=Math.PI;a.position.set(-76,0,-42);scene.add(a);blob(9,40,a,0,-1);blob(36,9,a,0,2)}
+  van=new THREE.Group();scene.add(van);const VB=0xf3f4f2;
+  box(4.9,1.9,2.0,VB,0,1.35,0,van);box(1.2,.9,1.96,0x2f3a44,2.2,1.75,0,van);box(5.0,.3,2.04,0x9aa3ab,0,.45,0,van);
+  [[1.6,1],[1.6,-1],[-1.6,1],[-1.6,-1]].forEach(([x,z])=>{const w=cyl(.36,.36,.24,0x23282d,x,.36,z,van,16);w.rotation.x=Math.PI/2});
+  const tl=new THREE.MeshBasicMaterial({color:0xb81c14});[[-2.46,.8],[-2.46,-.8]].forEach(([x,z])=>{const l=new THREE.Mesh(new THREE.BoxGeometry(.04,.3,.2),tl);l.position.set(x,1.1,z);van.add(l)});
+  blob(6,3,van);van.position.set(-46,0,-1.5)}
  /* notre véhicule : on voit l'intérieur, à la première personne */
- const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95}[part],0,0);
+ const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128}[part],0,0);
  blob(3,6,veh); // on est dans le véhicule : on n'en voit que le tableau de bord
  const IN=new THREE.Group();veh.add(IN);const DASH=0x8d97a0;
  const dash=box(.5,.12,1.9,DASH,1.55,1.0,0,IN);box(.05,.05,1.9,DASH,1.8,1.12,0,IN);
@@ -1193,6 +1213,27 @@ async function traversee(part='feux'){
    await choisir(D,[{t:'50 km/h',p:[-334,2.6,6.5],ok:1},{t:'30 km/h',p:[-334,1.2,9],fb:'La route de la ferme est la seule exception : 50 km/h. Partout ailleurs, zone 30.'},{t:'70 km/h',p:[-334,3.8,4],fb:'Rien n\'est au-dessus de 50 sur la plateforme : la route de la ferme est limitée à 50 km/h.'}],
     'Oui : 50 km/h sur la route de la ferme, 30 partout ailleurs.');
    jlog('6 h 07','Zone 30 : la route de la ferme à 50');await look(ahead(),1200);D.kill();return await fin()}
+  if(part==='dstop'){
+   const L=tag([-81.4,.1,0],{dx:-40,dy:-80});L.set('Vers la voie avion','Deux stops avant de traverser.');
+   await contV('Rouler jusqu\'au premier stop');await drive(-86);
+   await sayS('c41',[at('c41',.02,()=>L.set('Deux stops consécutifs','Pour traverser une voie de circulation avion.')),
+    at('c41',.32,()=>{L.a.set(-76,.1,-12);L.set('Le premier stop','Il protège l\'arrivée et le départ des aéronefs sur les postes voisins.');look([-72,1,-36],1700)}),
+    at('c41',.72,()=>{L.a.set(-48.4,.1,0);L.set('Le second stop','Il protège la voie de circulation avion.');look(ahead(),1500)})]);
+   await sayS('c42',[at('c42',.02,()=>{L.a.set(-81.4,.1,0);L.set('Au premier stop','On marque l\'arrêt.')}),
+    at('c42',.16,()=>{L.a.set(-76,3,-22);L.set('Un aéronef attendu ?','On vérifie les postes voisins avant d\'avancer.');look([-74,2,-40],1600)}),
+    at('c42',.42,()=>{L.a.set(-48.4,.1,0);L.set('Puis le second stop','On s\'y avance.');look(ahead(),1200);drive(-55)}),
+    at('c42',.62,()=>{L.a.copy(van.position).setY(2.6);L.set('Le véhicule qui précède','On attend qu\'il ait terminé sa traversée.')}),
+    at('c42',.86,()=>L.set('Pas de petit train','Un véhicule à la fois dans la traversée.'))]);
+   await sayS('c43',[at('c43',.04,()=>{L.dock().set('Où ?','A04, A01, A09, C14, C02, B24, D24.')})]);
+   L.dock(false);L.a.set(-48.4,.1,0);L.set('À vous','Le véhicule devant vous s\'engage dans la traversée.');
+   const goV=anim(8000,t=>{van.position.x=-46+106*t*t}).then(()=>{anim(12000,t=>{van.position.x=60+200*t})});await wait(FAST?50:1600);
+   L.dock().set('À vous','Que faites-vous ?');
+   await choisir(L,[{t:'Je le suis de près, on traverse ensemble',p:[-40,.6,1.2],fb:'Pas de petit train : on attend que le véhicule qui précède ait terminé sa traversée.'},
+    {t:'J\'attends qu\'il ait fini de traverser',p:[-50.5,.4,-1.6],ok:1}],'Oui : un véhicule à la fois, on attend qu\'il ait terminé sa traversée.');
+   await goV;L.dock(false).set('Avant de vous engager','Un regard des deux côtés de la voie.');await look([0,2,-140],1500);await look([0,2,140],2000);await look(ahead(),1300);
+   L.a.set(-20,.1,3.4);L.set('Entre les tiretets','La traversée se fait dans le cheminement prévu.');await drive(30);
+   L.dock().set('Double stop','Premier stop : les postes voisins. Second stop : la voie avion. Un véhicule à la fois.');
+   jlog('6 h 13','Double stop : un véhicule à la fois');L.kill();return await fin()}
   if(part==='ligne'){
    const L=tag([-19.5,.1,-30],{dx:-40,dy:-70});L.el.style.opacity=0;
    await drive(-62);await look([-19.5,0,-34],1600);L.el.style.opacity=1;
@@ -1260,7 +1301,7 @@ runSeq([['Couverture',cover],["L'alphabet aéronautique",alphabet],["À vous d'�
  ['Les routes de service à accès restreint',rds],['Lire la carte',carte],['Pourquoi un accès restreint',pourquoi],['Nouvelle route de service, juin 2025',rds2025],['Zone 30',zone30],
  ['Le marquage au sol : les couleurs',()=>traversee('couleurs')],['Les cheminements véhicules',()=>traversee('chemins')],['La ligne de sécurité',ligne],['Je passe, ou je ne passe pas ? À vous',passe],
  ['La signalisation',signal],['La vitesse',vitesse],['Les zébras blancs',zblanc],["Le stationnement : où c'est interdit",zbleu],['Jaune, rouge, et le carré',zrouge],['Les zébras ? À vous',zebras],
- ['Le dispositif lumineux',()=>traversee('feux')],['Feux de croisement, priorité, convois',croise],['Le double stop',dstop],["Quand la zone d'évolution contrôlée déborde",zecdeb],['Le triangle',triangle],['La voie derrière les postes avion',vcv],
+ ['Le dispositif lumineux',()=>traversee('feux')],['Feux de croisement, priorité, convois',croise],['Le double stop',()=>traversee('dstop')],["Quand la zone d'évolution contrôlée déborde",zecdeb],['Le triangle',triangle],['La voie derrière les postes avion',vcv],
  ['Les voies hors gabarit',gabarit],['Autour du terminal 1',t1],['Les satellites et la jetée Uniform',satel],['Autour des satellites A, S3 et S4',s3s4],["Autour de l'avion",autour],['Les feux anticollision',anticoll],['Avant de pénétrer sur le poste',avant],['La vigie',vigie],
  ["Questions d'entraînement",questions],["Fin de la première partie",fin]]);
 
