@@ -809,21 +809,36 @@ async function quiz(prev){prev.html(`<button class="act" id="goq">Passer aux que
   {id:'z43',q:"Suis-je autorisé à stationner mon véhicule sur les marquages au sol (zébras) ?",o:[["Non.",1,"Jamais sur un zébra, quelle que soit sa couleur."],["Oui, mais uniquement sur les zébras verts.",0,"Aucun zébra n'est un parking."],["Oui.",0,"Non : les zébras signalent des zones à laisser libres."]]}];
  QS=Qs;return ask(Qs)}
 let QS=null;const SEUIL=2;
-async function ask(Qs){let score=0;
+async function ask(Qs){let score=0;MISSED=[];
  for(let i=0;i<Qs.length;i++){const Qq=Qs[i];const el=document.createElement('div');el.className='qz';el.innerHTML=`<p class="n">Question ${i+1} sur ${Qs.length}</p><p class="q">${nb(Qq.q)}</p>`+Qq.o.map((o,k)=>`<button class="opt" data-k="${k}">${nb(o[0])}</button>`).join('');ui.appendChild(el);
-  const sp=say(Qq.id);
+  const sp=Qq.id&&LINES[Qq.id]?say(Qq.id):wait(FAST?0:400);
   const pick=await new Promise(r=>el.querySelectorAll('.opt').forEach(b=>b.onclick=()=>r(b)));
-  const k=+pick.dataset.k,good=!!Qq.o[k][1];if(good)score++;
+  const k=+pick.dataset.k,good=!!Qq.o[k][1];if(good)score++;else MISSED.push(Qq.rev||REVQ[Qq.id]);
   el.querySelectorAll('.opt').forEach(b=>{b.onclick=null;b.classList.add('off');const kk=+b.dataset.k;if(Qq.o[kk][1])b.classList.add('ok');else if(b===pick)b.classList.add('ko')});
   pick.insertAdjacentHTML('afterend',`<p class="fb ${good?'ok':'ko'}">${nb(Qq.o[k][2])}</p>`);
   await sp;const nx=document.createElement('button');nx.className='act';nx.textContent=i<Qs.length-1?'Question suivante':'Terminer';el.appendChild(nx);await new Promise(r=>nx.onclick=r);el.remove()}
  return score}
 const plur=n=>`${n} bonne${n>1?'s':''} réponse${n>1?'s':''} sur 4`;
+/* la seconde série (diapos 201, 208, 213, 224) : après un échec, on revoit les parties manquées, puis on répond à l'autre série */
+const QS2=[{rev:'psi',q:"Pendant l'avitaillement, le périmètre de sécurité incendie s'étend à :",o:[["3 m des réservoirs, des conduites, des points d'accès au réseau de carburant et des avitailleurs.",1,"Une zone non marquée au sol : on n'y fume pas, on n'y utilise ni téléphone, ni montre connectée, ni flash."],["1 m des points extrêmes de l'avion.",0,"Un mètre, c'est le périmètre de sécurité collision. Le périmètre incendie, c'est trois mètres."],["15 m devant les réacteurs.",0,"Quinze mètres, c'est l'aspiration devant un réacteur en marche. Le périmètre incendie, c'est trois mètres."]]},
+ {rev:'cones',q:"Où les cônes sont-ils obligatoires ?",o:[["Au nez de l'avion.",0,"Au nez, ils sont recommandés. Les deux cônes obligatoires sont en bout d'aile."],["En bout d'aile.",1,"Deux cônes obligatoires en bout d'aile ; au nez, aux bouts du plan horizontal et à la queue, ils sont recommandés."],["À la queue de l'avion.",0,"À la queue, ils sont recommandés. Les deux cônes obligatoires sont en bout d'aile."]]},
+ {rev:'stat',q:"Je gare mon engin près du poste :",o:[["Devant l'avion, pour être prêt.",0,"Jamais devant l'avion."],["Sous la passerelle, à l'abri.",0,"Jamais sous la passerelle, ni dans son cadre blanc."],["Sur un emplacement réservé, en marche arrière, moteur coupé, frein de parc serré, feux éteints.",1,"Les engins se garent sur les emplacements réservés, en marche arrière de préférence."]]},
+ {rev:'coac',q:"Une minute de retard au départ de l'avion, c'est :",o:[["600 € de pénalité, imputés par la compagnie.",1,"Et le créneau de départ peut être modifié."],["60 € de pénalité.",0,"C'est dix fois plus : six cents euros la minute."],["Aucune pénalité si le retard vient d'un engin d'assistance.",0,"Six cents euros la minute, imputés par la compagnie pour la société concernée."]]}];
+const REVN={urg:"Les arrêts d'urgence",front:'La frontière',psc:'Le périmètre de sécurité collision',stat:'Le stationnement',psi:'Le périmètre de sécurité incendie',cones:'Les cônes',coac:'La coactivité'};
+const REVQ={z40:'urg',z41:'front',z42:'psc',z43:'stat'};
+async function revoir(k){const d=label([0,0,0],{lead:false});d.sm=[];let L;
+ try{if(k==='urg')L=await urgence(d);else if(k==='front')L=await frontiere(d);else if(k==='psc'){d.kill();await go('cones');const l2=label([8.8,.1,8]);L=await psc(l2)}
+  else if(k==='stat'){L=await interdit(d);L=await stat(L)}else if(k==='psi')L=await psiP(d);else if(k==='cones')L=await cones(d);else if(k==='coac'){d.sm=[];L=await coactivite(d)}}catch(e){console.warn('revoir',k,e)}
+ if(L){if(L.sm)L.sm.forEach(x=>x.kill());L.kill()}try{d.kill()}catch(e){}}
+let MISSED=[],SER=0;
 async function fin(score){
- // seuil de réussite : deux bonnes réponses sur quatre ; en dessous, on recommence les questions, autant de fois qu'on veut
- while(score<SEUIL){const L=label([0,0,0],{lead:false}).title('Les questions').card(plur(score),`Il en faut au moins ${SEUIL} pour passer à l'étape 8. Vous pouvez recommencer les questions autant de fois que vous voulez.`,{ko:1}).html(`<button class="act" id="again">Recommencer les questions</button>`);
+ // seuil : la moitié au moins (2 sur 4, décision de Cat) ; en dessous, on revoit les parties manquées, puis on répond à l'autre série
+ while(score<SEUIL){const parts=[...new Set(MISSED)];
+  const L=label([0,0,0],{lead:false}).title('Les questions').card(plur(score),`Il en faut au moins ${SEUIL} pour passer à l'étape 8. On revoit d'abord : ${parts.map(k=>REVN[k].charAt(0).toLowerCase()+REVN[k].slice(1)).join(', ')}. Puis une nouvelle série de questions.`,{ko:1}).html(`<button class="act" id="again">Revoir la partie</button>`);
   await new Promise(r=>$('#again').onclick=r);L.kill();await wait(300);
-  const sh=QS.slice();for(let i=sh.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[sh[i],sh[j]]=[sh[j],sh[i]]}score=await ask(sh)}
+  for(const k of parts)await revoir(k);
+  await go('quiz');SER++;const QQ=(SER%2?QS2:QS).slice();for(let i=QQ.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[QQ[i],QQ[j]]=[QQ[j],QQ[i]]}
+  jlog('7 h 29','Parties revues : '+parts.map(k=>REVN[k]).join(', '));score=await ask(QQ)}
  jlog('7 h 28',`Questions de l'étape : ${plur(score)}`);
  step('fin');await go('haut',2500);
  const L=label([0,0,-6],{big:1,lead:false}).title('Étape 7 terminée · 7 h 30').card(plur(score),'').html(`<p class="s" style="margin-top:14px;font-weight:600">Votre journal de l'étape</p><ul class="jl">${jhtml(false)}</ul>`).html(`<a class="act" style="text-decoration:none" href="../navigation/permis-t-etape8-manoeuvre.html">Étape 8 · L'aire de manœuvre</a>`);
