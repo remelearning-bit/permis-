@@ -1,6 +1,6 @@
 /* ---------------- Étape 6 · Les règles générales de sécurité sur l'aire de mouvement (diapos 187 à 196) ----------------
    Voix g01 à g18 existantes. Photos du support (diapos 191 à 195), illustrations au trait pour les équipements et la cabine.
-   Questions : seuil de 80 %, seconde série après un échec. */
+   Questions : seuil de 50 %, seconde série après un échec. */
 const H6='Étape 6 · La sécurité sur l\'aire de mouvement';
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
 var CAPS={c6:'Image du parcours REM Formation'};
@@ -110,7 +110,7 @@ async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entra
    {line:'g17',bk:[7],fixed:1,q:"La circulation des piétons sur l'aire de mouvement est :",o:[["Strictement interdite.",0,"Non : elle est autorisée, sous conditions, dans les cheminements piétons et avec les équipements."],["Autorisée sous certaines conditions.",1,"Dans les cheminements piétons, avec le gilet et les équipements ; jamais sur une voie avion sans accompagnement."],["Autorisée, de jour seulement, avec port d'un vêtement haute visibilité.",0,"Le gilet est nécessaire, mais la condition n'est pas le jour : ce sont les cheminements et les règles de sécurité."]]}];
  return quiz('q6',Q,'7 h 02',"Questions d'entraînement",[1],8,true)}
 
-/* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 80 %, retour ciblé */
+/* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 50 %, retour ciblé */
 async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
  for(let i=0;i<Q.length;i++){const z=Q[i];
   vue(`<div class="qc" id="qq" style="width:min(760px,100%)"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div>`);

@@ -1,5 +1,5 @@
 /* ---------------- Étape 5 · La circulation des véhicules, première partie : les principes généraux (diapos 90 à 149) ----------------
-   Voix c01 à c64 existantes. Photos du support et images du PowerPoint. Questions : seuil de 80 %, retour ciblé, seconde série (QCM REM et test Groupe ADP). */
+   Voix c01 à c64 existantes. Photos du support et images du PowerPoint. Questions : seuil de 50 %, retour ciblé, seconde série (QCM REM et test Groupe ADP). */
 const H5='Étape 5 · La circulation des véhicules';
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
 var CAPS={c5a:'Photo du support REM Formation'};
@@ -37,7 +37,7 @@ async function epeler(){step();head(H5+' · 6 h 03',"À vous d'épeler");ALT.ep=
    {line:'c08',q:"Le poste K52, je l'annonce :",o:[["Kilo Cinq Deux",1,"Kilo pour K, Cinq, Deux."],["Kilomètre Cinq Deux",0,"Le mot de la lettre K est Kilo, pas kilomètre."],["Charlie Cinq Deux",0,"Charlie, c'est la lettre C. Pour K, on dit Kilo."]]}];
  return quiz('ep',Q,'6 h 03',"À vous d'épeler",[1],2,true)}
 
-/* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 80 %, retour ciblé */
+/* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 50 %, retour ciblé */
 async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
  for(let i=0;i<Q.length;i++){const z=Q[i];
   vue(z.ph?`<div class="qimg"><figure class="fig"><img src="${IMG[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(760px,100%)"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div>`);
