@@ -10,13 +10,13 @@ const p=await ctx.newPage();const TP=Date.now();
 await p.addInitScript(()=>{const pl=HTMLMediaElement.prototype.play;HTMLMediaElement.prototype.play=function(){if(this.tagName==='AUDIO')window.__aud=this;return pl.apply(this,arguments)}});
 const log=[];const T=()=>(Date.now()-TP)/1000;
 await p.goto(url);await p.waitForTimeout(2500);let last='',idle=0;
-for(let i=0;i<2000;i++){
+const MAXT=+(process.env.MAXT||9999);for(let i=0;i<2000;i++){if(T()>MAXT)break;
  const st=await p.evaluate(()=>{const A=window.__aud;return A&&!A.paused&&!A.ended?A.src:''});
  if(st&&st!==last){log.push({t:T(),src:st.startsWith('data:')?'emb':st.split('/').pop()})}last=st;
  const c=await p.evaluate(()=>{const vis=e=>{const r=e.getBoundingClientRect();return r.width>0&&r.height>0&&getComputedStyle(e).opacity>.5};
   const ch=[...document.querySelectorAll(innerWidth<700?'#trav .tch.live:not(.ok):not(.ko)':'#trav .ttg.live:not(.ok):not(.ko)')].filter(vis);
   if(ch.length)return {kind:'choice',items:ch.map(e=>{const r=e.getBoundingClientRect();return {t:e.textContent.trim(),x:r.left+r.width/2,y:r.top+r.height/2}})};
-  const a=[...document.querySelectorAll('#vbtn .act, #vbtn a.act')].filter(vis)[0];if(a){const r=a.getBoundingClientRect();return {kind:'btn',t:a.textContent.trim(),href:a.getAttribute('href'),x:r.left+r.width/2,y:r.top+r.height/2}}
+  const a=[...document.querySelectorAll('#navgo .act, #vbtn .act, #vbtn a.act')].filter(vis)[0];if(a){const r=a.getBoundingClientRect();return {kind:'btn',t:a.textContent.trim(),href:a.getAttribute('href'),x:r.left+r.width/2,y:r.top+r.height/2}}
   return null});
  if(!c){idle++;if(idle>2400)break;await p.waitForTimeout(100);continue}idle=0;
  if(c.kind==='btn'&&c.href){await p.waitForTimeout(2500);break}

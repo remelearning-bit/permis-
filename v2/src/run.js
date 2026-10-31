@@ -4,7 +4,7 @@ const b=await chromium.launch({args:['--autoplay-policy=no-user-gesture-required
 const p=await b.newPage({viewport:{width:+w,height:+h},deviceScaleFactor:1,isMobile:+w<700,hasTouch:+w<700});
 const errs=[];p.on('pageerror',e=>errs.push('PAGEERR '+e.message));p.on('console',m=>{if(m.type()==='error')errs.push('CON '+m.text())});
 await p.goto(url);await p.waitForTimeout(1500);let n=0,idle=0;const t0=Date.now();
-const SEL=[".mk2.live b",'#navgo .act','#vbtn a.act','#vbtn .act:not(.alt)','#vz .qc .act','.lab .act','#jrn.on .act','.ref:not(.seen):not(.off)','.bk:not(.ko)','.pz.live button:not(.ko)','#vz .qc .ans:not(.off)','.permis li.ans','.vpt.live','.tgt:not(.ok):not(.done)','.lab .ans:not(.off)','.tgt.live:not(.ok):not(.ko)','#trav .ttg.live:not(.ok):not(.ko)'];
+const SEL=[".mk2.live b",'#navgo .act','#vbtn a.act','#vbtn .act:not(.alt)','#vz .qc .act','.lab .act','#jrn.on .act','.ref:not(.seen):not(.off)','.bk:not(.ko)','.pz.live button:not(.ko)','#vz .qc .ans:not(.off)','.permis li.ans','.vpt.live','.tgt:not(.ok):not(.done)','.lab .ans:not(.off)','.tgt.live:not(.ok):not(.ko)','#trav .ttg.live:not(.ok):not(.ko)','#trav .tch.live:not(.ok):not(.ko)'];
 for(let i=0;i<+maxs;i++){
  const c=await p.evaluate((SEL)=>{for(const s of SEL){const els=[...document.querySelectorAll(s)].filter(e=>{const r=e.getBoundingClientRect();const st=getComputedStyle(e);return r.width>0&&r.height>0&&st.visibility!=='hidden'&&+st.opacity>.3&&r.bottom>0&&r.top<innerHeight&&r.right>0&&r.left<innerWidth});
   if(els.length){const e=els[Math.floor(Math.random()*els.length)];const r=e.getBoundingClientRect();return {s,x:r.left+r.width/2,y:r.top+r.height/2,t:(e.textContent||'').trim().slice(0,40),href:e.getAttribute('href')}}}return null},SEL);

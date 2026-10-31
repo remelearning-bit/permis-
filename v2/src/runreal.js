@@ -7,7 +7,7 @@ await p.addInitScript(()=>{const pl=HTMLMediaElement.prototype.play;HTMLMediaEle
 await p.goto(url);await p.waitForTimeout(2000);const t0=Date.now();const T=()=>((Date.now()-t0)/1000).toFixed(1);
 const log=s=>{fs.appendFileSync(out+'/log.txt',s+'\n')};
 let lastAud='',k=0,n=0,idle=0,lastShot=0;
-const SEL=[".mk2.live b",'#navgo .act','#vbtn a.act','#vbtn .act:not(.alt)','#vz .qc .act','.lab .act','#jrn.on .act','.ref:not(.seen):not(.off)','.bk:not(.ko)','.pz.live button:not(.ko)','#vz .qc .ans:not(.off)','.permis li.ans','.vpt.live','.tgt:not(.ok):not(.done)','.lab .ans:not(.off)','.tgt.live:not(.ok):not(.ko)','#trav .ttg.live:not(.ok):not(.ko)'];
+const SEL=[".mk2.live b",'#navgo .act','#vbtn a.act','#vbtn .act:not(.alt)','#vz .qc .act','.lab .act','#jrn.on .act','.ref:not(.seen):not(.off)','.bk:not(.ko)','.pz.live button:not(.ko)','#vz .qc .ans:not(.off)','.permis li.ans','.vpt.live','.tgt:not(.ok):not(.done)','.lab .ans:not(.off)','.tgt.live:not(.ok):not(.ko)','#trav .ttg.live:not(.ok):not(.ko)','#trav .tch.live:not(.ok):not(.ko)'];
 while(true){
  const st=await p.evaluate(()=>{let r='';try{const A=window.__aud;if(A&&!A.paused&&!A.ended)r=decodeURIComponent(A.src.split('/').pop())}catch(e){}const v=[...document.querySelectorAll('video')].find(x=>!x.paused&&!x.ended);if(v)r+=' +film';return r});
  if(st!==lastAud){log(`${T()}s AUDIO ${st||'(silence)'}`);lastAud=st}

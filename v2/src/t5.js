@@ -2,7 +2,10 @@
    Sources : diapo 126 (feux rouges, traversée interdite) et sa note ; diapo 127 (détection automatique des mobiles,
    feu orange, orange clignotant, feu rouge, ligne d'effet) ; diapo 163 (traversée à l'intérieur des tiretets décalés
    blancs et noirs). Voix existantes c36, c37, c38. Vue à la première personne, comme « En panne sur la voie avion ». */
-async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion');if(innerWidth<700)headOff();
+async function traversee(part='feux'){
+ // un seul monde pour tout le trajet de l'étape 5 ; chaque écran est un lieu (part) : zone30, couleurs, chemins, feux
+ const HD={zone30:['6 h 07','Zone 30'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion']};
+ step();head(H5+' · '+HD[part][0],HD[part][1]);if(innerWidth<700)headOff();
  const host=document.createElement('div');host.id='trav';host.innerHTML='<canvas></canvas><svg class="ld"></svg><div class="ui"></div>';document.body.appendChild(host);
  const cv=host.querySelector('canvas'),ldv=host.querySelector('.ld'),UI=host.querySelector('.ui');
  const R=new THREE.WebGLRenderer({canvas:cv,antialias:true,powerPreference:'high-performance'});R.setPixelRatio(Math.min(devicePixelRatio||1,1.75));
@@ -54,8 +57,30 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  /* l'avion qui roule sur la voie (même modèle que la démonstration de la panne) */
  const avion=makeAirliner(glowTex);scene.add(avion);blob(9,40,avion,0,-1);blob(36,9,avion,0,2);
  avion.position.set(0,0,-420);let planeV=0,planeOn=false;
+ let avion2=null;if(part==='couleurs'||part==='chemins'){avion2=makeAirliner(glowTex);avion2.userData.beacons.forEach(b=>avion2.remove(b));avion2.traverse(o=>{if(o.userData.taxi)o.visible=false});
+  avion2.position.set(-148,0,38);scene.add(avion2);blob(9,40,avion2,0,-1);blob(36,9,avion2,0,2);
+  // zone d'évolution contrôlée : enveloppe convexe des points extrêmes de l'avion, élargie de 4,50 m
+  const P=[[0,18.8],[1.98,14],[-1.98,14],[17.9,-1.3],[17.9,-2.9],[-17.9,-1.3],[-17.9,-2.9],[6.45,-17.1],[6.45,-18.4],[-6.45,-17.1],[-6.45,-18.4],[0,-18.9]];
+  const pts=[];P.forEach(([x,z])=>{for(let k=0;k<24;k++){const a=k/24*Math.PI*2;pts.push([x+4.5*Math.cos(a),z+4.5*Math.sin(a)])}});pts.sort((p,q)=>p[0]-q[0]||p[1]-q[1]);
+  const cr=(o,a,b)=>(a[0]-o[0])*(b[1]-o[1])-(a[1]-o[1])*(b[0]-o[0]);const lo=[],up=[];for(const p of pts){while(lo.length>1&&cr(lo[lo.length-2],lo[lo.length-1],p)<=0)lo.pop();lo.push(p)}
+  for(const p of pts.slice().reverse()){while(up.length>1&&cr(up[up.length-2],up[up.length-1],p)<=0)up.pop();up.push(p)}const H=lo.slice(0,-1).concat(up.slice(0,-1));H.push(H[0]);
+  for(let i=0;i<H.length-1;i++)strip(H[i][0]-148,H[i][1]+38,H[i+1][0]-148,H[i+1][1]+38,.3,ROUGE,.07)}
+ /* ---- lieu « zone 30 » (diapo 101) : panneaux d'entrée de zone 30 ; la route de la ferme part à droite, limitée à 50 ---- */
+ const panneau=(draw,w,h)=>{const c=document.createElement('canvas');c.width=256;c.height=Math.round(256*h/w);const g=c.getContext('2d');draw(g,c.width,c.height);const t=new THREE.CanvasTexture(c);t.anisotropy=8;t.colorSpace=THREE.SRGBColorSpace;return new THREE.MeshBasicMaterial({map:t})};
+ const rond=(g,cx,cy,r,txt)=>{g.fillStyle='#fff';g.beginPath();g.arc(cx,cy,r,0,7);g.fill();g.lineWidth=r*.2;g.strokeStyle='#c4161c';g.beginPath();g.arc(cx,cy,r*.9,0,7);g.stroke();g.fillStyle='#111';g.font=`bold ${r*.95}px Arial, sans-serif`;g.textAlign='center';g.textBaseline='middle';g.fillText(txt,cx,cy+r*.05)};
+ const signZ=panneau((g,w,h)=>{g.fillStyle='#fff';g.fillRect(0,0,w,h);g.strokeStyle='#1d2329';g.lineWidth=6;g.strokeRect(5,5,w-10,h-10);g.fillStyle='#111';g.font='bold 54px Arial, sans-serif';g.textAlign='center';g.fillText('ZONE',w/2,74);rond(g,w/2,h*.62,74,'30')},.7,.95);
+ const sign50=panneau((g,w,h)=>{g.clearRect(0,0,w,h);rond(g,w/2,h/2,120,'50')},.8,.8);sign50.transparent=true;
+ const poteau=(x,z,mat,w,h,ry)=>{cyl(.04,.04,2.2,0x8a9096,x,1.1,z,scene,8);const p=new THREE.Mesh(new THREE.PlaneGeometry(w,h),mat);p.position.set(x,2.2+h/2-.2,z);p.rotation.y=ry;scene.add(p);return p};
+ poteau(-370,4.6,signZ,.7,.95,-Math.PI/2);poteau(-370,-4.6,signZ,.7,.95,-Math.PI/2);
+ {const r=new THREE.Mesh(new THREE.PlaneGeometry(7,126,1,30),mat(0x86898c));r.rotation.x=-Math.PI/2;r.position.set(-326,.041,66.5);scene.add(r);
+  strip(-329.4,3.4,-329.4,129,.18,BLANC,.065);strip(-322.6,3.4,-322.6,129,.18,BLANC,.065);poteau(-334,6.5,sign50,.8,.8,-Math.PI/2)}
+ /* ---- lieu « marquage » (diapos 108, 109) : un poste à droite du cheminement, ligne jaune de guidage avion, ligne rouge de la zone d'évolution contrôlée ; flèche au sol ---- */
+ {const ap=new THREE.Mesh(new THREE.PlaneGeometry(60,60),mat(BETON));ap.rotation.x=-Math.PI/2;ap.position.set(-148,.03,38);scene.add(ap);
+  strip(-148,8,-148,66,.3,JAUNE,.07);
+  const fl=new THREE.Shape();fl.moveTo(0,-.35);fl.lineTo(3,-.35);fl.lineTo(3,-.8);fl.lineTo(4.6,0);fl.lineTo(3,.8);fl.lineTo(3,.35);fl.lineTo(0,.35);fl.closePath();
+  const fm=new THREE.Mesh(new THREE.ShapeGeometry(fl),mat(BLANC));fm.rotation.x=-Math.PI/2;fm.position.set(-140,.07,0);scene.add(fm)}
  /* notre véhicule : on voit l'intérieur, à la première personne */
- const veh=new THREE.Group();scene.add(veh);veh.position.set(-95,0,0);
+ const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,feux:-95}[part],0,0);
  blob(3,6,veh); // on est dans le véhicule : on n'en voit que le tableau de bord
  const IN=new THREE.Group();veh.add(IN);const DASH=0x8d97a0;
  const dash=box(.5,.12,1.9,DASH,1.55,1.0,0,IN);box(.05,.05,1.9,DASH,1.8,1.12,0,IN);
@@ -113,6 +138,7 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  if(Q.has('avion')){ // réglage du modèle : vues fixes
   avion.position.set(0,0,0);IN.visible=false;window.__view=(px,py,pz,tx,ty,tz)=>{seatOff={x:px,y:py,z:pz};camT.set(tx,ty,tz)};await new Promise(()=>{})}
  /* ======== le déroulé ======== */
+ if(part!=='feux')return await lieu5(part);
  const L=tag([-44.5,.1,0],{dx:-30,dy:-90});L.set('Le cheminement véhicule','Il croise une voie de circulation avion. On y va.');
  await contV('Rouler jusqu\'à la traversée');
  await drive(-51);
@@ -154,7 +180,47 @@ async function traversee(){step();head(H5+' · 5 h 58','Traverser une voie avion
  await drive(30);
  L.dock().set('Traversée faite','Feu rouge : on attend. Orange clignotant : stop, puis traversée avec prudence. Feux éteints, en panne : stop, puis traversée avec vigilance.');
  jlog('5 h 59','Traversée à l\'orange clignotant, entre les tiretets');
- await contV();live=false;L.kill();host.remove();R.dispose();removeEventListener('resize',fit);return null}
+ await contV();live=false;L.kill();host.remove();R.dispose();removeEventListener('resize',fit);return null
+ async function fin(){await contV();live=false;host.remove();R.dispose();removeEventListener('resize',fit);return null}
+ async function lieu5(part){
+  if(part==='zone30'){
+   const L=tag([-370,2.6,4.6],{dx:-40,dy:-60});L.set('Zone 30','Le panneau à l\'entrée du cheminement.');
+   await contV('Rouler');await drive(-382);
+   const L2=tag([-334,2.6,6.5],{dx:-60,dy:-40});L2.el.style.opacity=0;
+   await sayS('c16',[at('c16',.12,()=>{L.set('Toute la plateforme en zone 30','30 km/h au plus, partout.');look([-370,2.4,4.6],1500)}),
+    at('c16',.39,()=>{L.kill();L2.el.style.opacity=1;L2.set('Une seule exception : la route de la ferme','Elle relie le cargo sud au terminal 1. Limitée à 50 km/h.');look([-334,2,6.5],1600)})]);
+   await look(ahead(),1400);L2.kill();
+   const D=tag([0,0,0]).dock();
+   await sayS('c17',[at('c17',.02,()=>D.set('Gyrophares et feux à éclats, orange','Interdits dans le secteur trafic, sauf les engins qui en ont besoin : repoussage d\'avion, nacelles, service hivernal, passerelles en déplacement.'))]);
+   await sayS('c18',[at('c18',.02,()=>D.set('Et à vélo ?',''))]);
+   await sayS('c19',[at('c19',.02,()=>D.set('Deux-roues, trottinettes, rollers','Interdits sur l\'aire de mouvement.'))]);
+   await drive(-352);await look([-334,2.2,6.5],1400);
+   D.set('À vous','La route de la ferme, à droite, est limitée à :');
+   await choisir(D,[{t:'50 km/h',p:[-334,2.6,6.5],ok:1},{t:'30 km/h',p:[-334,1.2,9],fb:'La route de la ferme est la seule exception : 50 km/h. Partout ailleurs, zone 30.'},{t:'70 km/h',p:[-334,3.8,4],fb:'Rien n\'est au-dessus de 50 sur la plateforme : la route de la ferme est limitée à 50 km/h.'}],
+    'Oui : 50 km/h sur la route de la ferme, 30 partout ailleurs.');
+   jlog('6 h 07','Zone 30 : la route de la ferme à 50');await look(ahead(),1200);D.kill();return await fin()}
+  if(part==='couleurs'){
+   const L=tag([-148,.1,20],{dx:-40,dy:-70});L.set('Le marquage au sol','Trois couleurs.');
+   await contV('Rouler');await drive(-160);
+   await sayS('c20',[at('c20',.46,()=>{L.a.set(-150,.1,3.4);L.set('Blanc','La sécurité de la circulation des véhicules.')}),
+    at('c20',.72,()=>{L.a.set(-148,.1,11);L.set('Jaune','La circulation des aéronefs.');look([-148,-1.5,17],1500)}),
+    at('c20',.9,()=>{L.a.set(-148,.1,14.6);L.set('Rouge','Le danger.')})]);
+   L.kill();const D=tag([0,0,0]).dock();D.set('À vous','Quelle ligne guide les avions ?');
+   await choisir(D,[{t:'La ligne blanche',p:[-152,.2,3.4],fb:'Le blanc, c\'est la sécurité de la circulation des véhicules.'},{t:'La ligne rouge',p:[-136,.2,16],fb:'Le rouge, c\'est le danger.'},{t:'La ligne jaune',p:[-148,.2,11],ok:1}],
+    'Oui : le jaune concerne la circulation des aéronefs.');
+   jlog('6 h 08','Marquage : le jaune pour les avions');await look(ahead(),1300);D.kill();return await fin()}
+  if(part==='chemins'){
+   const L=tag([-150,.1,3.4],{dx:-40,dy:-70});
+   await sayS('c21',[at('c21',.02,()=>L.set('Lignes blanches','Continues ou pointillées, de part et d\'autre du cheminement quand il dessert les postes avion.')),
+    at('c21',.79,()=>{L.a.set(-138,.1,0);L.set('La flèche','Le sens de circulation.')})]);
+   await drive(-104);
+   await sayS('c22',[at('c22',.13,()=>{L.a.set(-44.5,.1,-3.4);L.set('Tiretets décalés, blancs et noirs','Vous êtes dans la bande dégagée d\'obstacles d\'une voie de circulation avion.')})]);
+   L.kill();return await fin()}}
+ // un choix posé dans la scène : on recommence jusqu'à la bonne réponse, chaque erreur est expliquée
+ async function choisir(D,opts,okT){for(;;){const Ts=[];const ps=opts.map((o,k)=>target(o.p,o.t,{ref:T=>Ts[k]=T,n:k+1}).then(()=>k));
+   const k=await Promise.race(ps);const o=opts[k];Ts.forEach((T,q)=>{if(q!==k)T.kill()});Ts[k].kill(o.ok?'ok':'ko');
+   if(o.ok){D.set('Oui',okT,'ok');await wait(FAST?50:1800);return}D.set('Non',o.fb,'ko');await wait(FAST?60:3200);D.set('À vous','Choisissez de nouveau.')}}
+}
 const ROUGE_CSS='#c4161c';
 document.head.insertAdjacentHTML('beforeend',`<style>
 #trav{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));z-index:1}
