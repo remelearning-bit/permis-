@@ -28,8 +28,8 @@ async function film(src,poster,title,credit,tm){step();head(H8+' · '+HH(tm),tit
  const v=$c('#fv');try{await v.play()}catch(e){}
  if(!FAST)await new Promise(r=>{v.onended=r;if(Q.has('pass'))setTimeout(r,2500)});
  jlog(tm,'Film : '+title);await contV();return null}
-const servitudes=()=>film('film-servitudes','film-servitudes','Le film : les servitudes de la voie avion','Film du support de formation (diapo 229)','7 h 34');
-const balisage=()=>film('film-balisage','film-balisage','Voie avion ou cheminement véhicule ?','Film du support de formation (diapo 231)','7 h 37');
+const servitudes=()=>film('film-servitudes','film-servitudes','Le film : les servitudes de la voie avion','Film du support de formation','7 h 34');
+const balisage=()=>film('film-balisage','film-balisage','Voie avion ou cheminement véhicule ?','Film du support de formation','7 h 37');
 
 /* 4 à 6. les écrans sur photo */
 const prevenir=S('zoneint','Prévenir les incursions',['m11'],[['m11',.05,'Sur piste et sur voie de circulation avion','La zone est interdite au permis T, réservée aux permis M, R et P.'],['m11',.55,'En cas de doute','Le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, 01 48 16 47 55.']],'Prévenir les incursions',{tm:'7 h 35'});
@@ -61,7 +61,7 @@ async function fin(){step();head('Étape 8 terminée · 7 h 40','Huitième case 
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 9 · Les procédures d'urgence</a>`}
 const NEXT='etape9.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
-.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:64px}
 .filmw video{width:100%;max-height:68vh;border-radius:14px;background:#1d2329;box-shadow:0 8px 28px rgba(38,60,82,.18)}
 .filmw .cr{margin:0;font-size:14px;color:#5d6f80}
 .qimg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center;width:100%;max-width:1220px}

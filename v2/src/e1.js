@@ -154,7 +154,7 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
   const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);drop(g,it);
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
-  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.x||it.ok)}
+  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(ks.map((k,i)=>{const l=lbOf(buckets,k);return i?l.charAt(0).toLowerCase()+l.slice(1):l}).join(', ou '),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
@@ -202,7 +202,7 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
   <span class="tk" id="xbt1" style="left:16.7%">3 mois</span><span class="tk" id="xbt2" style="left:66.7%">12 mois</span></div></div></div>`;
  await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}<p class="sub" style="text-align:center;margin-top:clamp(12px,3vh,28px)">${nb("Une règle précisée par la consigne d'exploitation n°3.")}</p></div>`)}),
-  W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Plus de douze',()=>{on('#xb2');on('#xbf2')})]);
+  W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Au-delà de douze',()=>{on('#xb2');on('#xbf2')})]);
  await pause(2200);return null}
 
 /* 4. les mesures particulières d'application */

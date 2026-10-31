@@ -4,7 +4,7 @@
 const H9='Étape 9 · Les procédures d\'urgence';
 const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c9:'Image du parcours REM Formation'};
+var CAPS={c9:'Image du parcours REM Formation',uld:'Le bac de récupération des objets intrus Air France',fodbin:'Le bac de récupération de l\'huile de frein des aéronefs'};
 
 async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
  const L=label([0,0,0],{lead:false}).title(d.cap);
@@ -53,8 +53,8 @@ async function film(src,title,credit,tm){step();head(H9+' · '+HH(tm),title);
  const v=$c('#fv');try{await v.play()}catch(e){}
  if(!FAST)await new Promise(r=>{v.onended=r;if(Q.has('pass'))setTimeout(r,2500)});
  jlog(tm,'Film : '+title);await contV();return null}
-const filmFod=()=>film('film-objets-intrus','Le film : les objets intrus','Film du support de formation (diapo 242)','7 h 47');
-const nettoyer=S('fodbin','Nettoyer lorsque vous partez',['u13'],[['u13',.05,'Chaque intervenant est responsable de ses déchets','« Clean as you go » : on nettoie sa zone de travail avant de partir.'],['u13',.25,'Deux bacs sur les postes','La récupération de l\'huile de frein des aéronefs, et la récupération des objets intrus Air France.'],['u13',.4,'Si on ne peut pas le ramasser','Une bâche, un épandage : on fait remonter l\'information, position exacte et type d\'objet.'],['u13',.8,'On alerte','Le centre opérationnel côté piste, ou les pompiers de l\'aéroport.']],'Les objets intrus',{tm:'7 h 48'});
+const filmFod=()=>film('film-objets-intrus','Le film : les objets intrus','Film du support de formation','7 h 47');
+const nettoyer=S('fodbin','Nettoyer lorsque vous partez',['u13'],[['u13',.05,'Chaque intervenant est responsable de ses déchets','« Clean as you go » : on nettoie sa zone de travail avant de partir.'],['u13',.25,'Deux bacs de récupération','L\'un pour l\'huile de frein des aéronefs, l\'autre pour les objets intrus Air France.'],['u13',.4,'Si on ne peut pas le ramasser','Une bâche, un épandage : on fait remonter l\'information, position exacte et type d\'objet.'],['u13',.8,'On alerte','Le centre opérationnel côté piste, ou les pompiers de l\'aéroport.']],'Les objets intrus',{tm:'7 h 48'});
 const poste=S('poste9','Sur le poste avion',['u14','u15'],[['u14',.05,'Je range','Tout le matériel d\'entretien ou de maintenance retourne dans ses rangements.'],['u14',.25,'Je compte mes outils','Pour être sûr de n\'avoir rien oublié.'],['u14',.45,'J\'inspecte ma zone','Et mes objets personnels : un gant posé sur la charlatte.'],['u14',.65,'Je vérifie mon matériel','Un crochet qui ne tient pas sur le chariot devient un projectile à la mise en route des moteurs.'],
  ['u15',.1,'Le permis T vaut formation','Un permis T valide, ou une attestation de formation piéton, vaut attestation de réussite à la formation sur les objets intrus, consigne n°11.']],'Les objets intrus',{tm:'7 h 49'});
 
@@ -67,21 +67,21 @@ const perdu=S('numeros','Conducteur perdu, et les numéros',['u18','u19'],[['u18
  ['u19',.05,'Pompiers','18 ou 112.'],['u19',.2,'Urgences médicales','15 ou 112.'],['u19',.4,'Gendarmerie des transports aériens','01 48 62 17 00.'],['u19',.65,'Centre opérationnel côté piste','01 48 16 47 55, ou la fréquence 71,675.']],'Les numéros',{tm:'7 h 51'});
 
 /* 8. à vous : qui j'appelle ? */
-const QUI=[['p','Les pompiers, 18','bell'],['s','Les urgences médicales, 15','user2'],['a','Le centre opérationnel côté piste','phone'],['r','Ma régulation','voices']];
+const QUI=[['p','Les pompiers, 18','bell'],['s','Les urgences médicales, 15','warn'],['a','Le centre opérationnel côté piste','phone'],['r','Ma régulation','voices']];
 const QA1=[{t:"Un départ de feu sur un poste avion.",b:"p",ok:"Le 18, en donnant le point avion."},
  {t:"Mon véhicule a touché un avion au poste.",b:"a",ok:"Il prévient les contrôleurs, la gendarmerie, les pompiers si besoin."},
  {t:"Mon véhicule tombe en panne dans la bande d'une voie avion.",b:"a",ok:"Position exacte : il fait stopper les avions dans la zone."},
  {t:"Un collègue est blessé.",b:"s",ok:"Les urgences médicales, 15 ou 112."},
- {t:"Une bâche s'est envolée sur une voie avion, impossible à ramasser.",b:"a",ok:"Position exacte et type d'objet, pour organiser le nettoyage."},
+ {t:"Une bâche s'est envolée sur une voie avion, impossible à ramasser.",b:"a|p",ok:"Position exacte et type d'objet, pour organiser le nettoyage."},
  {t:"Je vois un drone au-dessus de la plateforme.",b:"a",ok:"Signalement immédiat, puis notification sur le Safety Portal."},
  {t:"Je ne sais plus où je suis.",b:"r|a",ok:"Ma régulation ou mon agent de maîtrise, avec les indices autour de moi. Ou le centre opérationnel côté piste, au 01 48 16 47 55."}];
 const QA2=[{t:"De la fumée sort d'un engin garé près de l'avion.",b:"p",ok:"Un feu : les pompiers au 18."},
- {t:"Un agent a fait un malaise sur le poste.",b:"s",ok:"Les urgences médicales, 15 ou 112."},
+ {t:"Un collègue est blessé sur le poste avion.",b:"s",ok:"Les urgences médicales, 15 ou 112."},
  {t:"J'ai heurté l'aile d'un avion en manœuvrant.",b:"a",ok:"Collision avec un avion : le centre opérationnel côté piste."},
  {t:"Mon véhicule ne redémarre plus, dans la bande d'une voie avion.",b:"a",ok:"Panne dans la bande : il fait stopper les avions."},
  {t:"Je ne reconnais plus les bâtiments autour de moi.",b:"r|a",ok:"Perdu : ma régulation ou mon agent de maîtrise, ou le centre opérationnel côté piste."},
  {t:"Un drone survole les postes avion.",b:"a",ok:"Signalement immédiat au centre opérationnel côté piste."},
- {t:"Un épandage d'huile sur le cheminement, impossible à ramasser.",b:"a",ok:"Position exacte et type d'objet, pour qu'un nettoyage soit organisé."}];
+ {t:"Un épandage d'huile sur le cheminement, impossible à ramasser.",b:"a|p",ok:"Position exacte et type d'objet, pour qu'un nettoyage soit organisé."}];
 async function qui(){step();head(H9+' · '+HH('7 h 52'),'Qui j\'appelle d\'abord ? Cliquez sur la bonne colonne');
  vue(`<div class="hero">${bigIc('phone')}<p class="cap">${nb("Dans cette situation, j'appelle d'abord :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('u20');
@@ -90,7 +90,7 @@ async function qui(){step();head(H9+' · '+HH('7 h 52'),'Qui j\'appelle d\'abord
 
 /* 9. les questions d'entraînement (diapo 248) */
 async function questions(){step();head(H9+' · '+HH('7 h 53'),"Questions d'entraînement");ALT.q9=1;const two=(TRY.q9||0)%2;
- const Q=two?[{bk:[4],fixed:1,q:"Un écrou trouvé par terre sur le poste avion, c'est :",o:[["Un objet intrus aéronautique : je le ramasse et je le jette dans une poubelle dédiée.",1,"Écrous et boulons sont des objets intrus aéronautiques. Celui qui ne le ramasse pas en est aussi responsable."],["Rien de grave, il n'a aucune fonction.",0,"Justement : sans fonction et sur l'aire de mouvement, c'est un objet intrus, un danger pour l'avion."],["L'affaire du mécanicien de l'avion.",0,"Le responsable, c'est autant celui qui le génère que celui qui ne le ramasse pas."]]},
+ const Q=two?[{bk:[4,5],fixed:1,q:"Un écrou trouvé par terre sur le poste avion, c'est :",o:[["Un objet intrus aéronautique : je le ramasse et je le jette dans une poubelle dédiée.",1,"Écrous et boulons sont des objets intrus aéronautiques. Celui qui ne le ramasse pas en est aussi responsable."],["Rien de grave, il n'a aucune fonction.",0,"Justement : sans fonction et sur l'aire de mouvement, c'est un objet intrus, un danger pour l'avion."],["L'affaire du mécanicien de l'avion.",0,"Le responsable, c'est autant celui qui le génère que celui qui ne le ramasse pas."]]},
    {bk:[2],fixed:1,q:"En panne dans la bande d'une voie avion, un avion arrive malgré tout. Vous :",o:[["Restez au volant, feux de détresse allumés.",0,"Non : vous sortez du véhicule, avec vos équipements, et vous croisez les bras en direction du pilote."],["Poussez le véhicule hors de la bande, quoi qu'il arrive.",0,"Si vous ne pouvez pas le pousser, vous restez sur place ; si un avion arrive, vous sortez et croisez les bras."],["Sortez du véhicule avec vos équipements et croisez les bras en direction du pilote.",1,"C'est le signal qui dit au pilote que vous êtes là."]]}]
   :[{line:'u21',bk:[4],fixed:1,q:"Qu'est-ce qu'un objet intrus, un FOD ?",o:[["C'est un débris ou un objet étranger présent sur l'aire de mouvement.",1,"Sans fonction aéronautique, et qui peut causer un dommage."],["Un véhicule non identifié sur l'aire de mouvement.",0,"Non : un objet intrus est un objet ou un débris, pas un véhicule."]]},
    {line:'u22',bk:[2],fixed:1,q:"En cas de panne de votre véhicule dans les bandes aéronautiques de voie de circulation avion, vous devez :",o:[["Abandonner le véhicule sur place.",0,"Jamais : on reste sur place, feux de détresse allumés, après avoir prévenu."],["Prévenir le centre opérationnel côté piste et rester auprès du véhicule.",1,"Position exacte, puis on attend le dépannage ou le Flyco."],["Réparer sur place.",0,"Non : on prévient, on reste, et on attend le dépannage."]]}];
@@ -115,7 +115,7 @@ const NEXT='etape10.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
 #pf{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));width:100%;height:calc(100% - 46px - env(safe-area-inset-bottom));border:0;z-index:5;background:#e8ebed}
 .p9{display:flex;flex-direction:column;gap:10px;max-width:760px;text-align:left}.p9 p{margin:0;background:#fff;border-radius:12px;padding:12px 16px;font-size:clamp(16px,1.4vw,20px);color:#3d4d5c;box-shadow:0 4px 16px rgba(38,60,82,.08)}.p9 b{color:var(--marine)}
-.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:64px}
 .filmw video{width:100%;max-height:68vh;border-radius:14px;background:#1d2329;box-shadow:0 8px 28px rgba(38,60,82,.18)}
 .filmw .cr{margin:0;font-size:14px;color:#5d6f80}
 </style>`);

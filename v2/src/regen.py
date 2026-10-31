@@ -31,6 +31,7 @@ R={
 "u21":("D","Deux questions d'entraînement. La première : qu'est-ce qu'un objet intrus ?"),
 "s17":("D","Tout événement qui peut avoir un impact sur la sécurité se déclare. Une fuite importante à l'avitaillement. Un point de stationnement dangereux pour un bus ou un camion. Un choc contre un avion. Un problème de dégivrage. Un chargement incorrect. Du matériel renversé par le souffle. Un franchissement non autorisé de la piste."),
 "s18":("D","Comment notifier. Par la fiche de notification d'événement, en quatre volets. Ou en ligne, sur le Safety Portal, ouvert à tous les partenaires sur demande d'ouverture de compte. Et pour les références réglementaires de l'aéroport, l'extranet opérationnel du Groupe Aéroports de Paris, accessible à tout titulaire d'un badge rouge."),
+"u12":("D","Ce que coûte l'ignorance d'un objet intrus. Gonesse, le vingt-cinq juillet deux mille. Au décollage, le Concorde roule sur une lamelle métallique perdue par un autre avion. Une minute vingt plus tard, il s'écrase. Cent treize personnes sont mortes. Cent neuf à bord, quatre au sol."),
 }
 if __name__=='__main__':
   n=sum(len(t) for w,t in R.values());print(len(R),'répliques',n,'caractères')

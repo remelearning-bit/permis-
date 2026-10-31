@@ -623,8 +623,8 @@ async function marche(){step();head('Préambule','Comment ça marche');
   W('p04','Xavier et moi',()=>{const a=$c('#pd'),b=$c('#px');if(a&&b){a.classList.remove('talk');b.classList.add('talk');setTimeout(()=>{b.classList.remove('talk');a.classList.add('talk')},FAST?0:900)}})]);
  // la main, les questions, le journal
  vue(`<div class="hero">${bigIc('hand')}<p class="cap">La main orange</p><p class="sub">Elle vous montre où cliquer.</p></div>`);
- const qfr=`<div class="hero">${bigIc('quiz')}<p class="cap">Des questions d'entraînement</p><ul class="chk" style="margin-top:clamp(6px,2vh,18px)"><li id="q1"><b>${CHECK}</b>Jamais notées</li><li id="q2"><b>${CHECK}</b>${nb("Un seuil à atteindre pour passer à la suite")}</li><li id="q3"><b>${CHECK}</b>Chaque réponse est expliquée</li></ul></div>`;
- await sayS('p05',[W('p05','Tout au long',()=>vue(qfr)),W('p05','Elles ne sont',()=>on('#q1','on')),W('p05','autant',()=>on('#q2','on')),W('p05','et chaque',()=>on('#q3','on')),
+ const qfr=`<div class="hero">${bigIc('quiz')}<p class="cap">Des questions d'entraînement</p><ul class="chk" style="margin-top:clamp(6px,2vh,18px)"><li id="q1"><b>${CHECK}</b>${nb("Au moins la moitié de bonnes réponses")}</li><li id="q2"><b>${CHECK}</b>${nb("Sinon, on revoit la partie, puis une nouvelle série")}</li><li id="q3"><b>${CHECK}</b>Chaque réponse est expliquée</li></ul></div>`;
+ await sayS('p05',[W('p05','Entre les étapes',()=>vue(qfr)),W('p05','Il faut au moins',()=>on('#q1','on')),W('p05','Sinon',()=>on('#q2','on')),W('p05','Chaque réponse',()=>on('#q3','on')),
   W('p05','Un journal',()=>vue(`<div class="hero">${bigIc('journal')}<p class="cap">Le journal</p><p class="sub">Il note chaque décision de la matinée, avec l'heure.</p></div>`))]);
  // un premier essai, pour de vrai
  vue(`<div class="hero"><div class="qc" id="qe" style="width:min(600px,100%)"><p class="n">À vous d'essayer</p><p class="q">${nb("Une série de questions n'est pas réussie. Que se passe-t-il ?")}</p></div></div>`);
@@ -680,7 +680,7 @@ async function candidat(){step();head('Préambule','Le candidat');
   W('p10','Vous avez ensuite',()=>{on('#xat2');on('#xaf2');const s=$c('#xa1');if(s)s.classList.remove('hl')})]);on('#xan');
  await sayS('p11',[at('p11',.02,()=>show('#f4'))]);
  await sayS('p12',[at('p12',.02,()=>{$c('#f4').classList.remove('in');on('#xa1','js')}),W('p12','Et attention',()=>show('#xb')),
-  W('p12','Entre trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('p12','Plus de douze',()=>{on('#xb2');on('#xbf2')})]);
+  W('p12','Entre trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('p12','Au-delà de douze',()=>{on('#xb2');on('#xbf2')})]);
  await contV();return null}
 
 /* 5. l'attestation : la photo de l'Annexe 8, parcourue partie par partie */

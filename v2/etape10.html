@@ -743,7 +743,7 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
   const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);drop(g,it);
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
-  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(lbOf(buckets,it.b),it.x||it.ok)}
+  else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(ks.map((k,i)=>{const l=lbOf(buckets,k);return i?l.charAt(0).toLowerCase()+l.slice(1):l}).join(', ou '),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
@@ -753,7 +753,7 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
 const H10='Étape 10 · L\'amélioration continue';
 const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c10:'Photo du support REM Formation'};
+var CAPS={c10:'Image du parcours REM Formation'};
 
 async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.head);
  if(d.ph){await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff()}
@@ -776,7 +776,7 @@ async function cover(){step();await photo('c10',FAST?10:1200);setCam({zoom:1.08}
  await cont(L,'Dernière étape');L.kill();return null}
 
 /* 2. le système de gestion de la sécurité (diapos 250 à 255) */
-const sgs=S('sgs','Le système de gestion de la sécurité',['s04'],[['s04',.05,'Une obligation pour être certifié','Compagnies, assistants en escale, aéroport : tous mettent en place un système de gestion de la sécurité.'],['s04',.6,'Un objectif commun','Limiter à tout prix les sources d\'incidents, avec les aéronefs, les passagers, ou les personnels de la plateforme.']],'Le système de gestion de la sécurité',{tm:'7 h 56'});
+const sgs=S(null,'Le système de gestion de la sécurité',['s04'],[['s04',.05,'Une obligation pour être certifié','Compagnies, assistants en escale, aéroport : tous mettent en place un système de gestion de la sécurité.'],['s04',.6,'Un objectif commun','Limiter à tout prix les sources d\'incidents, avec les aéronefs, les passagers, ou les personnels de la plateforme.']],'Le système de gestion de la sécurité',{tm:'7 h 56',ic:'shield'});
 /* Situations des diapos 251 (à risque) et 253 (ce qui est attendu). Retours tirés des mêmes diapos. */
 const RISK1=[{t:"Un conteneur mal fixé sur le chariot.",b:"r",ok:"C'est une situation à risque."},
  {t:"Un chariot à bagages dont le frein n'a pas été enclenché.",b:"r",ok:"C'est une situation à risque."},
@@ -799,7 +799,7 @@ const culture=S('sgs2','Un outil de culture juste',['s06','s07'],[['s06',.05,'Je
  ['s07',.05,'Vos remontées comptent','Sur Roissy : un tunnel pour la traversée du GE3, des procédures d\'avitaillement modifiées, des lignes de sécurité banalisées derrière les postes, un cédez-le-passage autour de LISA, un stop déplacé à la sortie de la route du S4.']],'Le système de gestion de la sécurité',{tm:'7 h 58',swap:['s07',.02,'remontees']});
 
 /* 3. les facteurs humains (diapos 256 à 258) : quatre cartes à retourner */
-async function facteurs(){step();head(H10+' · '+HH('8 h 00'),'Les facteurs humains');await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function facteurs(){step();await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();head(H10+' · '+HH('8 h 00'),'Les facteurs humains : cliquez sur chaque carte');
  const C=[['s09','L\'addiction','Alcool, médicaments, drogues : somnolence, manque de vigilance, agressivité. Contrôle au volant sous l\'emprise d\'alcool ou de drogue : retrait immédiat du permis T, du badge et du permis de conduire.'],
   ['s10','La fatigue','Plus d\'erreurs, plus d\'omissions, une perception dégradée, de l\'irritabilité. Le cerveau n\'est pas le même à 15 h qu\'à 3 h du matin.'],
   ['s11','Le stress','Le déséquilibre entre ce qu\'on vous demande et vos ressources. Le premier sens perdu : l\'ouïe.'],
@@ -819,19 +819,19 @@ async function film(src,title,credit,tm){step();head(H10+' · '+HH(tm),title);
  const v=$c('#fv');try{await v.play()}catch(e){}
  if(!FAST)await new Promise(r=>{v.onended=r;if(Q.has('pass'))setTimeout(r,2500)});
  jlog(tm,'Film : '+title);await contV();return null}
-const filmNotif=()=>film('film-notification','Le film : la notification des événements','Film du support de formation (diapo 259)','8 h 02');
+const filmNotif=()=>film('film-notification','Le film : la notification des événements','Film du support de formation','8 h 02');
 const protection=S(null,'Notifier : un régime de protection',['s15'],[['s15',.03,'Le règlement européen 376/2014 et le code des transports','Ils protègent ceux qui notifient, face à leur employeur comme à l\'État.'],['s15',.35,'Pas de mesure sur la seule notification','Aucune mesure ne peut être prise sur des informations connues uniquement par une notification.'],
- ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],'Les notifications',{tm:'8 h 03',ic:'shield',more:[['Un exemple, tiré du support','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
+ ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],'Les notifications',{tm:'8 h 03',ic:'shield',more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
 const obligation=S(null,'L\'obligation de rendre compte',['s16','s17'],[['s16',.03,'Sans délai','Le code de l\'aviation civile oblige toute personne à rendre compte de tout incident ou accident dont elle a connaissance.'],['s16',.45,'Dans les 72 heures','En tort ou sans tort : aucune sanction.'],['s16',.75,'Ne pas rendre compte','Un an d\'emprisonnement et 15 000 € d\'amende.'],
  ['s17',.05,'À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],'Les notifications',{tm:'8 h 04',ic:'warn'});
 const comment=S('fiche','Comment notifier',['s18'],[['s18',.03,'La fiche de notification d\'événement','La notification d\'accident ou d\'incident, en quatre volets.'],['s18',.4,'Ou le Safety Portal','safety-portal.fr/CDG, ouvert à tous les partenaires sur demande d\'ouverture de compte.'],['s18',.75,'L\'extranet opérationnel du Groupe ADP','Les références réglementaires de l\'aéroport, accessible à tout titulaire d\'un badge rouge.']],'Les notifications',{tm:'8 h 05',more:[['72 heures','Le délai pour notifier au service de gestion de la sécurité, à compter de la connaissance de l\'événement.'],['Le signalement volontaire','On peut notifier tout événement, même s\'il n\'est pas dans la liste réglementaire.'],['Si l\'outil est en panne','Le formulaire CRESEA, à transmettre par mail : airsidesafety.CDG@adp.fr.']]});
 
 /* 5. les questions d'entraînement */
-async function questions(){step();head(H10+' · '+HH('8 h 06'),"Questions d'entraînement");await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();ALT.q10=1;const two=(TRY.q10||0)%2;
+async function questions(){step();await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();head(H10+' · '+HH('8 h 06'),"Questions d'entraînement");ALT.q10=1;const two=(TRY.q10||0)%2;
  const Q=two?[{bk:[8],fixed:1,q:"J'ai causé un incident, sans le vouloir, et je le déclare dans les 72 heures :",o:[["Je suis sanctionné, puisque je suis en tort.",0,"Non : en tort ou sans tort, déclaré dans les 72 heures, aucune sanction."],["Aucune sanction : je suis protégé par la notification.",1,"Le code de l'aviation civile : déclaré dans les 72 heures, aucune sanction."],["Je dois attendre que quelqu'un d'autre le déclare.",0,"Non : toute personne qui en a connaissance doit rendre compte, sans délai."]]},
-   {bk:[4],fixed:1,q:"Un contrôle au volant sous l'emprise d'alcool ou de drogue, c'est :",o:[["Un simple avertissement la première fois.",0,"Non : le retrait est immédiat."],["Le retrait immédiat du permis T et du badge, et du permis de conduire.",1,"C'est ce que dit le support."],["Le retrait du permis T seulement.",0,"Non : le badge et le permis de conduire sont aussi retirés."]]}]
+   {bk:[4],fixed:1,q:"Un contrôle au volant sous l'emprise d'alcool ou de drogue, c'est :",o:[["Un simple avertissement la première fois.",0,"Non : le retrait est immédiat."],["Le retrait immédiat du permis T et du badge, et du permis de conduire.",1,"Alcool ou drogue au volant : retrait immédiat du permis T et du badge, et retrait du permis de conduire."],["Le retrait du permis T seulement.",0,"Non : le badge et le permis de conduire sont aussi retirés."]]}]
   :[{line:'s19',bk:[3,7],fixed:1,q:"La culture juste pardonne les fautes intentionnelles ?",o:[["Vrai.",0,"Faux : la protection tombe en cas de manquement délibéré."],["Faux.",1,"La culture juste protège celui qui notifie une erreur, pas celui qui enfreint les règles délibérément."]]},
-   {line:'s20',bk:[4,5],fixed:1,q:"La part des facteurs humains dans les événements de sécurité est :",o:[["Négligeable.",0,"Non : la réponse du support est « significative »."],["Modérée.",0,"Non : la réponse du support est « significative »."],["Significative.",1,"Addiction, fatigue, stress, burn-out : les facteurs humains pèsent lourd sur la sécurité."]]}];
+   {line:'s20',bk:[4,5],fixed:1,q:"La part des facteurs humains dans les événements de sécurité est :",o:[["Négligeable.",0,"Non : significative. Addiction, fatigue, stress, burn-out pèsent sur la vigilance."],["Modérée.",0,"Non : significative. Addiction, fatigue, stress, burn-out pèsent sur la vigilance."],["Significative.",1,"Addiction, fatigue, stress, burn-out : les facteurs humains pèsent lourd sur la sécurité."]]}];
  return quiz('q10',Q,'8 h 06',"Questions d'entraînement",[1],10,true)}
 async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
  for(let i=0;i<Q.length;i++){const z=Q[i];
@@ -852,7 +852,7 @@ async function fin(){step();head('Étape 10 terminée · 8 h 10','Dixième case 
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Revoir le parcours depuis le début</a>`}
 const NEXT='preambule.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
-.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px}
+.filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:64px}
 .filmw video{width:100%;max-height:68vh;border-radius:14px;background:#1d2329;box-shadow:0 8px 28px rgba(38,60,82,.18)}
 .filmw .cr{margin:0;font-size:14px;color:#5d6f80}
 .flw{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(10px,1.8vw,24px);width:100%;max-width:1200px}
