@@ -219,9 +219,11 @@ const cam=new THREE.PerspectiveCamera(48,1,1,4000);cam.up.set(0,0,-1);
 const PW=160; // largeur de chaque photo dans la scène
 const LOADER=new THREE.TextureLoader();const PH={};
 function plane(k){if(PH[k])return PH[k];const [w,h]=DIM[k];const H=PW*h/w;const tex=LOADER.load(IMG[k]);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
- const m=new THREE.Mesh(new THREE.PlaneGeometry(PW,H),new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.visible=false;scene.add(m);
+ const m=new THREE.Mesh(new THREE.PlaneGeometry(PW,H),new THREE.MeshBasicMaterial({map:tex,alphaMap:FEATHER(),transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.visible=false;scene.add(m);
  return PH[k]={k,m,w:PW,h:H}}
 let CUR=null;let ord=1;
+/* bords de photo adoucis : la photo se fond dans le fond clair au lieu d'un cadre net */
+let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
  const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
@@ -247,6 +249,24 @@ function camTo(o,D=1600){drift=null;const a={...V},b=view(o);if(FAST)D=60;return
 function setCam(o){Object.assign(V,view(o))}
 /* nouvelle photo + cadrage + retrait du panneau en même temps : la voix part sans attendre */
 async function goPh(k,o,D=500){const p=photo(k,FAST?10:D);if(VZ.classList.contains('on'))setCam(o);else camTo(o,FAST?10:D);await Promise.all([p,vzOff()])}
+/* sur téléphone, une photo en paysage reste petite : « Agrandir » l'ouvre en plein écran, on la fait glisser, on touche pour zoomer ; la voix attend */
+(function(){const css=`#zbtn{position:fixed;right:12px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:7;display:none;align-items:center;gap:6px;padding:9px 14px;border-radius:22px;border:2px solid var(--marine,#263C52);background:#fff;color:var(--marine,#263C52);font:700 16px Barlow,system-ui,sans-serif;box-shadow:0 3px 12px rgba(38,60,82,.18);cursor:pointer}
+#zbtn.on{display:flex}#zbtn svg{width:18px;height:18px}
+#zv{position:fixed;inset:0;z-index:45;background:#e7eaea;display:none;flex-direction:column}#zv.on{display:flex}
+#zv .zh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px calc(10px);background:#f7f8f8;border-bottom:1px solid rgba(38,60,82,.12);font:600 15px Barlow,system-ui,sans-serif;color:#5d6b78}
+#zv .zh button{padding:9px 16px;border-radius:20px;border:0;background:var(--orange,#e8501c);color:#fff;font:700 16px Barlow,system-ui,sans-serif}
+#zv .zs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;display:flex}#zv .zs img{display:block;margin:auto;max-width:none;height:auto;flex:none}`;
+document.head.insertAdjacentHTML('beforeend','<style>'+css+'</style>');
+const b=document.createElement('button');b.id='zbtn';b.type='button';b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg>Agrandir';document.body.appendChild(b);
+const v=document.createElement('div');v.id='zv';v.innerHTML='<div class="zh"><span>Faites glisser la photo, touchez-la pour zoomer. Tournez le téléphone pour la voir en entier.</span><button type="button">Fermer</button></div><div class="zs"><img alt=""></div>';document.body.appendChild(v);
+const im=v.querySelector('img'),sc=v.querySelector('.zs');let wasPlaying=false;
+function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientWidth,H=sc.clientHeight;let w=a>=1?Math.min(W*1.7,H*a):Math.min(W,H*a);if(v.classList.contains('big'))w*=2.2;im.style.width=Math.round(w)+'px'}
+ function center(){size();sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2;sc.scrollTop=(sc.scrollHeight-sc.clientHeight)/2}
+b.onclick=()=>{if(!CUR||!IMG[CUR.k])return;im.src=IMG[CUR.k];v.classList.remove('big');v.classList.add('on');wasPlaying=!!(curAudio&&!curAudio.paused);if(wasPlaying)curAudio.pause();(im.complete?center():im.onload=center)};
+v.querySelector('.zh button').onclick=()=>{v.classList.remove('on');if(wasPlaying&&curAudio)curAudio.play().catch(()=>{})};
+im.onclick=e=>{const r=im.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;v.classList.toggle('big');size();requestAnimationFrame(()=>{sc.scrollLeft=fx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=fy*sc.scrollHeight-sc.clientHeight/2})};
+setInterval(()=>{const show=PORT()&&CUR&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
+
 /* pendant la voix, la photo glisse lentement : léger rapprochement vers le point nommé */
 let drift=null;
 function slow(o,D){const a={...V},b=view(o);drift={t0:performance.now(),D:FAST?60:D,a,b}}
