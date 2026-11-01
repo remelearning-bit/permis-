@@ -86,8 +86,10 @@ body.subs #sub{display:block}
 #jrn .act{margin-top:16px}
 
 @media (max-width:700px){#bar .st{font-size:14px}#bar{gap:12px}}
-</style></head>
+.lab .jl{max-height:min(40vh,380px);overflow-y:auto;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:thin}</style></head>
 <body>
+<div id="load" style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#e7eaea;color:#263C52;font-family:Barlow,system-ui,sans-serif;text-align:center;padding:24px;transition:opacity .4s"><p style="margin:0;font-weight:700;font-size:clamp(22px,3vw,34px)" id="loadt">Permis T</p><p style="margin:0;font-size:clamp(17px,2vw,21px);color:#5d6b78">Chargement de l'étape, quelques secondes.</p></div>
+<script>document.getElementById('loadt').textContent=document.title.replace(/^Permis T · /,'');addEventListener('DOMContentLoaded',()=>{const l=document.getElementById('load');if(l){l.style.opacity=0;setTimeout(()=>l.remove(),450)}})</script>
 <canvas id="c"></canvas>
 <svg id="lead"></svg>
 <div id="ui"></div>
@@ -544,10 +546,11 @@ const VO=new Audio();VO.preload='auto';let voUnlocked=false;
 let unlockPend=false;
 const unlock=()=>{if(voUnlocked||FAST||MUET)return;voUnlocked=true;unlockPend=true;try{VO.muted=true;VO.src=AUDIO+'z01.mp3';const p=VO.play();const end=()=>{if(unlockPend){VO.pause();unlockPend=false}VO.muted=false};if(p)p.then(end,end);else end()}catch(e){VO.muted=false}};
 addEventListener('pointerdown',unlock,true);addEventListener('click',unlock,true);addEventListener('touchend',unlock,true);
-function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];sub.innerHTML=`<b>${L.w==='X'?'Xavier':'Damienne'}</b> · ${L.t}`;
+const PF=new Set();function prefetchNext(id){if(FAST||MUET)return;const ks=Object.keys(LINES),i=ks.indexOf(id);if(i<0)return;for(let j=i+1;j<=i+2&&j<ks.length;j++){const u=AUDIO+ks[j]+'.mp3';if(!PF.has(u)){PF.add(u);fetch(u).catch(()=>{})}}}
+function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];prefetchNext(id);sub.innerHTML=`<b>${L.w==='X'?'Xavier':'Damienne'}</b> · ${L.t}`;
  const a=FAST?new Audio(AUDIO+id+'.mp3'):VO;if(!FAST){unlockPend=false;a.onended=a.onerror=null;a.pause();a.muted=false;a.src=AUDIO+id+'.mp3';a.playbackRate=1}curAudio=a;if(FAST)a.playbackRate=16;a.muted=FAST;const hs=hooks.slice().sort((x,y)=>x[0]-y[0]);let k=0,done=false;
  const tick=()=>{if(done)return;const d=a.duration||0;const f=d?a.currentTime/d:0;while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}requestAnimationFrame(tick)};
- const fin=()=>{if(done)return;done=true;while(k<hs.length){hs[k][1]();k++}setTimeout(res,FAST?20:350)};
+ const fin=()=>{if(done)return;done=true;while(k<hs.length){hs[k][1]();k++}setTimeout(res,FAST?20:120)};
  a.onended=fin;a.onerror=()=>{a.onerror=null;if(!MUET&&!FAST)document.body.classList.add('subs');const ms=Math.max(2500,L.t.length*62);let t0=performance.now();const fake=()=>{const f=(performance.now()-t0)/(FAST?ms/16:ms);while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}if(f>=1)fin();else requestAnimationFrame(fake)};fake()};
  a.play().then(()=>tick()).catch(()=>{if(a.onerror)a.onerror()})})}
 $('#brep').onclick=()=>{if(curAudio){curAudio.currentTime=0;curAudio.play().catch(()=>{})}};
@@ -857,7 +860,7 @@ async function main(){
  let L=await tour();
  if(EXTRAIT){L=await frontiere(L);L=await coactivite(L);L=await vigie(L);L=await zec(L);L=await classer(L);L=await urgence(L);L.kill();step('fin');await go('haut',2500);
   label([0,0,-6],{big:1,lead:false}).title('Étape 7 · extrait').card("Fin de l'extrait",'La version complète enchaîne aussi l\'interzec, les cônes, le périmètre de sécurité collision, l\'avitaillement, la passerelle, le stationnement et les questions.');return}
- L=await frontiere(L);L=await coactivite(L);L=await filmV(L,'film-coactivite','Le film : circuler en coactivité','7 h 06');L=await vigie(L);L=await zec(L);L=await classer(L);L=await interzec(L);L=await cones(L);L=await psc(L);L=await entrer(L);L=await perim(L);L=await psiP(L);L=await filmV(L,'film-avitaillement','Le film : l\'avitaillement','7 h 21');L=await incidents(L);L=await urgence(L);L=await zep(L);L=await interdit(L);L=await stat(L);
+ L=await frontiere(L);L=await coactivite(L);L=await filmV(L,'film-coactivite','Le film : circuler en coactivité','7 h 06');L=await vigie(L);L=await zec(L);L=await classer(L);L=await interzec(L);L=await cones(L);L=await psc(L);L=await entrer(L);L=await perim(L);L=await psiP(L);L=await filmV(L,'film-avitaillement','Le film : l\'avitaillement','7 h 19');L=await incidents(L);L=await urgence(L);L=await zep(L);L=await interdit(L);L=await stat(L);
  const sc=await quiz(L);await fin(sc)}
 window.V2={get QS(){return QS},get au(){return curAudio},go,P,cam,scene,setPlane,placePlane,tgts,get here(){return here}};
 main();

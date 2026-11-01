@@ -250,10 +250,12 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.05,(now-last
  cam.lookAt(camT);layout();R.render(scene,cam)}
 function resize(){R.setSize(innerWidth,innerHeight,false);setFov()}addEventListener('resize',resize);resize();requestAnimationFrame(frame);
 /* ================= LA SCÈNE ================= */
+async function sonOk(){if(FAST)return true;try{const a=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');return await Promise.race([a.play().then(()=>true),new Promise(r=>setTimeout(()=>r(false),800))])}catch(e){return false}}
 async function main(){
  // départ : on roule sur la route de service, vers la voie avion
- const L=label([0,0,0],{fixed:1}).title('En panne sur la voie avion').html('<button class="act" id="go">Commencer</button>');
- await new Promise(r=>$('#go').onclick=r);$('#go').remove();
+ const L=label([0,0,0],{fixed:1}).title('En panne sur la voie avion');
+ // dans le parcours, l'apprenant vient de cliquer : la démonstration démarre seule ; le bouton ne sert que si le navigateur bloque le son
+ if(!(parent!==window&&await sonOk())){L.html('<button class="act" id="go">Commencer</button>');await new Promise(r=>$('#go').onclick=r);$('#go').remove()}
  planeGoal=-150;
  // le véhicule avance, ralentit, et s'arrête sur l'axe : c'est la panne
  const x0=veh.position.x;await anim(4200,t=>{const e=1-Math.pow(1-t,2.4);veh.position.x=x0+(VX-x0)*e;cam.position.copy(seat());camT.set(veh.position.x+40,.9,-.45)});
