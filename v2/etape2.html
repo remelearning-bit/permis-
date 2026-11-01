@@ -173,6 +173,20 @@ body.subs #cap{bottom:auto;top:16px}
 <body>
 <div id="load" style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#e7eaea;color:#263C52;font-family:Barlow,system-ui,sans-serif;text-align:center;padding:24px;transition:opacity .4s"><p style="margin:0;font-weight:700;font-size:clamp(22px,3vw,34px)" id="loadt">Permis T</p><p style="margin:0;font-size:clamp(17px,2vw,21px);color:#5d6b78">Chargement de l'étape, quelques secondes.</p></div>
 <script>document.getElementById('loadt').textContent=document.title.replace(/^Permis T · /,'');addEventListener('DOMContentLoaded',()=>{const l=document.getElementById('load');if(l){l.style.opacity=0;setTimeout(()=>l.remove(),450)}})</script>
+<script>/* durée minimale : la théorie dure au moins trois heures ; chaque étape a son temps minimum, le passage à la suite s'ouvre quand il est atteint */
+(function(){var MIN={preambule:14,etape1:22,etape2:10,etape3:9,etape4:13,etape5:22,etape5b:17,etape6:7,etape7:28,etape8:14,etape9:13,etape10:13};
+var pg=(location.pathname.split('/').pop()||'preambule.html').replace('.html',''),q=new URLSearchParams(location.search);
+var need=(MIN[pg]||0)*60;if(q.has('tmin'))need=+q.get('tmin')*60;else if(q.has('nav')||q.has('fast'))return;if(!need)return;
+var key='permisT-temps-'+pg,t=0;try{t=+localStorage.getItem(key)||0}catch(e){}
+var last=Date.now(),act=Date.now();['pointerdown','keydown','touchstart','wheel'].forEach(function(e){addEventListener(e,function(){act=Date.now()},true)});
+function gate(){var rest=Math.max(0,need-t),open=rest<=0;
+ document.querySelectorAll('a.act').forEach(function(a){var h=a.getAttribute('href')||'';if(!/(etape\d+b?|preambule)\.html/.test(h)||h.indexOf(pg+'.html')===0)return;
+  var n=a.nextElementSibling&&a.nextElementSibling.classList.contains('tmin')?a.nextElementSibling:null;
+  if(open){if(a.dataset.wait){delete a.dataset.wait;a.style.pointerEvents='';a.style.opacity='';a.removeAttribute('aria-disabled')}if(n)n.remove();return}
+  a.dataset.wait=1;a.style.pointerEvents='none';a.style.opacity='.45';a.setAttribute('aria-disabled','true');
+  if(!n){n=document.createElement('p');n.className='tmin';n.style.cssText='margin:10px 0 0;font-size:16px;color:#5d6b78';a.insertAdjacentElement('afterend',n)}
+  var m=Math.ceil(rest/60);var tx='La formation dure au moins trois heures : la suite s\u2019ouvre dans '+m+(m>1?' minutes':' minute')+'. Vous pouvez relire votre journal en attendant.';if(n.textContent!==tx)n.textContent=tx})}
+setInterval(function(){var now=Date.now();if(!document.hidden&&now-act<300000)t+=Math.min(5,(now-last)/1000);last=now;try{localStorage.setItem(key,String(Math.round(t)))}catch(e){}gate()},1000);new MutationObserver(gate).observe(document.documentElement,{childList:true,subtree:true})})()</script>
 <canvas id="c"></canvas>
 <svg id="lead"></svg>
 <div id="ui"></div>
