@@ -636,7 +636,7 @@ async function cover(){await photo('cov',FAST?10:1200);if(PORT()){const c=pt(.3,
 
 /* 2. comment ça marche : un plan par idée */
 async function marche(){step();head('Préambule','Comment ça marche');
- vue(`<div class="hero"><p class="huge" id="h330">0 h 00</p><p class="cap">La partie théorique</p><p class="sub">Le minimum réglementaire est de 3 h, sans compter l'évaluation de 30 minutes.</p></div>`);
+ vue(`<div class="hero"><p class="huge" id="h330">0 h 00</p><p class="cap">La partie théorique</p><p class="sub">3 h de formation et 30 minutes d'évaluation.</p></div>`);
  const road=`<div class="hero"><div class="road">${[...Array(10)].map((_,i)=>`${i?'<b></b>':''}<i>${i+1}</i>`).join('')}</div><p class="cap" style="margin-top:clamp(18px,4vh,40px)">Dix étapes, dans l'ordre</p><p class="sub it" id="rd2">On ne passe à la suivante qu'après avoir terminé la précédente.</p></div>`;
  await sayS('p04',[at('p04',.02,()=>countTo('#h330',210,2600,v=>{const m=Math.round(v);return `${Math.floor(m/60)} h ${String(m%60).padStart(2,'0')}`})),
   W('p04','Elle se fait',()=>{vue(road);[...cur().querySelectorAll('.road i')].forEach((e,i)=>setTimeout(()=>e.classList.add('in'),FAST?0:i*160))}),
