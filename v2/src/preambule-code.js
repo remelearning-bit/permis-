@@ -31,7 +31,7 @@ function setFov(){const W=innerWidth,H=innerHeight,a=W/H;cam.fov=a<1?Math.min(74
 const V={x:0,z:0,d:120};
 function fitD(k,mode){const P=plane(k);const tv=Math.tan(cam.fov*Math.PI/360),asp=cam.aspect;
  if(mode==='contain'){ // la photo entière, dans la partie libre de l'écran
-  const fw=PORT()?.92:.6,fh=PORT()?.6:.84;return Math.max(P.w/(2*tv*asp*fw),P.h/(2*tv*fh))}
+  const fw=PORT()?1:.96,fh=PORT()?.8:.96;return Math.max(P.w/(2*tv*asp*fw),P.h/(2*tv*fh))}
  const sx=PORT()?1:1.26,sy=PORT()?1.3:1;return Math.min(P.w/(2*tv*asp*sx),P.h/(2*tv*sy))*.985}
 function view(o={}){const k=CUR.k;const d=fitD(k,o.mode)/(o.zoom||1);let x=o.x??0,z=o.z??0;
  if(o.mode!=='contain'){const tv=Math.tan(cam.fov*Math.PI/360);const hw=d*tv*cam.aspect,hv=d*tv;const P=CUR;
