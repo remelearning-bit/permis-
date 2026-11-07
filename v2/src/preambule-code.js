@@ -41,6 +41,16 @@ function view(o={}){const k=CUR.k;const d=fitD(k,o.mode)/(o.zoom||1);let x=o.x??
 let mv=null;
 function camTo(o,D=1600){drift=null;const a={...V},b=view(o);if(FAST)D=60;return new Promise(r=>{mv={t0:performance.now(),D,a,b,r}})}
 function setCam(o){Object.assign(V,view(o))}
+/* plans nets et zoomables : un bouton « Plan interactif » ouvre le plan ADP d'origine en plein écran (les voix attendent) */
+(function(){const MAP={planpoint:['circulation','Où rouler avec le permis T ?'],planrestreint:['circulation','Où rouler avec le permis T ?'],zone30:['vitesses','Les vitesses sur la plateforme'],hot1:['hot-t1','Points chauds autour du terminal 1'],hot2:['hot-ac','Points chauds des terminaux A et C'],hot3:['hot-cargo','Points chauds du cargo sud'],hot4:['hot-bd2e','Points chauds autour du BD et du 2E']};
+document.head.insertAdjacentHTML('beforeend','<style>#pbtn{position:fixed;right:12px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:7;display:none;align-items:center;gap:6px;padding:9px 14px;border-radius:22px;border:2px solid var(--marine,#263C52);background:var(--marine,#263C52);color:#fff;font:700 16px Barlow,system-ui,sans-serif;box-shadow:0 3px 12px rgba(38,60,82,.18);cursor:pointer}#pbtn.on{display:flex}#pbtn.up{bottom:calc(164px + env(safe-area-inset-bottom))}#pv{position:fixed;inset:0;z-index:46;background:#fff;display:none;flex-direction:column}#pv.on{display:flex}#pv .zh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:8px 14px;background:#f7f8f8;border-bottom:1px solid rgba(38,60,82,.12);font:600 15px Barlow,system-ui,sans-serif;color:#5d6b78}#pv .zh button{padding:9px 16px;border-radius:20px;border:0;background:var(--orange,#e8501c);color:#fff;font:700 16px Barlow,system-ui,sans-serif}#pv iframe{flex:1;border:0;width:100%}</style>');
+const b=document.createElement('button');b.id='pbtn';b.type='button';b.textContent='Plan interactif';document.body.appendChild(b);
+const v=document.createElement('div');v.id='pv';v.innerHTML='<div class="zh"><span>Zoomez sur le plan, déplacez-le.</span><button type="button">Fermer</button></div><iframe title="Plan interactif"></iframe>';document.body.appendChild(v);
+let was=false;
+b.onclick=()=>{const m=CUR&&MAP[CUR.k];if(!m)return;v.querySelector('iframe').src='plans/'+m[0]+'/index.html';v.querySelector('span').textContent=PORT()?'Tournez le téléphone pour voir le plan plus grand.':'Zoomez avec la molette, déplacez le plan.';v.classList.add('on');was=!!(curAudio&&!curAudio.paused);if(was)curAudio.pause()};
+v.querySelector('button').onclick=()=>{v.classList.remove('on');v.querySelector('iframe').src='about:blank';if(was&&curAudio)curAudio.play().catch(()=>{})};
+setInterval(()=>{const show=!!(CUR&&MAP[CUR.k]&&CUR.m.visible)&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on')&&!document.querySelector('#zv.on');b.classList.toggle('on',show);b.classList.toggle('up',show&&PORT())},300)})();
+
 /* pendant la voix, la photo glisse lentement : léger rapprochement vers le point nommé */
 let drift=null;
 function slow(o,D){const a={...V},b=view(o);drift={t0:performance.now(),D:FAST?60:D,a,b}}
