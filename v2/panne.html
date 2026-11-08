@@ -65,7 +65,7 @@ const BETON=0xc3c6c2,VOIE=0xb0b3af,BLANC=0xf7f7f4,JAUNE=0xe0b419,MARINE=0x263C52
 {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600,80,80),mat(HERBE));g.rotation.x=-Math.PI/2;g.position.y=-.15;scene.add(g)}
 {const t=new THREE.Mesh(new THREE.PlaneGeometry(38,1600,1,80),mat(BETON));t.rotation.x=-Math.PI/2;t.position.y=.01;scene.add(t);
  const v=new THREE.Mesh(new THREE.PlaneGeometry(23,1600,1,80),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.y=.015;scene.add(v)}
-strip(0,-800,0,800,.45,JAUNE,.03);strip(-11.6,-800,-11.6,800,.25,JAUNE,.03);strip(11.6,-800,11.6,800,.25,JAUNE,.03);
+for(const [lx,lw] of [[0,.45],[-11.6,.25],[11.6,.25]]){strip(lx,-800,lx,-3.8,lw,JAUNE,.03);strip(lx,3.8,lx,800,lw,JAUNE,.03)}
 for(let z=-780;z<=780;z+=30)[-12.6,12.6].forEach(x=>{cyl(.12,.12,.35,0x6f7a84,x,.18,z,scene,8);const l=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),new THREE.MeshBasicMaterial({color:0x3a6fd0}));l.position.set(x,.42,z);scene.add(l)});
 {const r=new THREE.Mesh(new THREE.PlaneGeometry(1600,7,80,1),mat(0xa3a6a2));r.rotation.x=-Math.PI/2;r.position.set(0,.02,0);scene.add(r)}
 for(let x=-800;x<-20;x+=4)strip(x,-3.4,x+2,-3.4,.2,BLANC,.035);for(let x=-800;x<-20;x+=4)strip(x,3.4,x+2,3.4,.2,BLANC,.035);

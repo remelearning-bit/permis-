@@ -1074,7 +1074,7 @@ async function traversee(part='feux'){
  {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600,80,80),mat(HERBE));g.rotation.x=-Math.PI/2;g.position.y=-.15;scene.add(g)}
  {const t=new THREE.Mesh(new THREE.PlaneGeometry(38,1600,1,80),mat(BETON));t.rotation.x=-Math.PI/2;t.position.y=0;scene.add(t);
   const v=new THREE.Mesh(new THREE.PlaneGeometry(23,1600,1,80),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.y=.02;scene.add(v)}
- strip(0,-800,0,800,.45,JAUNE,.06);strip(-11.6,-800,-11.6,800,.25,JAUNE,.06);strip(11.6,-800,11.6,800,.25,JAUNE,.06);
+ for(const [lx,lw] of [[0,.45],[-11.6,.25],[11.6,.25]]){strip(lx,-800,lx,-3.8,lw,JAUNE,.06);strip(lx,3.8,lx,800,lw,JAUNE,.06)}
  for(let z=-780;z<=780;z+=30)if(Math.abs(z)>8)[-12.6,12.6].forEach(x=>{cyl(.12,.12,.35,0x6f7a84,x,.18,z,scene,8);const l=new THREE.Mesh(new THREE.SphereGeometry(.16,8,6),new THREE.MeshBasicMaterial({color:0x3a6fd0}));l.position.set(x,.42,z);scene.add(l)});
  {const r=new THREE.Mesh(new THREE.PlaneGeometry(1600,7,80,1),mat(0x86898c));r.rotation.x=-Math.PI/2;r.position.set(0,.04,0);scene.add(r)}
  // le cheminement hors de la voie : lignes blanches continues
