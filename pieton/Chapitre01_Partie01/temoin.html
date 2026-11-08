@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Chapitre 01 — écran témoin</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--marine:#263C52;--marine-d:#1a2a3c;--orange:#E94E1B;--vert:#2E8B57;--ciel:#e7eaea;--gris:#5b6b78;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:var(--marine);display:flex;align-items:center;justify-content:center;min-height:100vh;gap:24px;flex-wrap:wrap;padding:24px;}
+h1,.titre-cond{font-family:'Barlow Condensed',sans-serif;font-weight:800;}
+.phone{width:390px;height:844px;background:var(--ciel);border-radius:28px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.5);display:flex;flex-direction:column;position:relative;}
+.bg-photo{position:absolute;inset:0;background-size:cover;background-position:center;}
+.bg-photo::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg, rgba(26,42,60,.15) 0%, rgba(26,42,60,.92) 72%);}
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:26px 22px 118px;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#ffb089;margin-bottom:6px;}
+.titre{font-size:24px;color:#fff;margin-bottom:10px;line-height:1.1;}
+.carte-legende{background:rgba(255,255,255,.95);border-radius:12px;padding:10px 14px;margin-top:8px;}
+.carte-legende .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--marine);padding:3px 0;}
+.pastille{width:12px;height:12px;border-radius:3px;flex-shrink:0;}
+.sousbar{position:absolute;left:0;right:0;bottom:0;background:var(--marine-d);padding:14px 20px;z-index:3;}
+.sousbar .nomvoix{font-size:10.5px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.sousbar .texte{color:#f2f4f5;font-size:13.5px;line-height:1.35;}
+.label{color:#fff;text-align:center;margin-top:14px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:15px;opacity:.8;}
+.wrap{display:flex;flex-direction:column;align-items:center;}
+.deuxzones{position:absolute;top:26px;left:22px;right:22px;display:flex;gap:10px;z-index:2;}
+.zone-chip{flex:1;background:rgba(255,255,255,.95);border-radius:10px;padding:10px 12px;}
+.zone-chip .nomz{font-weight:800;font-size:13px;color:var(--marine);font-family:'Barlow Condensed',sans-serif;}
+.zone-chip.piste .nomz{color:var(--orange);}
+.zone-chip p{font-size:11.5px;color:var(--gris);margin-top:3px;line-height:1.3;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="bg-photo" style="background-image:url('assets/img/vue_ensemble_cdg.jpg')"></div>
+    <div class="deuxzones">
+      <div class="zone-chip piste"><div class="nomz">CÔTÉ PISTE</div><p>Accès sous autorisation</p></div>
+      <div class="zone-chip"><div class="nomz">CÔTÉ VILLE</div><p>Zone libre d'accès</p></div>
+    </div>
+    <div class="contenu">
+      <div class="eyebrow">Vue d'ensemble</div>
+      <div class="titre">Paris – Charles de Gaulle</div>
+      <p style="color:#d8dee0;font-size:14px;">Trois terminaux, deux zones de fret, des aires éloignées. Les postes portent des noms de l'alphabet phonétique.</p>
+    </div>
+    <div class="sousbar">
+      <div class="nomvoix">Mehdi</div>
+      <div class="texte">Trois terminaux, deux zones de fret et des aires éloignées : avant de circuler, on se repère.</div>
+    </div>
+  </div>
+  <div class="label">Écran A — vue d'ensemble (carte réelle, annotée)</div>
+</div>
+
+<div class="wrap">
+  <div class="phone">
+    <div class="bg-photo" style="background-image:url('assets/img/parif_cdg.jpg')"></div>
+    <div class="contenu">
+      <div class="eyebrow">Accéder côté piste</div>
+      <div class="titre">Les PARIF de la plateforme</div>
+      <div class="carte-legende">
+        <div class="lg"><span class="pastille" style="background:#6a3fa0;"></span> 4 PARIF desservent la plateforme</div>
+        <div class="lg"><span class="pastille" style="background:var(--vert);"></span> 2 ouverts 24 h / 24</div>
+        <div class="lg"><span class="pastille" style="background:var(--orange);"></span> 2 selon horaires définis</div>
+      </div>
+    </div>
+    <div class="sousbar">
+      <div class="nomvoix">Claire</div>
+      <div class="texte">Quatre PARIF desservent la plateforme. Deux sont ouverts 24 heures sur 24, les deux autres selon des horaires définis. Repérez celui qui dessert votre zone avant de prendre la route.</div>
+    </div>
+  </div>
+  <div class="label">Écran B — les PARIF (carte réelle, annotée)</div>
+</div>
+
+</body>
+</html>

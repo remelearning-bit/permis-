@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 03 — Partie 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:24px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:28px;}
+
+.souligne{font-size:15px;color:#cfd9e0;line-height:1.45;margin-top:4px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.punch-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.punch-xl.vu{opacity:1;transform:translateY(0);}
+.punch-xl .q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:#9fb0bd;opacity:.9;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.punch-xl .r{font-size:25px;font-weight:700;color:#fff;line-height:1.28;}
+.punch-xl .r b{color:#fff;font-weight:800;}
+
+/* ---- face à face, sans carte : deux colonnes séparées par un simple trait ---- */
+.duel-kin{display:flex;gap:18px;margin-top:18px;}
+.duel-kin .d{flex:1;opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.duel-kin .d.vu{opacity:1;transform:translateY(0);}
+.duel-kin .d:first-child{border-right:1px solid rgba(255,255,255,.14);padding-right:18px;}
+.duel-kin .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:16px;color:#fff;margin-bottom:6px;letter-spacing:.02em;}
+.duel-kin .d.a .t{color:#9fb0bd;}
+.duel-kin .d.b .t{color:#fff;}
+.duel-kin p{font-size:13px;color:#cfd9e0;line-height:1.4;}
+
+/* ---- liste repère, posée directement ---- */
+.fil-lettre{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:16px;}
+.fil-lettre li{display:flex;align-items:flex-start;gap:14px;opacity:0;transform:translateX(10px);transition:opacity .35s ease, transform .35s ease;}
+.fil-lettre li.vu{opacity:1;transform:translateX(0);}
+.fil-lettre .lettre{flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:30px;color:#fff;line-height:1;width:34px;}
+.fil-lettre .tx{padding-top:3px;}
+.fil-lettre .tx .t{font-size:15px;font-weight:700;color:#fff;}
+.fil-lettre .tx p{font-size:13px;color:#cfd9e0;margin-top:1px;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:140px;left:-10px;bottom:-14px;">ERREUR</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 03 · Partie 02</div>
+        <div class="titre-kin grand" style="margin-bottom:16px;"><span class="vu">L'erreur</span></div>
+        <div class="titre-kin citation"><span class="vu">«</span> <span class="vu">Errare</span> <span class="vu">humanum</span> <span class="vu">est,</span> <span class="vu">perseverare</span> <span class="vu">diabolicum</span> <span class="vu">»</span></div>
+        <div class="souligne vu" style="margin-top:12px;">L'erreur est humaine, persévérer est diabolique.</div>
+      </div>
+    </section>
+
+    <!-- S1 — erreur vs violation -->
+    <section class="screen" id="s1">
+      <div class="scene-data"><div class="mot-fond" style="font-size:120px;right:-10px;top:30px;">VIOLATION</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey1">Deux manières de ne pas faire ce qu'il fallait</div>
+        <div class="titre-kin" id="t1"><span>Erreur</span> <span>ou</span> <span>violation</span> <span>?</span></div>
+        <div class="duel-kin">
+          <div class="d a" id="dA"><div class="t">L'ERREUR</div><p>L'écart est involontaire.</p></div>
+          <div class="d b" id="dB"><div class="t">LA VIOLATION</div><p>L'écart est une décision volontaire. Avec une intention de nuire, c'est une malveillance.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S2 — SHEL -->
+    <section class="screen" id="s2">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;left:-14px;bottom:-18px;">SHEL</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">Classification OACI</div>
+        <div class="titre-kin" id="t2"><span>Le</span> <span>modèle</span> <span>S</span>·<span>H</span>·<span>E</span>·<span>L</span></div>
+        <ul class="fil-lettre" id="listeShel">
+          <li><div class="lettre">S</div><div class="tx"><div class="t">Software</div><p>Documentation, procédures, symboles, logiciels</p></div></li>
+          <li><div class="lettre">H</div><div class="tx"><div class="t">Hardware</div><p>Le matériel</p></div></li>
+          <li><div class="lettre">E</div><div class="tx"><div class="t">Environnement</div><p>&nbsp;</p></div></li>
+          <li><div class="lettre">L</div><div class="tx"><div class="t">Liveware</div><p>L'être humain</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S3 — droit à l'erreur -->
+    <section class="screen" id="s3">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;right:-12px;bottom:-16px;">DROIT</div></div>
+      <div class="contenu">
+        <div class="punch-xl" id="p1">
+          <div class="q">Le droit à l'erreur</div>
+          <div class="r">L'expression reconnaît le droit à l'erreur, mais <b>pas celui de ne rien faire</b> pour éviter qu'elle ne se reproduise.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4 — transition -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;left:-10px;top:36px;">SAVOIR-ÊTRE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey4">Fin de la partie 02</div>
+        <div class="titre-kin grand" id="t4"><span>Se</span> <span>tromper,</span> <span>oui.</span> <span>S'arrêter</span> <span>là,</span> <span>non.</span></div>
+        <div class="souligne" id="p4">Partie 03 — Le savoir-être</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*90); }); }
+
+const steps = [
+  {screen:'s0', file:'95_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre trois, partie deux : l'erreur. Errare humanum est, perseverare diabolicum. L'erreur est humaine, persévérer est diabolique.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'96_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Il y a deux manières de ne pas faire ce qui aurait dû être fait. Si l'écart est involontaire, on parle d'erreur humaine.",
+   onStart:function(){ reveal('#ey1'); reveal('.titre-kin#t1 span',250); setTimeout(function(){ document.getElementById('dA').classList.add('vu'); },700); }, chain:true},
+  {screen:'s1', file:'97_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Si l'écart est une décision volontaire, c'est une violation. Et si celle-ci s'accompagne d'une intention de nuire, il s'agit alors de malveillance.",
+   onStart:function(){ document.getElementById('dB').classList.add('vu'); }, chain:false},
+
+  {screen:'s2', file:'98_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Pour classer les facteurs humains, l'Organisation de l'aviation civile internationale a adopté le modèle S, H, E, L : software, pour la documentation et les procédures ; hardware, le matériel ; l'environnement ; et liveware, l'être humain.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',250); reveal('#listeShel li',700); }, chain:false},
+
+  {screen:'s3', file:'99_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le droit à l'erreur reconnaît qu'on puisse se tromper. Mais pas celui de ne rien faire pour éviter que l'erreur ne se reproduise.",
+   onStart:function(){ reveal('#p1'); }, chain:false},
+
+  {screen:'s4', file:'100_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Se tromper, oui. S'arrêter là, non. Passons maintenant au savoir-être.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); setTimeout(function(){ document.getElementById('p4').classList.add('vu'); },1100); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 03' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 02'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

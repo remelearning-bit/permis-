@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 04 — Partie 02</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.scene{position:absolute;inset:0;background-size:cover;background-position:center;}
+.voile-bas{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg, rgba(10,16,24,0) 0%, rgba(10,16,24,.5) 38%, rgba(10,16,24,.93) 100%);}
+.lieu-tag{position:absolute;top:18px;left:18px;z-index:3;background:rgba(10,16,24,.55);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.04em;color:#fff;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+.contenu.bas{justify-content:flex-end;padding-bottom:24px;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:23px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:27px;}
+
+.souligne{font-size:14px;color:#cfd9e0;line-height:1.4;margin-top:2px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:16px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:4px;}
+.ligne p{font-size:14px;color:#cfd9e0;line-height:1.4;}
+
+.punch-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.punch-xl.vu{opacity:1;transform:translateY(0);}
+.punch-xl .q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:#ff8255;opacity:.95;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.punch-xl .r{font-size:24px;font-weight:700;color:#fff;line-height:1.3;}
+.punch-xl .r b{color:#fff;font-weight:800;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;right:-12px;top:30px;">RISQUE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 04 · Partie 02</div>
+        <div class="titre-kin grand vu" style="margin-bottom:16px;"><span class="vu">La</span> <span class="vu">gestion</span> <span class="vu">du</span> <span class="vu">risque</span></div>
+        <div class="titre-kin citation"><span class="vu">«</span> <span class="vu">Une</span> <span class="vu">sécurité</span> <span class="vu">qui</span> <span class="vu">n'avance</span> <span class="vu">pas</span> <span class="vu">est</span> <span class="vu">une</span> <span class="vu">sécurité</span> <span class="vu">qui</span> <span class="vu">recule</span> <span class="vu">!</span> <span class="vu">»</span></div>
+      </div>
+    </section>
+
+    <!-- S1 — DUER -->
+    <section class="screen" id="s1">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;left:-16px;bottom:-18px;">DUER</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey1">La prévention</div>
+        <div class="titre-kin" id="t1"><span>Le</span> <span>Document</span> <span>Unique</span> <span>d'Évaluation</span> <span>des</span> <span>Risques</span></div>
+        <div class="ligne" id="f1"><div class="t">Une obligation depuis 2001</div><p>Tout employeur ayant au moins un salarié doit répertorier et évaluer l'ensemble des risques professionnels pouvant nuire à la sécurité des travailleurs.</p></div>
+        <div class="ligne" id="f2"><div class="t">Mis à jour au moins une fois par an</div><p>Et à chaque aménagement qui change les conditions de travail, ou dès qu'une information nouvelle sur un risque est connue.</p></div>
+      </div>
+    </section>
+
+    <!-- S2 — notification des événements, vraie photo -->
+    <section class="screen" id="s2">
+      <div class="scene" style="background-image:url('assets/img/zone_terrain.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">Zone de circulation balisée — tarmac</div>
+      <div class="contenu bas">
+        <div class="eyebrow" id="ey2">Un acte essentiel</div>
+        <div class="ligne vu" style="margin-top:0;"><div class="t">Notifier les événements</div><p>Les accidents sont rarement une surprise : l'expérience montre qu'ils sont souvent précédés d'incidents similaires. Les signaler est une ressource précieuse pour repérer les dangers potentiels.</p></div>
+      </div>
+    </section>
+
+    <!-- S3 — choc avion -->
+    <section class="screen" id="s3">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;right:-14px;bottom:-16px;">CHOC</div></div>
+      <div class="contenu">
+        <div class="punch-xl" id="a1">
+          <div class="q">À retenir</div>
+          <div class="r"><b>Signalez tout choc avion</b>, même un choc qui semble minime. C'est cette notification systématique qui permet de détecter les dangers avant l'accident.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4 — transition -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:120px;left:-10px;top:38px;">PRÉVENIR</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey4">Fin de la partie 02</div>
+        <div class="titre-kin grand" id="t4"><span>Repérer,</span> <span>signaler,</span> <span>prévenir</span></div>
+        <div class="souligne" id="p4">Partie 03 — La culture juste et le SGS</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*110); }); }
+
+const steps = [
+  {screen:'s0', file:'118_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre quatre, partie deux : la gestion du risque. Une sécurité qui n'avance pas est une sécurité qui recule !",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'119_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le Document Unique d'Évaluation des Risques est une obligation pour toutes les entreprises depuis deux mille un. Il oblige l'employeur à répertorier et évaluer l'ensemble des risques professionnels.",
+   onStart:function(){ reveal('#ey1'); reveal('.titre-kin#t1 span',250); setTimeout(function(){ document.getElementById('f1').classList.add('vu'); },700); }, chain:true},
+  {screen:'s1', file:'120_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Il doit être mis à jour au moins une fois par an, à chaque aménagement qui change les conditions de travail, ou dès qu'une information nouvelle sur un risque est connue.",
+   onStart:function(){ document.getElementById('f2').classList.add('vu'); }, chain:false},
+
+  {screen:'s2', file:'121_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Notifier les événements est un acte essentiel. L'expérience montre que les accidents sont souvent précédés d'incidents similaires : les signaler est une ressource précieuse pour repérer les dangers potentiels, à condition que l'information remonte à l'encadrement.",
+   onStart:function(){ reveal('#ey2'); }, chain:false},
+
+  {screen:'s3', file:'122_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Signalez tout choc avion, même celui qui vous semble minime. C'est cette notification systématique qui permet de détecter les dangers avant l'accident.",
+   onStart:function(){ reveal('#a1'); }, chain:false},
+
+  {screen:'s4', file:'123_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Repérer, signaler, prévenir. Passons maintenant à la culture juste et au SGS.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); setTimeout(function(){ document.getElementById('p4').classList.add('vu'); },1000); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 03' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 02'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

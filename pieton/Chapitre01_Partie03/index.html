@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 01 — Partie 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52;
+  --marine-d:#1a2a3c;
+  --orange:#E94E1B;
+  --vert:#2E8B57;
+  --ciel:#e7eaea;
+  --blanc:#ffffff;
+  --gris:#5b6b78;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Barlow',sans-serif;
+  background:#0f1720;
+  color:var(--marine);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+h1,h2,h3,.chiffre,.titre-cond{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+
+#app{
+  position:relative;
+  width:100%;
+  max-width:430px;
+  height:100vh;
+  max-height:932px;
+  background:var(--ciel);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+@media (min-width:700px){
+  body{padding:28px;}
+  #app{
+    height:min(920px,96vh);
+    border-radius:28px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+}
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;background:var(--ciel);z-index:5;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:#c9d1d4;overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:var(--marine);transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.bg-clair{position:absolute;inset:0;background:var(--ciel);}
+.bg-marine{position:absolute;inset:0;background:var(--marine);}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;padding:26px 22px;overflow-y:auto;}
+.contenu.centre{justify-content:center;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:8px;}
+.titre-xl{font-size:30px;line-height:1.08;color:var(--marine);}
+.titre-xl.blanc{color:var(--blanc);}
+
+/* ---- cartes EPI (icône + titre + texte) ---- */
+.epi-grid{display:flex;flex-direction:column;gap:10px;margin-top:16px;}
+.epi-carte{
+  display:flex; align-items:flex-start; gap:14px;
+  background:rgba(255,255,255,.08); border:1px solid rgba(255,255,255,.2); border-radius:14px;
+  padding:14px 15px;
+  opacity:0; transform:translateY(8px); transition:opacity .4s ease, transform .4s ease;
+}
+.epi-carte.vu{opacity:1; transform:translateY(0); background:rgba(255,255,255,.95); border-color:transparent;}
+.epi-carte .ic-wrap{width:44px;height:44px;flex-shrink:0;}
+.epi-carte .ic-wrap svg{width:100%;height:100%;display:block;}
+.epi-carte .txt-wrap .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15.5px;color:#fff;}
+.epi-carte.vu .txt-wrap .t{color:var(--marine);}
+.epi-carte .txt-wrap p{font-size:12.5px;color:#d8dee0;margin-top:3px;line-height:1.35;}
+.epi-carte.vu .txt-wrap p{color:var(--gris);}
+
+/* ---- écran badge ---- */
+.badge-ecran{display:flex;flex-direction:column;align-items:center;text-align:center;gap:16px;margin-top:10px;}
+.badge-ic{width:84px;height:84px;}
+.badge-ic svg{width:100%;height:100%;display:block;}
+.badge-fait{background:rgba(255,255,255,.96);border-radius:14px;padding:14px 16px;opacity:0;transform:translateY(8px);transition:opacity .4s ease, transform .4s ease;text-align:left;width:100%;}
+.badge-fait.vu{opacity:1;transform:translateY(0);}
+.badge-fait p{font-size:13.5px;color:var(--marine);line-height:1.4;}
+
+/* ---- sous-bar / barre ---- */
+#sousbar{flex-shrink:0;background:var(--marine-d);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+
+#barre{flex-shrink:0;background:var(--ciel);padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:var(--marine-d);}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+
+  <div id="stage">
+
+    <!-- S0 — Partie 03, citation -->
+    <section class="screen" id="s0">
+      <div class="bg-marine"></div>
+      <div class="contenu centre" style="text-align:center;">
+        <div class="eyebrow">Partie 03</div>
+        <h1 class="titre-xl blanc" style="margin-bottom:14px;">Les équipements</h1>
+        <p style="font-size:19px;font-weight:600;color:#d8dee0;font-style:italic;">« Bien équipé, il ne peut rien m'arriver »</p>
+      </div>
+    </section>
+
+    <!-- S1 — Les EPI -->
+    <section class="screen" id="s1">
+      <div class="bg-marine"></div>
+      <div class="contenu" style="padding-top:30px;">
+        <div class="eyebrow">Les équipements de protection individuelle</div>
+        <h2 class="titre-xl blanc" style="font-size:21px;margin-bottom:4px;">Vous protéger, et être vu</h2>
+        <p id="introEpi" style="font-size:13.5px;color:#d8dee0;line-height:1.4;opacity:0;transition:opacity .4s ease;">Ce que vous portez sur l'aire de mouvement vous protège — et vous rend visible.</p>
+        <div class="epi-grid">
+          <div class="epi-carte" id="ep-gilet">
+            <div class="ic-wrap"><svg viewBox="0 0 200 200"><path d="M62 30l22 10c4 18 28 18 32 0l22-10 22 26-14 16v104H54V72L40 56z" fill="#F2C200" stroke="#263C52" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M100 52v124" stroke="#263C52" stroke-width="4"/><rect x="56" y="112" width="88" height="13" fill="#cfd4d8" stroke="#263C52" stroke-width="3"/><rect x="56" y="140" width="88" height="13" fill="#cfd4d8" stroke="#263C52" stroke-width="3"/>
+              <rect x="112" y="76" width="22" height="16" rx="3" fill="#263C52"/></svg></div>
+            <div class="txt-wrap"><div class="t">Gilet haute visibilité</div><p>Jaune ou orange, en permanence sur l'aire de mouvement.</p></div>
+          </div>
+          <div class="epi-carte" id="ep-casque">
+            <div class="ic-wrap"><svg viewBox="0 0 200 200"><path d="M50 112c0-44 22-72 50-72s50 28 50 72" fill="none" stroke="#263C52" stroke-width="14" stroke-linecap="round"/>
+              <rect x="30" y="100" width="40" height="64" rx="18" fill="#263C52"/><rect x="130" y="100" width="40" height="64" rx="18" fill="#263C52"/><rect x="40" y="112" width="20" height="40" rx="9" fill="#5d6f80"/><rect x="140" y="112" width="20" height="40" rx="9" fill="#5d6f80"/></svg></div>
+            <div class="txt-wrap"><div class="t">Protection auditive</div><p>Un casque anti-bruit, dans les zones exposées à des bruits intensifs sur l'aire de trafic.</p></div>
+          </div>
+          <div class="epi-carte" id="ep-chaussures">
+            <div class="ic-wrap"><svg viewBox="0 0 200 200"><path d="M46 60h46v52c18 4 40 10 56 22 10 8 12 20 10 30H40c-4-30 0-70 6-104z" fill="#3a434c" stroke="#1d2329" stroke-width="5" stroke-linejoin="round"/>
+              <path d="M38 164h124v12H38z" fill="#1d2329"/><path d="M118 124c14 4 26 12 32 22" fill="none" stroke="#8a949d" stroke-width="5" stroke-linecap="round"/><path d="M58 76h26M58 92h26" stroke="#8a949d" stroke-width="4" stroke-linecap="round"/></svg></div>
+            <div class="txt-wrap"><div class="t">Selon vos missions</div><p>D'autres équipements peuvent être demandés, par exemple des chaussures de sécurité.</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S2 — Le badge -->
+    <section class="screen" id="s2">
+      <div class="bg-marine"></div>
+      <div class="contenu centre">
+        <div class="eyebrow" style="text-align:center;">Le badge doit être porté de façon apparente</div>
+        <h2 class="titre-xl blanc" style="font-size:21px;margin-bottom:6px;text-align:center;">Porte-badge avec titre de circulation</h2>
+        <div class="badge-ecran">
+          <div class="badge-ic"><svg viewBox="0 0 48 48"><path d="M20 2h8l2 7h-12z" fill="#5d6f80" stroke="#263C52" stroke-width="1.2"/><rect x="11" y="9" width="26" height="36" rx="4" fill="#fff" stroke="#263C52" stroke-width="2"/><rect x="11" y="9" width="26" height="6" rx="3" fill="#E94E1B"/><circle cx="24" cy="24" r="6" fill="#d8dee0" stroke="#263C52" stroke-width="1.5"/><path d="M17 39c1.5-4.5 4.5-7 7-7s5.5 2.5 7 7" fill="none" stroke="#263C52" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+          <div class="badge-fait" id="faitBadge1"><p>Le titre de circulation aéroportuaire se porte en permanence et de façon visible côté piste.</p></div>
+          <div class="badge-fait" id="faitBadge2"><p>Un porte-badge adapté le maintient lisible, au-dessus de la ceinture, sans le masquer par un vêtement ou un équipement.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S3 — transition vers partie 04 -->
+    <section class="screen" id="s3">
+      <div class="bg-marine"></div>
+      <div class="contenu centre" style="text-align:center;">
+        <div class="eyebrow">Fin de la partie 03</div>
+        <h1 class="titre-xl blanc" style="margin-bottom:10px;">Vous êtes équipé, et identifiable</h1>
+        <p style="font-size:15.5px;color:#d8dee0;">Partie 04 — La phraséologie</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte">
+      <div class="nomvoix" id="nomSpk"></div>
+      <div id="txtSpk"></div>
+    </div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel){ document.querySelectorAll(sel).forEach(function(el){ el.classList.add('vu'); }); }
+function show(sel){ document.querySelectorAll(sel).forEach(function(el){ el.style.opacity='1'; }); }
+
+const steps = [
+  // --- écran 0 : citation d'ouverture (1 réplique) ---
+  {screen:'s0', file:'39_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Partie trois : les équipements. Bien équipé, il ne peut rien m'arriver.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 1 : les EPI (4 répliques) ---
+  {screen:'s1', file:'40_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Ce que vous portez sur l'aire de mouvement vous protège, et vous rend visible.",
+   onStart:function(){ show('#introEpi'); }, chain:true},
+  {screen:'s1', file:'41_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le gilet haute visibilité, généralement jaune ou orange, se porte en permanence sur l'aire de mouvement.",
+   onStart:function(){ reveal('#ep-gilet'); }, chain:true},
+  {screen:'s1', file:'42_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"La protection auditive, un casque anti-bruit, est portée par tout agent travaillant dans les zones exposées à des bruits intensifs, sur l'aire de trafic.",
+   onStart:function(){ reveal('#ep-casque'); }, chain:true},
+  {screen:'s1', file:'43_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Et selon vos missions, ou les règles internes de votre entreprise, d'autres équipements peuvent être demandés : par exemple des chaussures de sécurité.",
+   onStart:function(){ reveal('#ep-chaussures'); }, chain:false},
+
+  // --- écran 2 : le badge (2 répliques) ---
+  {screen:'s2', file:'44_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le titre de circulation aéroportuaire se porte en permanence et de façon visible côté piste.",
+   onStart:function(){ reveal('#faitBadge1'); }, chain:true},
+  {screen:'s2', file:'45_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Un porte-badge adapté le maintient lisible, au-dessus de la ceinture, sans le masquer par un vêtement ou un équipement.",
+   onStart:function(){ reveal('#faitBadge2'); }, chain:false},
+
+  // --- écran 3 : transition vers partie 04 (1 réplique) ---
+  {screen:'s3', file:'46_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Vous êtes équipé et identifiable. Passons à la phraséologie.",
+   onStart:function(){}, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.id = 'dot-'+id;
+  d.innerHTML = '<i></i>';
+  progressEl.appendChild(d);
+});
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); });
+  document.getElementById(id).classList.add('actif');
+}
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%';
+    else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){
+    stepIndex++;
+    playStep(stepIndex);
+  } else {
+    suivantBtn.classList.add('actif');
+    const bar = document.getElementById('dot-'+s.screen).querySelector('i');
+    bar.style.width = '100%';
+  }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 04' : 'Suivant';
+
+  s.onStart();
+
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+// filet de sécurité : si le fichier audio est absent/erreur (ex. avant livraison des voix),
+// on avance quand même pour permettre la vérification visuelle de la structure.
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){
+    stepIndex++;
+    playStep(stepIndex);
+  } else {
+    suivantBtn.classList.remove('actif');
+    suivantTxt.textContent = 'Fin de la partie 03';
+  }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

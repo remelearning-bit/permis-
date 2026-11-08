@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 01 — Partie 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52;
+  --marine-d:#1a2a3c;
+  --orange:#E94E1B;
+  --vert:#2E8B57;
+  --ciel:#e7eaea;
+  --blanc:#ffffff;
+  --gris:#5b6b78;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{
+  font-family:'Barlow',sans-serif;
+  background:#0f1720;
+  color:var(--marine);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:100vh;
+  overflow:hidden;
+}
+h1,h2,h3,.chiffre,.titre-cond{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+
+#app{
+  position:relative;
+  width:100%;
+  max-width:430px;
+  height:100vh;
+  max-height:932px;
+  background:var(--ciel);
+  overflow:hidden;
+  display:flex;
+  flex-direction:column;
+}
+@media (min-width:700px){
+  body{padding:28px;}
+  #app{
+    height:min(920px,96vh);
+    border-radius:28px;
+    box-shadow:0 30px 80px rgba(0,0,0,.45);
+  }
+}
+
+/* ---- progress dots ---- */
+#progress{
+  display:flex;
+  gap:4px;
+  padding:14px 16px 10px;
+  flex-shrink:0;
+  background:var(--ciel);
+  z-index:5;
+}
+#progress .dot{
+  flex:1;
+  height:4px;
+  border-radius:2px;
+  background:#c9d1d4;
+  overflow:hidden;
+}
+#progress .dot i{
+  display:block;
+  height:100%;
+  width:0%;
+  background:var(--marine);
+  transition:width .25s linear;
+}
+#progress .dot.done i{width:100%;}
+
+/* ---- stage ---- */
+#stage{
+  position:relative;
+  flex:1;
+  overflow:hidden;
+}
+.screen{
+  position:absolute;
+  inset:0;
+  display:none;
+  flex-direction:column;
+  opacity:0;
+  transition:opacity .35s ease;
+}
+.screen.actif{display:flex;opacity:1;}
+
+.bg-photo{
+  position:absolute;inset:0;
+  background-size:cover;
+  background-position:center;
+}
+.bg-photo::after{
+  content:"";
+  position:absolute;inset:0;
+  background:linear-gradient(180deg, rgba(26,42,60,.35) 0%, rgba(26,42,60,.92) 78%);
+}
+.bg-clair{position:absolute;inset:0;background:var(--ciel);}
+.bg-marine{position:absolute;inset:0;background:var(--marine);}
+
+.contenu{
+  position:relative;
+  z-index:2;
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  padding:26px 22px;
+  overflow-y:auto;
+}
+.contenu.bas{justify-content:flex-end;padding-bottom:30px;}
+.contenu.centre{justify-content:center;}
+
+/* ---- typography helpers ---- */
+.eyebrow{
+  font-family:'Barlow Condensed',sans-serif;
+  font-weight:700;
+  font-size:12.5px;
+  letter-spacing:.14em;
+  text-transform:uppercase;
+  color:#9fb0bd;
+  margin-bottom:8px;
+}
+.eyebrow.clair{color:#e7ebee;}
+.titre-xl{font-size:30px;line-height:1.08;color:var(--marine);}
+.titre-xl.blanc{color:var(--blanc);}
+.sous-titre{font-size:14.5px;color:var(--gris);margin-top:8px;line-height:1.4;}
+.sous-titre.clair{color:#d8dee0;}
+
+/* ---- liste 4 parties (écran 0) ---- */
+.liste-chap{display:flex;flex-direction:column;}
+.chap-item{
+  display:flex;align-items:center;gap:14px;
+  padding:13px 0;
+  opacity:.3;
+  transform:translateX(-6px);
+  transition:opacity .4s ease, transform .4s ease;
+  border-bottom:1px solid rgba(255,255,255,.18);
+}
+.chap-item:last-child{border-bottom:none;}
+.chap-item.vu{opacity:1;transform:translateX(0);}
+.chap-item.courant{opacity:1;}
+.chap-num{font-size:24px;color:var(--orange);min-width:30px;flex-shrink:0;}
+.chap-txt{font-size:15.5px;font-weight:600;color:#fff;}
+.chap-item.courant .chap-txt{color:var(--orange);}
+
+/* ---- deux zones (écran 2) ---- */
+.deuxzones{display:flex;gap:10px;margin-bottom:16px;}
+.zone-chip{flex:1;background:rgba(255,255,255,.95);border-radius:10px;padding:10px 12px;opacity:.55;transition:opacity .35s ease, transform .35s ease;}
+.zone-chip.actif{opacity:1;transform:translateY(-2px);box-shadow:0 4px 14px rgba(0,0,0,.25);}
+.zone-chip .nomz{font-weight:800;font-size:13px;color:var(--marine);font-family:'Barlow Condensed',sans-serif;}
+.zone-chip.piste .nomz{color:var(--marine);}
+.zone-chip p{font-size:11px;color:var(--gris);margin-top:3px;line-height:1.3;}
+.detail-carte{background:rgba(255,255,255,.96);border-radius:14px;padding:16px 16px;margin-bottom:10px;opacity:0;transform:translateY(8px);transition:opacity .4s ease, transform .4s ease;}
+.detail-carte.vu{opacity:1;transform:translateY(0);}
+.detail-carte .tag{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:14px;margin-bottom:8px;}
+.detail-carte.piste .tag{color:var(--marine);}
+.detail-carte.ville .tag{color:var(--marine);}
+.detail-carte ul{list-style:none;}
+.detail-carte li{font-size:13px;color:var(--marine);padding:4px 0 4px 16px;position:relative;line-height:1.35;}
+.detail-carte li::before{content:"";position:absolute;left:0;top:11px;width:5px;height:5px;border-radius:50%;background:var(--gris);}
+
+/* ---- badges postes (terminaux / fret) ---- */
+.badge-grid{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px;}
+.badge-poste{
+  background:rgba(255,255,255,.95);border-radius:9px;padding:7px 13px;
+  font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:14px;color:var(--marine);
+  opacity:0;transform:translateY(6px);transition:opacity .35s ease, transform .35s ease;
+}
+.badge-poste.vu{opacity:1;transform:translateY(0);}
+.badge-sous{width:100%;font-family:'Barlow',sans-serif;font-weight:700;font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#ffb089;margin-top:6px;}
+
+/* ---- définitions PIF / PARIF ---- */
+.def-carte{background:rgba(255,255,255,.96);border-radius:14px;padding:16px;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .4s ease, transform .4s ease;}
+.def-carte.vu{opacity:1;transform:translateY(0);}
+.def-carte .sigle{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:20px;color:var(--marine);}
+.def-carte .nomlong{font-size:12.5px;color:var(--gris);font-weight:600;margin:4px 0 6px;}
+.def-carte p{font-size:13.5px;color:var(--marine);line-height:1.35;}
+
+/* ---- légende carte (PARIF horaires) ---- */
+.carte-legende{background:rgba(255,255,255,.96);border-radius:12px;padding:12px 15px;margin-top:8px;}
+.carte-legende .lg{display:flex;align-items:center;gap:8px;font-size:12.5px;font-weight:600;color:var(--marine);padding:4px 0;opacity:0;transition:opacity .35s ease;}
+.carte-legende .lg.vu{opacity:1;}
+.pastille{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+
+/* ---- trois aires (chips) ---- */
+.aire-chips{display:flex;flex-direction:column;gap:10px;margin-top:14px;}
+.aire-chip{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);border-radius:12px;padding:12px 14px;opacity:.45;transition:all .35s ease;}
+.aire-chip.actif{opacity:1;background:rgba(255,255,255,.14);border-color:var(--orange);}
+.aire-chip .nomc{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:15px;color:#fff;}
+.aire-chip.actif .nomc{color:var(--orange);}
+.aire-chip p{font-size:12.5px;color:#d8dee0;margin-top:5px;line-height:1.35;display:none;}
+.aire-chip.actif p{display:block;}
+
+/* ---- sous-bar / barre ---- */
+#sousbar{
+  flex-shrink:0;
+  background:var(--marine-d);
+  padding:14px 18px;
+  display:flex;
+  align-items:flex-start;
+  gap:12px;
+  min-height:76px;
+  z-index:5;
+}
+#sousbar .avatar{
+  width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;
+}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+
+#barre{
+  flex-shrink:0;
+  background:var(--ciel);
+  padding:14px 18px calc(14px + env(safe-area-inset-bottom));
+  display:flex;
+  justify-content:flex-end;
+  gap:10px;
+  border-top:1px solid #d6dbdd;
+}
+#suivant{
+  background:var(--marine);color:#fff;border:none;border-radius:10px;
+  padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;
+  opacity:.35;pointer-events:none;transition:opacity .25s ease;
+  display:flex;align-items:center;gap:8px;
+}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:var(--marine-d);}
+
+.bg-plan{position:absolute;inset:0;background:#fff}
+.bg-plan iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.bg-plan::after{content:"";position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,rgba(26,42,60,0) 0%,rgba(26,42,60,0) 40%,rgba(26,42,60,.9) 82%)}
+.hasplan .contenu{pointer-events:none}.hasplan .contenu>*{pointer-events:auto}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+
+  <div id="stage">
+
+    <!-- S0 — Chapitre 01, intro + 4 parties -->
+    <section class="screen" id="s0">
+      <div class="bg-marine"></div>
+      <div class="contenu">
+        <div class="eyebrow">Chapitre 01</div>
+        <h1 class="titre-xl blanc" style="margin-bottom:18px;">La sécurité — généralités</h1>
+        <div class="liste-chap">
+          <div class="chap-item courant" data-ch="1"><div class="chap-num">01</div><div class="chap-txt">Présentation</div></div>
+          <div class="chap-item" data-ch="2"><div class="chap-num">02</div><div class="chap-txt">Les périmètres</div></div>
+          <div class="chap-item" data-ch="3"><div class="chap-num">03</div><div class="chap-txt">Les équipements de protection individuelle</div></div>
+          <div class="chap-item" data-ch="4"><div class="chap-num">04</div><div class="chap-txt">La phraséologie</div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S1 — Partie 01, présentation -->
+    <section class="screen" id="s1">
+      <div class="bg-marine"></div>
+      <div class="contenu centre" style="text-align:center;">
+        <div class="eyebrow">Partie 01</div>
+        <h1 class="titre-xl blanc" style="margin-bottom:14px;">Présentation</h1>
+        <p style="font-size:19px;font-weight:600;color:#d8dee0;font-style:italic;">« Où je me situe sur l'aéroport »</p>
+      </div>
+    </section>
+
+    <!-- S2 — Deux zones (piste / ville) -->
+    <section class="screen" id="s2">
+      <div class="bg-marine"></div>
+      <div class="contenu" style="padding-top:30px;">
+        <div class="eyebrow">Deux grandes zones</div>
+        <div class="deuxzones">
+          <div class="zone-chip piste" id="chipPiste"><div class="nomz">CÔTÉ PISTE</div><p>Accès sous autorisation</p></div>
+          <div class="zone-chip" id="chipVille"><div class="nomz">CÔTÉ VILLE</div><p>Zone libre d'accès</p></div>
+        </div>
+        <div class="detail-carte piste" id="cartePiste">
+          <div class="tag">Côté piste</div>
+          <ul>
+            <li>Aérogare en aval des postes d'inspection filtrage</li>
+            <li>Secteurs sensibles</li>
+            <li>Pistes et voies de circulation</li>
+            <li>Aires de stationnement des avions</li>
+            <li>Installations techniques</li>
+          </ul>
+        </div>
+        <div class="detail-carte ville" id="carteVille">
+          <div class="tag">Côté ville</div>
+          <ul>
+            <li>Parties de l'aérogare accessibles au public</li>
+            <li>Parcs de stationnement des passagers</li>
+            <li>Routes et voies de desserte</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- S3 — Vue d'ensemble plateforme -->
+    <section class="screen hasplan" id="s3">
+      <div class="bg-plan"><iframe title="Plan ADP" data-src="assets/plans/masse/index.html?e" loading="lazy"></iframe></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Vue d'ensemble</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Paris – Charles de Gaulle</h2>
+        <p class="sous-titre clair">Trois terminaux, deux zones de fret, des aires éloignées.</p>
+        <div class="badge-poste" id="badgeAlphabet" style="margin-top:12px;background:rgba(255,255,255,.95);display:inline-block;">Postes nommés par l'alphabet phonétique — détail en partie 04</div>
+      </div>
+    </section>
+
+    <!-- S4 — Terminal 1 -->
+    <section class="screen hasplan" id="s4">
+      <div class="bg-plan"><iframe title="Plan ADP" data-src="assets/plans/masse/index.html?e&v=0.364,0.328,0.12" loading="lazy"></iframe></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">CDG 1</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Terminal 1</h2>
+        <div class="badge-sous">Postes de stationnement</div>
+        <div class="badge-grid" id="badgesT1">
+          <span class="badge-poste">Uniform</span>
+          <span class="badge-poste">Whisky</span>
+          <span class="badge-poste">X-ray</span>
+          <span class="badge-poste">Yankee</span>
+          <span class="badge-poste">Zoulou</span>
+        </div>
+        <div class="badge-sous">Aires éloignées</div>
+        <div class="badge-grid" id="badgesT1b">
+          <span class="badge-poste">Roméo</span>
+          <span class="badge-poste">Sierra</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- S5 — Terminal 2 -->
+    <section class="screen hasplan" id="s5">
+      <div class="bg-plan"><iframe title="Plan ADP" data-src="assets/plans/masse/index.html?e&v=0.55,0.5,0.2" loading="lazy"></iframe></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">CDG 2</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Terminal 2</h2>
+        <div class="badge-sous">7 terminaux</div>
+        <div class="badge-grid" id="badgesT2">
+          <span class="badge-poste">A</span><span class="badge-poste">B</span><span class="badge-poste">C</span>
+          <span class="badge-poste">D</span><span class="badge-poste">E</span><span class="badge-poste">F</span>
+          <span class="badge-poste">G</span>
+        </div>
+        <div class="badge-sous">3 satellites · 2 aires éloignées</div>
+        <div class="badge-grid" id="badgesT2b">
+          <span class="badge-poste">Satellite A</span><span class="badge-poste">Satellite 3</span><span class="badge-poste">Satellite 4</span>
+          <span class="badge-poste">Golf</span><span class="badge-poste">Hôtel</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- S6 — Terminal 3 -->
+    <section class="screen" id="s6">
+      <div class="bg-photo" style="background-image:url('assets/img/terminal3_cdg.jpg')"></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">CDG 3</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Terminal 3</h2>
+        <div class="badge-sous">Poste de stationnement</div>
+        <div class="badge-grid" id="badgesT3">
+          <span class="badge-poste">Québec</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- S7 — Fret nord -->
+    <section class="screen hasplan" id="s7">
+      <div class="bg-plan"><iframe title="Plan ADP" data-src="assets/plans/masse/index.html?e&v=0.12,0.4,0.2" loading="lazy"></iframe></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Zone de fret</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Fret nord</h2>
+        <div class="badge-sous">Postes de stationnement</div>
+        <div class="badge-grid" id="badgesFN">
+          <span class="badge-poste">India</span>
+          <span class="badge-poste">Echo</span>
+          <span class="badge-poste">Novembre</span>
+          <span class="badge-poste">Zone FedEx</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- S8 — Fret sud -->
+    <section class="screen hasplan" id="s8">
+      <div class="bg-plan"><iframe title="Plan ADP" data-src="assets/plans/masse/index.html?e&v=0.28,0.7,0.2" loading="lazy"></iframe></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Zone de fret</div>
+        <h2 class="titre-xl blanc" style="font-size:22px;">Fret sud</h2>
+        <div class="badge-sous">Postes de stationnement</div>
+        <div class="badge-grid" id="badgesFS">
+          <span class="badge-poste">Mike</span>
+          <span class="badge-poste">Papa</span>
+          <span class="badge-poste">Novembre</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- S9 — Accéder côté piste (PIF / PARIF) -->
+    <section class="screen" id="s9">
+      <div class="bg-photo" style="background-image:url('assets/img/acceder_piste.jpg')"></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Accéder côté piste</div>
+        <h2 class="titre-xl blanc" style="font-size:20px;margin-bottom:12px;">Un titre spécial, des points de contrôle précis</h2>
+        <div class="def-carte" id="defPIF">
+          <div class="sigle">PIF</div>
+          <div class="nomlong">Poste d'inspection filtrage</div>
+          <p>Contrôle les personnes.</p>
+        </div>
+        <div class="def-carte" id="defPARIF">
+          <div class="sigle">PARIF</div>
+          <div class="nomlong">Poste d'accès routier avec inspection filtrage</div>
+          <p>Contrôle les véhicules.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- S10 — Les PARIF de la plateforme -->
+    <section class="screen" id="s10">
+      <div class="bg-photo" style="background-image:url('assets/img/parif_cdg.jpg')"></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Accéder côté piste</div>
+        <h2 class="titre-xl blanc" style="font-size:20px;">Les PARIF de la plateforme</h2>
+        <div class="carte-legende">
+          <div class="lg" id="lgParif1"><span class="pastille" style="background:#6a3fa0;"></span> 4 PARIF desservent la plateforme</div>
+          <div class="lg" id="lgParif2"><span class="pastille" style="background:var(--vert);"></span> 2 ouverts 24 h / 24</div>
+          <div class="lg" id="lgParif3"><span class="pastille" style="background:var(--orange);"></span> 2 selon horaires définis (4 h-17 h et 5 h-18 h)</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S11 — Les trois aires -->
+    <section class="screen" id="s11">
+      <div class="bg-marine"></div>
+      <div class="contenu" style="padding-top:30px;">
+        <div class="eyebrow">Trois aires à connaître</div>
+        <div class="aire-chips">
+          <div class="aire-chip actif" id="aireMouvement">
+            <div class="nomc">Aire de mouvement</div>
+            <p>Décollages, atterrissages, circulation des avions et des véhicules. Comprend l'aire de manœuvre et les aires de trafic.</p>
+          </div>
+          <div class="aire-chip" id="aireTrafic">
+            <div class="nomc">Aire de trafic</div>
+          </div>
+          <div class="aire-chip" id="aireManoeuvre">
+            <div class="nomc">Aire de manœuvre</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S12 — Aire de trafic -->
+    <section class="screen" id="s12">
+      <div class="bg-photo" style="background-image:url('assets/img/aire_trafic.jpg')"></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Aire de trafic</div>
+        <p class="sous-titre clair" style="font-size:15px;">Opérations d'escale : embarquement, débarquement, fret, avitaillement, stationnement, entretien. Les véhicules y accèdent aux postes de stationnement.</p>
+      </div>
+    </section>
+
+    <!-- S13 — Aire de manœuvre -->
+    <section class="screen" id="s13">
+      <div class="bg-photo" style="background-image:url('assets/img/aire_manoeuvre.jpg')"></div>
+      <div class="contenu bas">
+        <div class="eyebrow clair">Aire de manœuvre</div>
+        <p class="sous-titre clair" style="font-size:15px;">Pistes, voies de circulation avions et dégagements, aires critiques, aires sensibles.</p>
+      </div>
+    </section>
+
+    <!-- S14 — Transition vers Partie 02 -->
+    <section class="screen" id="s14">
+      <div class="bg-marine"></div>
+      <div class="contenu centre" style="text-align:center;">
+        <div class="eyebrow">Fin de la partie 01</div>
+        <h1 class="titre-xl blanc" style="margin-bottom:10px;">Vous savez maintenant où vous êtes</h1>
+        <p style="font-size:15.5px;color:#d8dee0;">Partie 02 — Les périmètres</p>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte">
+      <div class="nomvoix" id="nomSpk"></div>
+      <div id="txtSpk"></div>
+    </div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel){ document.querySelectorAll(sel).forEach(function(el){ el.classList.add('vu'); }); }
+
+const steps = [
+  // --- écran 0 : chapitre 01, 4 parties (2 répliques) ---
+  {screen:'s0', file:'01_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre premier : la sécurité, généralités.",
+   onStart:function(){}, chain:true},
+  {screen:'s0', file:'02_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Quatre parties : la présentation, les périmètres, les équipements de protection individuelle, la phraséologie.",
+   onStart:function(){
+     ['1','2','3','4'].forEach(function(n,i){
+       setTimeout(function(){ reveal('.chap-item[data-ch="'+n+'"]'); }, i*500);
+     });
+   }, chain:false},
+
+  // --- écran 1 : partie 01 présentation (1 réplique) ---
+  {screen:'s1', file:'03_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Partie une : la présentation. Où je me situe sur l'aéroport.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 2 : deux zones (3 répliques) ---
+  {screen:'s2', file:'04_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Deux grandes zones se partagent la plateforme : côté piste, et côté ville.",
+   onStart:function(){}, chain:true},
+  {screen:'s2', file:'05_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Côté piste, les personnes et les véhicules doivent posséder une autorisation pour y accéder : l'aérogare en aval des postes d'inspection filtrage, les secteurs sensibles, les pistes, les voies de circulation, les aires de stationnement des avions, et les installations techniques.",
+   onStart:function(){
+     document.getElementById('chipPiste').classList.add('actif');
+     document.getElementById('chipVille').classList.remove('actif');
+     reveal('#cartePiste');
+   }, chain:true},
+  {screen:'s2', file:'06_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Côté ville, c'est une zone libre d'accès : les parties de l'aérogare accessibles au public, les parcs de stationnement des passagers, et les routes et voies de desserte.",
+   onStart:function(){
+     document.getElementById('chipVille').classList.add('actif');
+     document.getElementById('chipPiste').classList.remove('actif');
+     reveal('#carteVille');
+   }, chain:false},
+
+  // --- écran 3 : vue d'ensemble plateforme (2 répliques) ---
+  {screen:'s3', file:'07_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Trois terminaux, deux zones de fret et des aires éloignées : avant de circuler, on se repère.",
+   onStart:function(){}, chain:true},
+  {screen:'s3', file:'08_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Les postes de stationnement portent des noms de l'alphabet phonétique, vous les retrouverez en partie quatre.",
+   onStart:function(){ reveal('#badgeAlphabet'); }, chain:false},
+
+  // --- écran 4 : terminal 1 (1 réplique) ---
+  {screen:'s4', file:'09_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le terminal un regroupe les postes Uniforme, Whisky, X-ray, Yankee et Zoulou, ainsi que deux aires éloignées : Roméo et Sierra.",
+   onStart:function(){
+     reveal('#badgesT1 .badge-poste');
+     setTimeout(function(){ reveal('#badgesT1b .badge-poste'); }, 700);
+   }, chain:false},
+
+  // --- écran 5 : terminal 2 (1 réplique) ---
+  {screen:'s5', file:'10_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le terminal deux regroupe sept terminaux, de A à G, trois satellites : Satellite A, Satellite trois, Satellite quatre, et deux aires éloignées : Golf et Hôtel.",
+   onStart:function(){
+     reveal('#badgesT2 .badge-poste');
+     setTimeout(function(){ reveal('#badgesT2b .badge-poste'); }, 700);
+   }, chain:false},
+
+  // --- écran 6 : terminal 3 (1 réplique) ---
+  {screen:'s6', file:'11_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le terminal trois ne regroupe qu'un seul poste : Québec.",
+   onStart:function(){ reveal('#badgesT3 .badge-poste'); }, chain:false},
+
+  // --- écran 7 : fret nord (1 réplique) ---
+  {screen:'s7', file:'12_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Côté fret nord, les postes India, Echo, Novembre, et la zone FedEx.",
+   onStart:function(){ reveal('#badgesFN .badge-poste'); }, chain:false},
+
+  // --- écran 8 : fret sud (1 réplique) ---
+  {screen:'s8', file:'13_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Côté fret sud, les postes Mike, Papa, et Novembre.",
+   onStart:function(){ reveal('#badgesFS .badge-poste'); }, chain:false},
+
+  // --- écran 9 : accéder côté piste — PIF / PARIF (3 répliques) ---
+  {screen:'s9', file:'14_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Pour accéder côté piste, il faut un titre spécial, et ça ne peut se faire qu'en des points précis, où sont contrôlées les personnes et les véhicules.",
+   onStart:function(){}, chain:true},
+  {screen:'s9', file:'15_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le poste d'inspection filtrage, ou PIF, contrôle les personnes.",
+   onStart:function(){ reveal('#defPIF'); }, chain:true},
+  {screen:'s9', file:'16_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le poste d'accès routier avec inspection filtrage, ou PARIF, contrôle les véhicules.",
+   onStart:function(){ reveal('#defPARIF'); }, chain:false},
+
+  // --- écran 10 : les PARIF de la plateforme (2 répliques) ---
+  {screen:'s10', file:'17_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Quatre PARIF desservent la plateforme. Deux sont ouverts vingt-quatre heures sur vingt-quatre, les deux autres selon des horaires définis : quatre heures à dix-sept heures, et cinq heures à dix-huit heures.",
+   onStart:function(){
+     ['1','2','3'].forEach(function(n,i){
+       setTimeout(function(){ reveal('#lgParif'+n); }, i*600);
+     });
+   }, chain:true},
+  {screen:'s10', file:'18_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Repérez celui qui dessert votre zone avant de prendre la route.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 11 : les trois aires (1 réplique) ---
+  {screen:'s11', file:'19_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Trois aires à connaître. L'aire de mouvement sert aux décollages, aux atterrissages, et à la circulation des avions et des véhicules : elle comprend l'aire de manœuvre et les aires de trafic.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 12 : aire de trafic (1 réplique) ---
+  {screen:'s12', file:'20_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"L'aire de trafic est destinée aux opérations d'escale : embarquement, débarquement, fret, avitaillement, stationnement et entretien des avions. C'est par là que les véhicules accèdent aux postes de stationnement.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 13 : aire de manœuvre (1 réplique) ---
+  {screen:'s13', file:'21_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"L'aire de manœuvre, ce sont les pistes, les voies de circulation avions et leurs dégagements, et toutes les aires opérationnelles : aires critiques, aires sensibles.",
+   onStart:function(){}, chain:false},
+
+  // --- écran 14 : transition vers partie 02 (1 réplique) ---
+  {screen:'s14', file:'22_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Vous savez maintenant où vous êtes. Passons aux périmètres.",
+   onStart:function(){}, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){
+  const d = document.createElement('div');
+  d.className = 'dot';
+  d.id = 'dot-'+id;
+  d.innerHTML = '<i></i>';
+  progressEl.appendChild(d);
+});
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){
+  document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); });
+  document.getElementById(id).classList.add('actif');
+}
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%';
+    else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){
+    stepIndex++;
+    playStep(stepIndex);
+  } else {
+    suivantBtn.classList.add('actif');
+    const bar = document.getElementById('dot-'+s.screen).querySelector('i');
+    bar.style.width = '100%';
+  }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 02' : 'Suivant';
+
+  s.onStart();
+
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+// filet de sécurité : si le fichier audio est absent/erreur (ex. avant livraison des voix),
+// on avance quand même pour permettre la vérification visuelle de la structure.
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){
+    stepIndex++;
+    playStep(stepIndex);
+  } else {
+    suivantBtn.classList.remove('actif');
+    suivantTxt.textContent = 'Fin de la partie 01';
+  }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+
+<script>
+(function(){function load(){document.querySelectorAll('.screen.actif .bg-plan iframe').forEach(function(f){if(!f.src||f.src==='about:blank'||f.getAttribute('src')===null)f.src=f.dataset.src})}
+new MutationObserver(load).observe(document.body,{subtree:true,attributes:true,attributeFilter:['class']});load()})();
+</script>
+</body>
+</html>

@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 04 — Partie 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:23px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:27px;}
+
+.souligne{font-size:14px;color:#cfd9e0;line-height:1.4;margin-top:2px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:16px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:4px;}
+.ligne p{font-size:14px;color:#cfd9e0;line-height:1.4;}
+
+.punch-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.punch-xl.vu{opacity:1;transform:translateY(0);}
+.punch-xl .q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:#ff8255;opacity:.95;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.punch-xl .r{font-size:24px;font-weight:700;color:#fff;line-height:1.3;}
+.punch-xl .r b{color:#fff;font-weight:800;}
+
+.fil-num{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:14px;}
+.fil-num li{display:flex;align-items:flex-start;gap:14px;opacity:0;transform:translateX(10px);transition:opacity .35s ease, transform .35s ease;}
+.fil-num li.vu{opacity:1;transform:translateX(0);}
+.fil-num .num{flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1;width:28px;}
+.fil-num .tx{padding-top:2px;}
+.fil-num .tx .t{font-size:16px;font-weight:700;color:#fff;}
+.fil-num .tx p{font-size:13px;color:#cfd9e0;margin-top:2px;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:125px;right:-14px;top:32px;">VIGILANCE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 04 · Partie 04</div>
+        <div class="titre-kin grand vu" style="margin-bottom:16px;"><span class="vu">Approche</span> <span class="vu">du</span> <span class="vu">risque</span> <span class="vu">sûreté</span></div>
+        <div class="titre-kin citation"><span class="vu">«</span> <span class="vu">Jusqu'ici</span> <span class="vu">tout</span> <span class="vu">va</span> <span class="vu">bien</span> <span class="vu">»</span></div>
+      </div>
+    </section>
+
+    <!-- S1 — la vigilance -->
+    <section class="screen" id="s1">
+      <div class="scene-data"><div class="mot-fond" style="font-size:145px;left:-18px;bottom:-14px;">ATTENTION</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey1">Vigilance et attention</div>
+        <div class="titre-kin" id="t1"><span>Être</span> <span>éveillé</span> <span>ne</span> <span>suffit</span> <span>pas</span></div>
+        <div class="ligne" id="f1"><div class="t">Nécessaire, mais pas suffisante</div><p>La vigilance active est une condition nécessaire, mais non suffisante, à l'attention : on peut être éveillé sans être réellement attentif.</p></div>
+      </div>
+    </section>
+
+    <!-- S2 — votre rôle -->
+    <section class="screen" id="s2">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;right:-12px;bottom:-16px;">TERRAIN</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">Votre rôle au quotidien</div>
+        <div class="titre-kin" id="t2" style="font-size:19px;"><span>Vous</span> <span>connaissez</span> <span>ce</span> <span>terrain</span> <span>mieux</span> <span>que</span> <span>quiconque</span></div>
+        <ul class="fil-num" id="listeVig">
+          <li><div class="num">1</div><div class="tx"><p>Votre action au quotidien est primordiale : personne ne connaît mieux que vous l'environnement dans lequel vous évoluez chaque matin.</p></div></li>
+          <li><div class="num">2</div><div class="tx"><p>Comme les passagers, vous pouvez être victime d'un acte de malveillance : certaines règles et devoirs vous sont donc applicables.</p></div></li>
+          <li><div class="num">3</div><div class="tx"><p>Même adaptées aux nécessités professionnelles, les mesures de sûreté ne sont jamais inutiles.</p></div></li>
+          <li><div class="num">4</div><div class="tx"><p>Vos facilités d'accès sont une responsabilité : ne laissez pas le « ça sert à rien » régir votre quotidien.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S3 — la routine -->
+    <section class="screen" id="s3">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;left:-14px;top:36px;">ROUTINE</div></div>
+      <div class="contenu">
+        <div class="punch-xl" id="a1">
+          <div class="q">À retenir</div>
+          <div class="r">La <b>routine</b> a du bon, notamment dans le contrôle réciproque. Mais n'oubliez pas : le risque de malveillance est très sensible à la <b>distraction</b>.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4 — transition finale -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:118px;right:-10px;bottom:-12px;">REMPART</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey4">Fin du chapitre 04</div>
+        <div class="titre-kin grand" id="t4"><span>Vous</span> <span>êtes</span> <span>le</span> <span>premier</span> <span>rempart</span></div>
+        <div class="souligne" id="p4">Place à l'évaluation finale</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*110); }); }
+
+const steps = [
+  {screen:'s0', file:'131_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre quatre, partie quatre : approche du risque sûreté. Jusqu'ici tout va bien...",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'132_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Dans tous les cas, la vigilance active est une condition nécessaire, mais non suffisante, à l'attention : on peut être éveillé mais non attentif.",
+   onStart:function(){ reveal('#ey1'); reveal('.titre-kin#t1 span',250); setTimeout(function(){ document.getElementById('f1').classList.add('vu'); },700); }, chain:false},
+
+  {screen:'s2', file:'133_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Votre action au quotidien est primordiale : qui mieux que vous connaît l'environnement dans lequel vous œuvrez chaque matin ? Comme les passagers, vous pouvez être victime d'un acte de malveillance, vous êtes donc soumis à certaines règles et devoirs. Même adaptées aux nécessités professionnelles, ne considérez jamais les mesures de sûreté comme inutiles. Enfin, vos facilités d'accès sont une responsabilité : ne laissez pas les formules toutes faites, « ça sert à rien, on verra plus tard », régir votre quotidien.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',200); reveal('#listeVig li',600); }, chain:false},
+
+  {screen:'s3', file:'134_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"La routine a du bon, notamment dans le contrôle réciproque. Mais n'oubliez pas : le risque de malveillance est très sensible à la distraction.",
+   onStart:function(){ reveal('#a1'); }, chain:false},
+
+  {screen:'s4', file:'135_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Vous êtes le premier rempart. Place maintenant à l'évaluation finale.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); setTimeout(function(){ document.getElementById('p4').classList.add('vu'); },1000); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Évaluation' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin du chapitre 04'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

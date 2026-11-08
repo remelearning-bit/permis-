@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 02 — Partie 04</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --orange:#E94E1B; --vert:#2E8B57; --blanc:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene{position:absolute;inset:0;background-size:cover;background-position:center;}
+.voile-bas{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg, rgba(10,16,24,0) 0%, rgba(10,16,24,.55) 35%, rgba(10,16,24,.94) 100%);}
+.voile-bas.haute{height:80%;}
+.lieu-tag{position:absolute;top:16px;left:16px;z-index:3;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;letter-spacing:.03em;}
+
+.texte-pose{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 24px;overflow-y:auto;}
+.texte-pose.centre{justify-content:center;padding-bottom:0;text-align:center;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#e7ebee;margin-bottom:8px;}
+
+.scene-etiquette{position:absolute;inset:0;background:#eef1f2;display:flex;align-items:center;justify-content:center;}
+.scene-etiquette svg{width:72%;max-width:280px;height:auto;}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:10px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:#fff;margin-bottom:2px;}
+.ligne p{font-size:14.5px;color:#e4e8eb;line-height:1.4;}
+.ligne.citation p{font-size:18px;font-weight:600;font-style:italic;line-height:1.35;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene" style="background-image:url('assets/img/extincteur_md.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">📍 Poste de fret</div>
+      <div class="texte-pose centre">
+        <div class="eyebrow">Chapitre 02 · Partie 04</div>
+        <div class="ligne vu citation"><p>« En cas de dommage ou de fuite constaté ou suspecté, signalez-le immédiatement et suivez les consignes d'urgence. »</p></div>
+      </div>
+    </section>
+
+    <!-- S1 — définition -->
+    <section class="screen" id="s1">
+      <div class="scene" style="background-image:url('assets/img/extincteur_md.jpg');"></div>
+      <div class="voile-bas haute"></div>
+      <div class="lieu-tag">📍 Poste de fret — moyens de lutte</div>
+      <div class="texte-pose">
+        <div class="ligne" id="fc1"><div class="t">Une vigilance renforcée</div><p>Les marchandises dangereuses sont des matières ou des objets qui présentent un risque pour la santé, l'environnement, la sécurité du personnel et la sécurité des vols.</p></div>
+        <div class="ligne" id="fc2"><p>À chaque matière dangereuse est associé un code international, en fonction de sa nature, de ses caractéristiques particulières et de sa dangerosité.</p></div>
+        <div class="ligne" id="fc3"><p>Par leur nature, les marchandises dangereuses exigent une vigilance plus prononcée que le fret ordinaire.</p></div>
+      </div>
+    </section>
+
+    <!-- S2 — emballage et étiquetage -->
+    <section class="screen" id="s2">
+      <div class="scene-etiquette">
+        <svg viewBox="0 0 320 320" xmlns="http://www.w3.org/2000/svg">
+          <rect x="30" y="40" width="260" height="200" rx="6" fill="#fff" stroke="var(--marine)" stroke-width="3"/>
+          <rect x="30" y="40" width="260" height="200" rx="6" fill="none" stroke="var(--marine)" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round" opacity=".35"/>
+          <g transform="translate(78,90) rotate(45)">
+            <rect x="-34" y="-34" width="68" height="68" fill="#E94E1B" stroke="#1d2329" stroke-width="2"/>
+          </g>
+          <path d="M78 105 q-7 -14 0 -22 q7 8 0 22z M78 97 q-4 -8 0 -13 q4 5 0 13z" transform="translate(0,-8)" fill="#fff"/>
+          <text x="78" y="145" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-weight="800" font-size="11" fill="var(--marine)">INFLAMMABLE</text>
+          <g transform="translate(220,90) rotate(45)">
+            <rect x="-34" y="-34" width="68" height="68" fill="#fff" stroke="#1d2329" stroke-width="2"/>
+          </g>
+          <path d="M210 76l10 10-10 10-10-10z M230 76l10 10-10 10-10-10z" fill="none" stroke="#1d2329" stroke-width="2"/>
+          <path d="M210 96l20 20M230 96l-20 20" stroke="#1d2329" stroke-width="2"/>
+          <text x="220" y="145" text-anchor="middle" font-family="'Barlow Condensed',sans-serif" font-weight="800" font-size="11" fill="var(--marine)">CORROSIF</text>
+          <text x="160" y="205" text-anchor="middle" font-family="'Barlow',sans-serif" font-weight="700" font-size="12" fill="#5d6f80">Étiquettes de danger — exemple</text>
+        </svg>
+      </div>
+      <div class="voile-bas haute"></div>
+      <div class="lieu-tag">📍 Poste de fret — chargement</div>
+      <div class="texte-pose">
+        <div class="ligne" id="fc4"><div class="t">L'emballage et l'étiquetage</div><p>Chaque emballage contenant des matières dangereuses est étiqueté en fonction des dangers principaux de la matière et, le cas échéant, des dangers subsidiaires.</p></div>
+        <div class="ligne" id="fc5"><p>Comprendre l'étiquetage permet d'adapter son comportement en cas d'accident, par exemple en cas d'épandage lors du chargement.</p></div>
+      </div>
+    </section>
+
+    <!-- S3 — transition vers chapitre 03 -->
+    <section class="screen" id="s3">
+      <div class="scene" style="background-image:url('assets/img/extincteur_md.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="texte-pose centre">
+        <div class="eyebrow">Fin du chapitre 02</div>
+        <div class="ligne vu"><div class="t" style="font-size:22px;">Signaler, c'est déjà prévenir</div><p style="margin-top:6px;">Chapitre 03 — Le facteur humain et organisationnel</p></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel){ document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, i*90); }); }
+
+const steps = [
+  {screen:'s0', file:'81_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Chapitre deux, partie quatre : les marchandises dangereuses. En cas de dommage ou de fuite constaté ou suspecté, signalez-le immédiatement et suivez les consignes d'urgence.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'82_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Les marchandises dangereuses sont des matières ou des objets qui présentent un risque pour la santé, l'environnement, la sécurité du personnel et la sécurité des vols.",
+   onStart:function(){ reveal('#fc1'); }, chain:true},
+  {screen:'s1', file:'83_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"À chaque matière dangereuse est associé un code international, en fonction de sa nature, de ses caractéristiques particulières et de sa dangerosité.",
+   onStart:function(){ reveal('#fc2'); }, chain:true},
+  {screen:'s1', file:'84_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Par leur nature, les marchandises dangereuses exigent une vigilance plus prononcée que le fret ordinaire.",
+   onStart:function(){ reveal('#fc3'); }, chain:false},
+
+  {screen:'s2', file:'85_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Chaque emballage contenant des matières dangereuses est étiqueté en fonction des dangers principaux de la matière et, le cas échéant, des dangers subsidiaires.",
+   onStart:function(){ reveal('#fc4'); }, chain:true},
+  {screen:'s2', file:'86_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Comprendre l'étiquetage permet d'adapter son comportement en cas d'accident, par exemple en cas d'épandage lors du chargement.",
+   onStart:function(){ reveal('#fc5'); }, chain:false},
+
+  {screen:'s3', file:'87_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Signaler, c'est déjà prévenir. Passons maintenant au facteur humain et organisationnel.",
+   onStart:function(){}, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Chapitre 03' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 04'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

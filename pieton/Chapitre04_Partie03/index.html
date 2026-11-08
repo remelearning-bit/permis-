@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 04 — Partie 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.scene{position:absolute;inset:0;background-size:cover;background-position:center;}
+.voile-bas{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg, rgba(10,16,24,0) 0%, rgba(10,16,24,.5) 38%, rgba(10,16,24,.93) 100%);}
+.lieu-tag{position:absolute;top:18px;left:18px;z-index:3;background:rgba(10,16,24,.55);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.04em;color:#fff;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+.contenu.bas{justify-content:flex-end;padding-bottom:24px;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:23px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:27px;}
+
+.souligne{font-size:14px;color:#cfd9e0;line-height:1.4;margin-top:2px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:16px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:18px;color:#fff;margin-bottom:4px;}
+.ligne p{font-size:14px;color:#cfd9e0;line-height:1.4;}
+.ligne.accent .t{color:#fff;text-decoration:underline;text-decoration-color:rgba(255,255,255,.35);text-underline-offset:3px;}
+
+.cite-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;position:relative;padding-left:22px;border-left:3px solid rgba(255,255,255,.25);}
+.cite-xl.vu{opacity:1;transform:translateY(0);}
+.cite-xl .guillemet{position:absolute;left:-14px;top:-34px;font-family:Georgia,serif;font-size:90px;color:rgba(255,255,255,.12);line-height:1;}
+.cite-xl p{font-size:19px;font-style:italic;color:#fff;line-height:1.42;position:relative;}
+.cite-xl .auteur{font-size:12.5px;color:#9fb0bd;margin-top:16px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;}
+.cite-xl .auteur b{display:block;color:#e7ebee;font-size:14px;letter-spacing:.01em;text-transform:none;margin-bottom:2px;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation d'ouverture -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;left:-16px;bottom:-18px;">CULTURE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 04 · Partie 03</div>
+        <div class="titre-kin grand vu" style="margin-bottom:16px;"><span class="vu">La</span> <span class="vu">culture</span> <span class="vu">juste</span> <span class="vu">et</span> <span class="vu">le</span> <span class="vu">SGS</span></div>
+        <div class="titre-kin citation"><span class="vu">«</span> <span class="vu">Nous</span> <span class="vu">apprenons</span> <span class="vu">des</span> <span class="vu">autres</span> <span class="vu">»</span></div>
+      </div>
+    </section>
+
+    <!-- S1 — pas le bon sens, vraie photo -->
+    <section class="screen" id="s1">
+      <div class="scene" style="background-image:url('assets/img/stop_piste.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">Marquage STOP — voie de circulation</div>
+      <div class="contenu bas">
+        <div class="eyebrow" id="ey1">Une question de bon sens ?</div>
+        <div class="ligne vu" style="margin-top:0;"><div class="t">Ce n'est pas le bon sens qui répond à tout</div><p>Il faut mettre en place une culture juste, des procédures, et des outils comme le système de gestion de la sécurité — le SGS. Un marquage clair ne remplace pas une culture partagée.</p></div>
+      </div>
+    </section>
+
+    <!-- S2 — culture juste définition -->
+    <section class="screen" id="s2">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;right:-14px;top:30px;">ERREUR</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">La culture juste</div>
+        <div class="titre-kin" id="t2"><span>Corriger</span> <span>l'erreur,</span> <span>pas</span> <span>l'auteur</span></div>
+        <div class="ligne accent" id="f2"><div class="t">Attention à l'erreur cachée</div><p>Dans la culture juste, une erreur cachée est considérée comme une faute. L'objectif est de corriger l'erreur, pas de sanctionner celui qui l'a commise.</p></div>
+      </div>
+    </section>
+
+    <!-- S3 — citation James Reason -->
+    <section class="screen" id="s3">
+      <div class="scene-data"><div class="mot-fond" style="font-size:120px;left:-10px;bottom:-14px;">CONFIANCE</div></div>
+      <div class="contenu">
+        <div class="cite-xl" id="c1">
+          <span class="guillemet">&ldquo;</span>
+          <p>Un climat de confiance qui incite les personnes à fournir les renseignements essentiels liés à la sécurité, mais dans lequel elles connaissent aussi les limites entre un comportement acceptable ou non.</p>
+          <div class="auteur"><b>James Reason</b>1997 — Les éléments de la culture de sécurité</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S4 — SGS outil -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;right:-18px;bottom:-18px;">SGS</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey4">Un outil de culture juste</div>
+        <div class="titre-kin" id="t4"><span>Le</span> <span>système</span> <span>de</span> <span>gestion</span> <span>de</span> <span>la</span> <span>sécurité</span></div>
+        <div class="ligne" id="f3"><div class="t">Une obligation pour tous les acteurs</div><p>Compagnie, assistance en escale, aéroport : la réglementation impose à chacun la mise en place d'un SGS, pour limiter les sources d'incidents possibles.</p></div>
+      </div>
+    </section>
+
+    <!-- S5 — démarche REX -->
+    <section class="screen" id="s5">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;left:-12px;top:36px;">REX</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey5">La démarche REX</div>
+        <div class="titre-kin" id="t5"><span>Analyser,</span> <span>corriger,</span> <span>retenir</span></div>
+        <div class="ligne" id="f4"><div class="t">Le cycle du retour d'expérience</div><p>Une analyse de l'événement, des actions correctives, et enfin le retour d'expérience partagé avec les équipes.</p></div>
+      </div>
+    </section>
+
+    <!-- S6 — transition -->
+    <section class="screen" id="s6">
+      <div class="scene-data"><div class="mot-fond" style="font-size:125px;right:-12px;top:38px;">SÛRETÉ</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey6">Fin de la partie 03</div>
+        <div class="titre-kin grand" id="t6"><span>Corriger</span> <span>l'erreur,</span> <span>jamais</span> <span>l'auteur</span></div>
+        <div class="souligne" id="p6">Partie 04 — Approche du risque sûreté</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*110); }); }
+
+const steps = [
+  {screen:'s0', file:'124_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Chapitre quatre, partie trois : la culture juste et le SGS. Nous apprenons des autres.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'125_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Ce n'est pas le bon sens qui permettra de répondre à toutes les questions. Il faut mettre en place une culture juste, des procédures, et des outils comme le système de gestion de la sécurité, le SGS.",
+   onStart:function(){ reveal('#ey1'); }, chain:false},
+
+  {screen:'s2', file:'126_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Dans la culture juste, une erreur cachée est considérée comme une faute. Attention : l'objectif est de corriger l'erreur, pas l'auteur.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',250); setTimeout(function(){ document.getElementById('f2').classList.add('vu'); },800); }, chain:false},
+
+  {screen:'s3', file:'127_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"James Reason écrivait en mille neuf cent quatre-vingt-dix-sept : un climat de confiance qui incite les personnes à fournir les renseignements essentiels liés à la sécurité, mais dans lequel elles connaissent aussi les limites entre un comportement acceptable ou non.",
+   onStart:function(){ reveal('#c1'); }, chain:false},
+
+  {screen:'s4', file:'128_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le système de gestion de la sécurité est un véritable outil de culture juste. Pour être certifiés, la compagnie, l'assistance en escale et l'aéroport doivent tous le mettre en place, pour limiter à tout prix les sources d'incidents possibles.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); setTimeout(function(){ document.getElementById('f3').classList.add('vu'); },800); }, chain:false},
+
+  {screen:'s5', file:'129_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"La démarche de retour d'expérience suit un cycle simple : une analyse de l'événement, des actions correctives, et enfin le retour d'expérience partagé avec les équipes.",
+   onStart:function(){ reveal('#ey5'); reveal('.titre-kin#t5 span',250); setTimeout(function(){ document.getElementById('f4').classList.add('vu'); },800); }, chain:false},
+
+  {screen:'s6', file:'130_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Corriger l'erreur, jamais l'auteur. Passons maintenant à l'approche du risque sûreté.",
+   onStart:function(){ reveal('#ey6'); reveal('.titre-kin#t6 span',250); setTimeout(function(){ document.getElementById('p6').classList.add('vu'); },1300); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 04' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 03'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

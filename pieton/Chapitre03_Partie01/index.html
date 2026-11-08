@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 03 — Partie 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+/* ---- scène sans photo : fond uni marine REM, profondeur donnée par la typo ---- */
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+/* titre kinétique : les mots arrivent un par un, en grand, posés */
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:25px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:29px;}
+
+.souligne{font-size:15px;color:#cfd9e0;line-height:1.45;margin-top:4px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+/* chiffres clés animés, posés, avec jauge */
+.stat-row{display:flex;gap:20px;margin-top:20px;flex-wrap:wrap;}
+.stat-live{flex:1;min-width:120px;opacity:0;transform:translateY(10px);transition:opacity .4s ease,transform .4s ease;}
+.stat-live.vu{opacity:1;transform:translateY(0);}
+.stat-live .ligne-chiffre{display:flex;align-items:flex-end;gap:4px;}
+.stat-live .chiffre{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:64px;line-height:.85;color:#ff8255;}
+.stat-live .pct{font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:28px;color:#ff8255;opacity:.9;margin-bottom:4px;}
+.stat-live .legende{font-size:13px;color:#cfd9e0;line-height:1.35;margin-top:6px;}
+.jauge{height:6px;border-radius:4px;background:rgba(255,255,255,.1);overflow:hidden;margin-top:10px;}
+.jauge i{display:block;height:100%;width:0%;border-radius:4px;background:linear-gradient(90deg,#E94E1B,#ff9d6b);transition:width 1.3s cubic-bezier(.22,1,.36,1);}
+
+.source{font-size:10.5px;color:#718293;font-style:italic;margin-top:22px;opacity:0;transition:opacity .5s ease;}
+.source.vu{opacity:.9;}
+
+/* liste "fil" posée directement, sans carte */
+.fil{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:13px;}
+.fil li{display:flex;align-items:center;gap:12px;opacity:0;transform:translateX(10px);transition:opacity .35s ease, transform .35s ease;}
+.fil li.vu{opacity:1;transform:translateX(0);}
+.fil .pt{width:8px;height:8px;border-radius:50%;background:var(--orange);flex-shrink:0;}
+.fil p{font-size:15px;color:#fff;font-weight:600;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:150px;left:-8px;bottom:-10px;">HUMAIN</div>
+      </div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 03 · Partie 01</div>
+        <div class="titre-kin citation vu"><span>«</span> <span>La</span> <span>sécurité</span> <span>est</span> <span>étroitement</span> <span>associée</span> <span>à</span> <span>l'humain.</span> <span>»</span></div>
+      </div>
+    </section>
+
+    <!-- S1 — de l'erreur technique aux facteurs humains -->
+    <section class="screen" id="s1">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:120px;right:-10px;top:30px;">ERREUR</div>
+      </div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey1">Saviez-vous que</div>
+        <div class="titre-kin grand" id="t1">
+          <span>On</span> <span>parlait</span> <span>d'abord</span> <span>d'<b>erreur</b></span> <span><b>technique</b>.</span> <span>Puis</span> <span>d'erreur</span> <span>humaine.</span>
+        </div>
+        <div class="souligne" id="p1">Aujourd'hui, on parle de <b>facteurs humains et organisationnels</b> — parce que l'humain s'adapte toujours au système dans lequel il travaille.</div>
+      </div>
+    </section>
+
+    <!-- S2 — chiffres clés RPS (1) -->
+    <section class="screen" id="s2">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:130px;left:-14px;bottom:-16px;">PRESSION</div>
+      </div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">Parmi les actifs français</div>
+        <div class="titre-kin" id="t2"><span>Les</span> <span>risques</span> <span>psychosociaux,</span> <span>en</span> <span>chiffres</span></div>
+        <div class="stat-row">
+          <div class="stat-live" id="st1">
+            <div class="ligne-chiffre"><div class="chiffre" data-cible="45">0</div><div class="pct">%</div></div>
+            <div class="legende">déclarent devoir, toujours ou souvent, se dépêcher</div>
+            <div class="jauge"><i data-cible="45"></i></div>
+          </div>
+          <div class="stat-live" id="st2">
+            <div class="ligne-chiffre"><div class="chiffre" data-cible="30">0</div><div class="pct">%</div></div>
+            <div class="legende">signalent avoir subi un comportement hostile au travail en douze mois</div>
+            <div class="jauge"><i data-cible="30"></i></div>
+          </div>
+        </div>
+        <div class="source" id="src2">Source : enquête Dares « Conditions de travail — Risques psychosociaux », 2016.</div>
+      </div>
+    </section>
+
+    <!-- S3 — chiffres clés RPS (2) -->
+    <section class="screen" id="s3">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:120px;right:-12px;bottom:-14px;">ÉMOTIONS</div>
+      </div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey3">Et ce n'est pas tout</div>
+        <div class="titre-kin" id="t3"><span>Trois</span> <span>salariés</span> <span>sur</span> <span>quatre,</span> <span>concernés</span></div>
+        <div class="stat-row">
+          <div class="stat-live" id="st3">
+            <div class="ligne-chiffre"><div class="chiffre" data-cible="25">0</div><div class="pct">%</div></div>
+            <div class="legende">disent devoir cacher leurs émotions, faire semblant d'être de bonne humeur</div>
+            <div class="jauge"><i data-cible="25"></i></div>
+          </div>
+          <div class="stat-live" id="st4">
+            <div class="ligne-chiffre"><div class="chiffre" data-cible="25">0</div><div class="pct">%</div></div>
+            <div class="legende">craignent de perdre leur emploi</div>
+            <div class="jauge"><i data-cible="25"></i></div>
+          </div>
+        </div>
+        <div class="source" id="src3">Source : enquête Dares « Conditions de travail — Risques psychosociaux », 2016.</div>
+      </div>
+    </section>
+
+    <!-- S4 — effets du stress -->
+    <section class="screen" id="s4">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:135px;left:-10px;top:40px;">STRESS</div>
+      </div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey4">Le stress, sur le corps</div>
+        <div class="titre-kin" id="t4"><span>Ce</span> <span>que</span> <span>le</span> <span>stress</span> <span>fait,</span> <span>vraiment</span></div>
+        <ul class="fil" id="filStress">
+          <li><div class="pt"></div><p>Fatigue, sommeil agité</p></li>
+          <li><div class="pt"></div><p>Tensions musculaires, troubles digestifs</p></li>
+          <li><div class="pt"></div><p>Augmentation du rythme cardiaque et de la pression artérielle</p></li>
+          <li><div class="pt"></div><p>Système immunitaire affaibli</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S5 — alcool, drogues et travail -->
+    <section class="screen" id="s5">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:115px;right:-8px;top:36px;">ALCOOL</div>
+      </div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey5">Alcool, drogues et travail</div>
+        <div class="titre-kin" id="t5"><span>Le</span> <span>travail</span> <span>peut</span> <span>peser</span> <span>dans</span> <span>la</span> <span>balance</span></div>
+        <div class="souligne" id="p5">Pression, travail de nuit, harcèlement, travail physique : le travail peut contribuer à déclencher, maintenir ou aggraver une consommation d'alcool ou de drogues.</div>
+        <ul class="fil" id="filAlcool">
+          <li><div class="pt"></div><p>Accidents du travail</p></li>
+          <li><div class="pt"></div><p>Absentéisme, retards</p></li>
+          <li><div class="pt"></div><p>Conflits avec les collègues</p></li>
+          <li><div class="pt"></div><p>Décisions erronées, baisse de qualité</p></li>
+        </ul>
+        <div class="source vu">Source : INRS.</div>
+      </div>
+    </section>
+
+    <!-- S6 — transition -->
+    <section class="screen" id="s6">
+      <div class="scene-data">
+        <div class="mot-fond" style="font-size:150px;right:-14px;bottom:-14px;">SÉCURITÉ</div>
+      </div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey6">Fin de la partie 01</div>
+        <div class="titre-kin grand" id="t6"><span>L'humain,</span> <span>au</span> <span>cœur</span> <span>de</span> <span>la</span> <span>sécurité</span></div>
+        <div class="souligne" id="p6">Partie 02 — L'erreur</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*90); }); }
+
+function compteurs(scope,delay){
+  delay = delay||0;
+  const items = document.querySelectorAll(scope+' .chiffre');
+  items.forEach(function(el){
+    const cible = parseInt(el.getAttribute('data-cible'),10);
+    setTimeout(function(){
+      const t0 = performance.now();
+      const dur = 1000;
+      function tick(now){
+        const p = Math.min(1,(now - t0)/dur);
+        el.textContent = Math.round(cible * (1 - Math.pow(1-p,3)));
+        if(p < 1) requestAnimationFrame(tick);
+      }
+      requestAnimationFrame(tick);
+    }, delay);
+  });
+  document.querySelectorAll(scope+' .jauge i').forEach(function(bar){
+    setTimeout(function(){ bar.style.width = bar.getAttribute('data-cible')+'%'; }, delay);
+  });
+}
+
+const steps = [
+  {screen:'s0', file:'88_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre trois, partie un : le facteur humain. La sécurité est étroitement associée à l'humain.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'89_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Saviez-vous qu'on parlait d'abord d'erreur technique ? Puis d'erreur humaine. Aujourd'hui, on parle de facteurs humains et organisationnels, parce que l'humain s'adapte toujours au système dans lequel il travaille.",
+   onStart:function(){ reveal('#ey1'); reveal('.titre-kin#t1 span',250); setTimeout(function(){ document.getElementById('p1').classList.add('vu'); },1100); }, chain:false},
+
+  {screen:'s2', file:'90_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Quarante-cinq pour cent des actifs français déclarent devoir, toujours ou souvent, se dépêcher. Et trente pour cent signalent avoir subi un comportement hostile au travail, au cours des douze derniers mois.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',250); reveal('#st1, #st2',600); compteurs('#s2',700); setTimeout(function(){ document.getElementById('src2').classList.add('vu'); },2000); }, chain:true},
+
+  {screen:'s3', file:'91_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Vingt-cinq pour cent disent devoir cacher leurs émotions, faire semblant d'être de bonne humeur. Et vingt-cinq pour cent craignent de perdre leur emploi.",
+   onStart:function(){ reveal('#ey3'); reveal('.titre-kin#t3 span',250); reveal('#st3, #st4',600); compteurs('#s3',700); setTimeout(function(){ document.getElementById('src3').classList.add('vu'); },2000); }, chain:false},
+
+  {screen:'s4', file:'92_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le stress, ce n'est pas que dans la tête. Fatigue, sommeil agité, tensions musculaires, troubles digestifs, rythme cardiaque et pression artérielle qui augmentent, système immunitaire affaibli : le corps entier encaisse.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); reveal('#filStress li',700); }, chain:false},
+
+  {screen:'s5', file:'93_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le travail peut aussi contribuer à déclencher, maintenir ou aggraver une consommation d'alcool ou de drogues. Avec des conséquences directes : accidents du travail, absentéisme, conflits avec les collègues, décisions erronées.",
+   onStart:function(){ reveal('#ey5'); reveal('.titre-kin#t5 span',250); setTimeout(function(){ document.getElementById('p5').classList.add('vu'); },1100); reveal('#filAlcool li',1500); }, chain:false},
+
+  {screen:'s6', file:'94_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"L'humain, au cœur de la sécurité. Passons maintenant à l'erreur.",
+   onStart:function(){ reveal('#ey6'); reveal('.titre-kin#t6 span',250); setTimeout(function(){ document.getElementById('p6').classList.add('vu'); },1400); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 02' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 01'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

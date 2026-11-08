@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 02 — Partie 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --orange:#E94E1B; --vert:#2E8B57; --blanc:#ffffff;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene{position:absolute;inset:0;background-size:cover;background-position:center;}
+.voile-bas{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg, rgba(10,16,24,0) 0%, rgba(10,16,24,.55) 35%, rgba(10,16,24,.94) 100%);}
+.lieu-tag{position:absolute;top:16px;left:16px;z-index:3;background:rgba(0,0,0,.4);backdrop-filter:blur(4px);color:#fff;font-size:11px;font-weight:700;padding:6px 12px;border-radius:20px;letter-spacing:.03em;}
+
+.texte-pose{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:flex-end;padding:0 22px 24px;}
+.texte-pose.centre{justify-content:center;padding-bottom:0;text-align:center;}
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#e7ebee;margin-bottom:8px;}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:10px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:17px;color:#fff;margin-bottom:2px;}
+.ligne p{font-size:14.5px;color:#e4e8eb;line-height:1.4;}
+.ligne.citation p{font-size:19px;font-weight:600;font-style:italic;line-height:1.35;}
+
+.hotspot{position:absolute;width:28px;height:28px;border-radius:50%;background:rgba(233,78,27,.9);border:2px solid #fff;z-index:3;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:13px;box-shadow:0 0 0 0 rgba(233,78,27,.6);animation:pulse 2.2s infinite;cursor:pointer;opacity:0;transition:opacity .4s ease;}
+.hotspot.vu{opacity:1;}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(233,78,27,.55);}70%{box-shadow:0 0 0 13px rgba(233,78,27,0);}100%{box-shadow:0 0 0 0 rgba(233,78,27,0);}}
+.bulle{display:none;position:absolute;z-index:4;background:#fff;color:var(--marine);font-size:12.5px;line-height:1.35;border-radius:10px;padding:10px 12px;width:190px;box-shadow:0 8px 24px rgba(0,0,0,.4);}
+.bulle.vu{display:block;}
+
+.video-wrap{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;background:#000;}
+.video-wrap video{width:100%;max-height:60vh;display:block;}
+.video-label{text-align:center;color:#9fb0bd;font-size:12.5px;padding:14px;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation, sur la piste -->
+    <section class="screen" id="s0">
+      <div class="scene" style="background-image:url('assets/img/piste_generale.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">📍 Aire de trafic — CDG</div>
+      <div class="texte-pose centre">
+        <div class="eyebrow">Chapitre 02 · Partie 01</div>
+        <div class="ligne vu citation"><p>« Le responsable d'un objet oublié n'est pas celui qui le génère, mais celui qui ne le ramasse pas. »</p></div>
+      </div>
+    </section>
+
+    <!-- S1 — définition FOD -->
+    <section class="screen" id="s1">
+      <div class="scene" style="background-image:url('assets/img/piste_generale.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">📍 Aire de trafic — CDG</div>
+      <div class="hotspot" id="hsFod" style="top:38%;left:60%;">?</div>
+      <div class="bulle" id="bulleFod" style="top:30%;left:36%;">FOD : Foreign Object Debris — un objet ou débris étranger.</div>
+      <div class="texte-pose">
+        <div class="ligne" id="fc1"><div class="t">Les objets et débris étrangers</div><p>On parle de FOD, un acronyme anglais qui désigne un objet ou un débris étranger.</p></div>
+        <div class="ligne" id="fc2"><p>C'est un débris ou un objet étranger présent sur l'aire de mouvement, qui n'a aucune fonction opérationnelle ou aéronautique, et qui peut entraîner un dommage.</p></div>
+      </div>
+    </section>
+
+    <!-- S2 — vidéo -->
+    <section class="screen" id="s2">
+      <div class="video-wrap">
+        <video id="vfod" controls playsinline preload="none" src="assets/video/fod.mp4"></video>
+        <div class="video-label">Objets et débris étrangers — comment limiter les risques</div>
+      </div>
+    </section>
+
+    <!-- S3 — vigilance ZEC -->
+    <section class="screen" id="s3">
+      <div class="scene" style="background-image:url('assets/img/zec_stockage.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">📍 Zone d'évolution contrôlée</div>
+      <div class="texte-pose">
+        <div class="ligne" id="fc3"><div class="t">Rien ne doit traîner</div><p>Tout objet laissé dans la zone d'évolution et de circulation constitue un objet étranger, et peut avoir des conséquences importantes sur les opérations avion.</p></div>
+        <div class="ligne" id="fc4"><p>Tout opérateur ayant une activité au sol est responsable des affaires ou des outils qu'il transporte, et ne doit rien oublier.</p></div>
+      </div>
+    </section>
+
+    <!-- S4 — clean as you go -->
+    <section class="screen" id="s4">
+      <div class="scene" style="background-image:url('assets/img/zec_stockage.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">📍 Zone d'évolution contrôlée</div>
+      <div class="texte-pose">
+        <div class="ligne" id="fc5"><div class="t">Clean as you go</div><p>Appliquez le principe clean as you go : nettoyez lorsque vous partez.</p></div>
+        <div class="ligne" id="fc6"><p>Et si un objet ne peut pas être ramassé, faites remonter l'information afin d'assurer un nettoyage.</p></div>
+      </div>
+    </section>
+
+    <!-- S5 — transition -->
+    <section class="screen" id="s5">
+      <div class="scene" style="background-image:url('assets/img/piste_generale.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="texte-pose centre">
+        <div class="eyebrow">Fin de la partie 01</div>
+        <div class="ligne vu"><div class="t" style="font-size:22px;">Un geste simple, une sécurité en plus</div><p style="margin-top:6px;">Partie 02 — Avitaillement et risque incendie</p></div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel){ document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, i*90); }); }
+
+const steps = [
+  {screen:'s0', file:'51_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Chapitre deux, partie un : les dangers provoqués par les objets et débris étrangers. Le responsable d'un objet oublié n'est pas celui qui le génère, mais celui qui ne le ramasse pas.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'52_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"On parle de FOD, un acronyme anglais qui désigne un objet ou un débris étranger.",
+   onStart:function(){ reveal('#fc1'); reveal('#hsFod'); }, chain:true},
+  {screen:'s1', file:'53_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"C'est un débris ou un objet étranger présent sur l'aire de mouvement, qui n'a aucune fonction opérationnelle ou aéronautique, et qui peut entraîner un dommage.",
+   onStart:function(){ reveal('#fc2'); }, chain:false},
+
+  {screen:'s2', file:'54_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Voici un film pour mieux comprendre comment limiter les risques liés à ces objets et débris étrangers.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s3', file:'55_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Tout objet laissé dans la zone d'évolution et de circulation constitue un objet étranger, et peut avoir des conséquences importantes sur les opérations avion.",
+   onStart:function(){ reveal('#fc3'); }, chain:true},
+  {screen:'s3', file:'56_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Tout opérateur ayant une activité au sol est responsable des affaires ou des outils qu'il transporte, et ne doit rien oublier.",
+   onStart:function(){ reveal('#fc4'); }, chain:false},
+
+  {screen:'s4', file:'57_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Appliquez le principe clean as you go : nettoyez lorsque vous partez.",
+   onStart:function(){ reveal('#fc5'); }, chain:true},
+  {screen:'s4', file:'58_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Et si un objet ne peut pas être ramassé, faites remonter l'information afin d'assurer un nettoyage.",
+   onStart:function(){ reveal('#fc6'); }, chain:false},
+
+  {screen:'s5', file:'59_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Un geste simple, une sécurité en plus. Passons à l'avitaillement et au risque incendie.",
+   onStart:function(){}, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+const videoEl = document.getElementById('vfod');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 02' : 'Suivant';
+  s.onStart();
+  if(s.screen !== 's2'){
+    player.src = 'assets/audio/'+s.file;
+    player.play().catch(function(){});
+  } else {
+    suivantBtn.classList.add('actif');
+    document.getElementById('dot-s2').querySelector('i').style.width='100%';
+  }
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+document.getElementById('hsFod').addEventListener('click', function(){
+  document.getElementById('bulleFod').classList.toggle('vu');
+});
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 01'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

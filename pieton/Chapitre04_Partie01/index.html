@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 04 — Partie 01</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+/* ---- sans photo : fond uni marine, profondeur par la typo ---- */
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+/* ---- avec photo : scène Style B ---- */
+.scene{position:absolute;inset:0;background-size:cover;background-position:center;}
+.voile-bas{position:absolute;left:0;right:0;bottom:0;height:62%;background:linear-gradient(180deg, rgba(10,16,24,0) 0%, rgba(10,16,24,.5) 38%, rgba(10,16,24,.93) 100%);}
+.lieu-tag{position:absolute;top:18px;left:18px;z-index:3;background:rgba(10,16,24,.55);border:1px solid rgba(255,255,255,.25);border-radius:7px;padding:5px 10px;font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:11.5px;letter-spacing:.04em;color:#fff;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+.contenu.bas{justify-content:flex-end;padding-bottom:24px;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.grand{font-size:27px;}
+
+.souligne{font-size:14px;color:#cfd9e0;line-height:1.4;margin-top:2px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.punch-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.punch-xl.vu{opacity:1;transform:translateY(0);}
+.punch-xl .q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:#9fb0bd;opacity:.9;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.punch-xl .r{font-size:22px;font-weight:700;color:#fff;line-height:1.3;}
+.punch-xl .r b{color:#fff;font-weight:800;}
+.punch-xl .ref{font-size:11.5px;color:#9fb0bd;font-style:italic;margin-top:14px;}
+
+.ligne{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;margin-top:10px;}
+.ligne.vu{opacity:1;transform:translateY(0);}
+.ligne .t{font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:19px;color:#fff;margin-bottom:4px;}
+.ligne p{font-size:14.5px;color:#eef1f2;line-height:1.4;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — intro chapitre -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;left:-10px;bottom:-14px;">RISQUE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 04</div>
+        <div class="titre-kin grand vu"><span class="vu">La</span> <span class="vu">gestion</span> <span class="vu">du</span> <span class="vu">risque</span> <span class="vu">et</span> <span class="vu">l'amélioration</span> <span class="vu">continue</span></div>
+        <div class="souligne vu" style="margin-top:10px;">Partie 01 — Le contexte juridique</div>
+      </div>
+    </section>
+
+    <!-- S1 — obligation de sécurité -->
+    <section class="screen" id="s1">
+      <div class="scene-data"><div class="mot-fond" style="font-size:120px;right:-10px;top:30px;">SÉCURITÉ</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey1">Code du travail</div>
+        <div class="titre-kin" id="t1"><span>L'obligation</span> <span>de</span> <span>sécurité</span></div>
+        <div class="punch-xl" id="f1">
+          <div class="r"><b>Prendre toutes les mesures nécessaires</b> pour assurer la sécurité et protéger la santé physique et mentale des travailleurs.</div>
+          <div class="ref">Articles L.4121-1 et suivants du Code du travail</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S2 — obligation de résultat -->
+    <section class="screen" id="s2">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;left:-16px;bottom:-18px;">RÉSULTAT</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">Nuance juridique</div>
+        <div class="titre-kin" id="t2"><span>Une</span> <span>obligation</span> <span>de</span> <span>résultat</span></div>
+        <div class="punch-xl" id="f2">
+          <div class="r"><b>Mais une preuve qui suffit.</b> La jurisprudence admet que l'obligation est respectée dès que l'employeur prouve qu'il a pris toutes les mesures de prévention nécessaires.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S3 — le terrain / 3 lignes de défense, vraie photo -->
+    <section class="screen" id="s3">
+      <div class="scene" style="background-image:url('assets/img/ligne_securite.jpg');"></div>
+      <div class="voile-bas"></div>
+      <div class="lieu-tag">Marquage au sol — poste avion</div>
+      <div class="contenu bas">
+        <div class="eyebrow" id="ey3">Sur le terrain</div>
+        <div class="ligne vu" style="margin-top:0;"><div class="t">Trois lignes de défense</div><p>Prévention · Récupération · Atténuation — le cadre légal se traduit sur le terrain à plusieurs niveaux, pour empêcher l'incident, le rattraper, ou en limiter les conséquences.</p></div>
+      </div>
+    </section>
+
+    <!-- S4 — transition -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;right:-14px;bottom:-16px;">LÉGAL</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey4">Fin de la partie 01</div>
+        <div class="titre-kin grand" id="t4"><span>Un</span> <span>cadre</span> <span>légal,</span> <span>une</span> <span>traduction</span> <span>terrain</span></div>
+        <div class="souligne" id="p4">Partie 02 — La gestion du risque</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*110); }); }
+
+const steps = [
+  {screen:'s0', file:'113_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Chapitre quatre : la gestion du risque et l'amélioration continue. Partie un, le contexte juridique.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'114_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Le Code du travail impose de prendre toutes les mesures nécessaires pour assurer la sécurité et protéger la santé physique et mentale des travailleurs. C'est l'objet des articles L quatre mille cent vingt et un et suivants.",
+   onStart:function(){ reveal('#ey1'); reveal('.titre-kin#t1 span',250); reveal('#f1',650); }, chain:false},
+
+  {screen:'s2', file:'115_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Cette obligation de sécurité est une obligation de résultat. Mais la jurisprudence admet qu'elle est respectée dès que l'employeur apporte la preuve qu'il a pris toutes les mesures de prévention nécessaires.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',250); reveal('#f2',650); }, chain:false},
+
+  {screen:'s3', file:'116_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Sur le terrain, ce cadre légal se traduit à plusieurs niveaux. Trois types de lignes de défense sont imaginées : la prévention, la récupération, et l'atténuation.",
+   onStart:function(){ reveal('#ey3'); }, chain:false},
+
+  {screen:'s4', file:'117_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Un cadre légal, une traduction terrain. Passons maintenant à la gestion du risque.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); setTimeout(function(){ document.getElementById('p4').classList.add('vu'); },1600); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 02' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 01'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>

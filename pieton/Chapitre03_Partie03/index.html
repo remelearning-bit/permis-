@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Sécurité en piste — Chapitre 03 — Partie 03</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@600;700;800;900&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --marine:#263C52; --marine-d:#1a2a3c; --orange:#E94E1B; --vert:#2E8B57;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+html,body{height:100%;}
+body{font-family:'Barlow',sans-serif;background:#0f1720;color:#fff;display:flex;align-items:center;justify-content:center;min-height:100vh;overflow:hidden;}
+h1,h2,h3{font-family:'Barlow Condensed',sans-serif;font-weight:800;letter-spacing:.01em;}
+#app{position:relative;width:100%;max-width:430px;height:100vh;max-height:932px;background:#000;overflow:hidden;display:flex;flex-direction:column;}
+@media (min-width:700px){ body{padding:28px;} #app{height:min(920px,96vh);border-radius:28px;box-shadow:0 30px 80px rgba(0,0,0,.45);} }
+
+#progress{display:flex;gap:4px;padding:14px 16px 10px;flex-shrink:0;z-index:6;position:relative;}
+#progress .dot{flex:1;height:4px;border-radius:2px;background:rgba(255,255,255,.25);overflow:hidden;}
+#progress .dot i{display:block;height:100%;width:0%;background:#fff;transition:width .25s linear;}
+#progress .dot.done i{width:100%;}
+
+#stage{position:relative;flex:1;overflow:hidden;}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;opacity:0;transition:opacity .35s ease;}
+.screen.actif{display:flex;opacity:1;}
+
+.scene-data{position:absolute;inset:0;overflow:hidden;background:linear-gradient(165deg,#1a2a3c 0%,#263C52 60%,#2f4860 100%);}
+.mot-fond{position:absolute;font-family:'Barlow Condensed',sans-serif;font-weight:900;color:transparent;-webkit-text-stroke:1.5px rgba(255,255,255,.07);letter-spacing:-.02em;white-space:nowrap;pointer-events:none;z-index:0;}
+
+.contenu{position:relative;z-index:2;flex:1;display:flex;flex-direction:column;justify-content:center;padding:26px 24px;overflow-y:auto;}
+.contenu.centre{align-items:center;text-align:center;}
+
+.eyebrow{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:#9fb0bd;margin-bottom:12px;opacity:0;transform:translateY(8px);transition:opacity .5s ease,transform .5s ease;}
+.eyebrow.vu{opacity:1;transform:translateY(0);}
+
+.titre-kin{font-size:25px;line-height:1.2;font-weight:700;color:#e9edef;margin-bottom:10px;}
+.titre-kin span{display:inline-block;opacity:0;transform:translateY(14px) scale(.96);transition:opacity .45s ease,transform .45s ease;}
+.titre-kin span.vu{opacity:1;transform:translateY(0) scale(1);}
+.titre-kin b{color:#fff;font-weight:800;}
+.titre-kin.citation{font-size:24px;font-style:italic;font-weight:600;}
+.titre-kin.grand{font-size:27px;}
+
+.souligne{font-size:14px;color:#cfd9e0;line-height:1.4;margin-top:2px;opacity:0;transform:translateY(10px);transition:opacity .45s ease,transform .45s ease;}
+.souligne.vu{opacity:1;transform:translateY(0);}
+
+.punch-xl{opacity:0;transform:translateY(10px);transition:opacity .4s ease, transform .4s ease;}
+.punch-xl.vu{opacity:1;transform:translateY(0);}
+.punch-xl .q{font-family:'Barlow Condensed',sans-serif;font-weight:700;font-size:13px;color:#9fb0bd;opacity:.9;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;}
+.punch-xl .r{font-size:24px;font-weight:700;color:#fff;line-height:1.3;}
+.punch-xl .r b{color:#fff;font-weight:800;}
+
+/* ---- citations qui circulent, posées sans carte, juste un repère de guillemet ---- */
+.cite-fil{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:16px;}
+.cite-fil li{opacity:0;transform:translateY(8px);transition:opacity .35s ease, transform .35s ease;padding-left:20px;position:relative;}
+.cite-fil li.vu{opacity:1;transform:translateY(0);}
+.cite-fil li::before{content:"\201C";position:absolute;left:0;top:-4px;font-size:26px;color:#ff8255;font-family:Georgia,serif;}
+.cite-fil li p{font-size:15px;font-style:italic;color:#e9edef;line-height:1.35;}
+
+/* ---- liste numérotée, posée directement ---- */
+.fil-num{list-style:none;margin-top:16px;display:flex;flex-direction:column;gap:14px;}
+.fil-num li{display:flex;align-items:flex-start;gap:14px;opacity:0;transform:translateX(10px);transition:opacity .35s ease, transform .35s ease;}
+.fil-num li.vu{opacity:1;transform:translateX(0);}
+.fil-num .num{flex-shrink:0;font-family:'Barlow Condensed',sans-serif;font-weight:900;font-size:26px;color:#fff;line-height:1;width:28px;}
+.fil-num .tx{padding-top:2px;}
+.fil-num .tx .t{font-size:16px;font-weight:700;color:#fff;}
+.fil-num .tx p{font-size:13px;color:#cfd9e0;margin-top:2px;}
+
+#sousbar{flex-shrink:0;background:rgba(10,16,24,.97);padding:14px 18px;display:flex;align-items:flex-start;gap:12px;min-height:76px;z-index:5;position:relative;}
+#sousbar .avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;font-family:'Barlow Condensed',sans-serif;font-weight:800;font-size:13px;color:#fff;}
+#sousbar .avatar.mehdi{background:#4a647d;}
+#sousbar .avatar.claire{background:var(--orange);}
+#sousbar .texte{flex:1;color:#f2f4f5;font-size:14.5px;line-height:1.35;padding-top:2px;}
+#sousbar .nomvoix{font-size:11px;font-weight:700;color:#9fb0bd;text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;}
+#barre{flex-shrink:0;background:#e7eaea;padding:14px 18px calc(14px + env(safe-area-inset-bottom));display:flex;justify-content:flex-end;gap:10px;border-top:1px solid #d6dbdd;position:relative;z-index:5;}
+#suivant{background:var(--marine);color:#fff;border:none;border-radius:10px;padding:13px 28px;font-size:15px;font-weight:700;font-family:'Barlow',sans-serif;opacity:.35;pointer-events:none;transition:opacity .25s ease;display:flex;align-items:center;gap:8px;}
+#suivant.actif{opacity:1;pointer-events:auto;cursor:pointer;}
+#suivant:active{background:#1a2a3c;}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <div id="progress"></div>
+  <div id="stage">
+
+    <!-- S0 — citation -->
+    <section class="screen" id="s0">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;left:-10px;bottom:-14px;">ÊTRE</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow vu">Chapitre 03 · Partie 03</div>
+        <div class="titre-kin grand vu" style="margin-bottom:16px;"><span class="vu">Le</span> <span class="vu">savoir-être</span></div>
+        <div class="titre-kin citation"><span class="vu">«</span> <span class="vu">Il</span> <span class="vu">vaut</span> <span class="vu">mieux</span> <span class="vu">suivre</span> <span class="vu">le</span> <span class="vu">bon</span> <span class="vu">chemin</span> <span class="vu">en</span> <span class="vu">boitant</span> <span class="vu">que</span> <span class="vu">le</span> <span class="vu">mauvais</span> <span class="vu">d'un</span> <span class="vu">pas</span> <span class="vu">ferme</span> <span class="vu">»</span></div>
+        <div class="souligne vu" style="margin-top:10px;">— Saint Augustin</div>
+      </div>
+    </section>
+
+    <!-- S1 — comportements inappropriés -->
+    <section class="screen" id="s1">
+      <div class="scene-data"><div class="mot-fond" style="font-size:120px;right:-10px;top:30px;">SITUATION</div></div>
+      <div class="contenu">
+        <div class="punch-xl" id="p1">
+          <div class="q">Ce n'est pas toujours la personne</div>
+          <div class="r">Ce sont parfois <b>les situations elles-mêmes</b> qui appellent les comportements inappropriés. Un mauvais éclairage, un espace confiné, et la probabilité de se tromper grimpe.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S2 — stéréotypes -->
+    <section class="screen" id="s2">
+      <div class="scene-data"><div class="mot-fond" style="font-size:140px;left:-12px;bottom:-16px;">DIVERSITÉ</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey2">La diversité</div>
+        <div class="titre-kin" id="t2"><span>Tout</span> <span>le</span> <span>monde</span> <span>y</span> <span>est</span> <span>favorable...</span></div>
+        <div class="souligne" id="p2b">...mais certains stéréotypes ont la vie dure</div>
+        <ul class="cite-fil" id="listeCite">
+          <li><p>Les femmes sont moins fiables que les hommes</p></li>
+          <li><p>Les seniors sont réfractaires au changement</p></li>
+          <li><p>Pour être un bon commercial, il faut forcément être beau</p></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S3 — 5 attitudes dangereuses -->
+    <section class="screen" id="s3">
+      <div class="scene-data"><div class="mot-fond" style="font-size:150px;right:-16px;bottom:-18px;">ATTITUDES</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey3">À repérer chez soi</div>
+        <div class="titre-kin" id="t3"><span>5</span> <span>attitudes</span> <span>dangereuses</span></div>
+        <ul class="fil-num" id="listeAtt">
+          <li><div class="num">1</div><div class="tx"><div class="t">Anti-autorité</div></div></li>
+          <li><div class="num">2</div><div class="tx"><div class="t">Impulsivité</div></div></li>
+          <li><div class="num">3</div><div class="tx"><div class="t">Invulnérabilité</div></div></li>
+          <li><div class="num">4</div><div class="tx"><div class="t">Machisme</div></div></li>
+          <li><div class="num">5</div><div class="tx"><div class="t">Résignation</div></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S4 — travail en équipe -->
+    <section class="screen" id="s4">
+      <div class="scene-data"><div class="mot-fond" style="font-size:130px;left:-10px;top:36px;">ÉQUIPE</div></div>
+      <div class="contenu">
+        <div class="eyebrow" id="ey4">Coopération et intelligence collective</div>
+        <div class="titre-kin" id="t4"><span>Les</span> <span>règles</span> <span>du</span> <span>travail</span> <span>en</span> <span>équipe</span></div>
+        <ul class="fil-num" id="listeEquipe">
+          <li><div class="num">1</div><div class="tx"><div class="t">Consultations réciproques</div><p>Avant de décider seul, demander l'avis.</p></div></li>
+          <li><div class="num">2</div><div class="tx"><div class="t">Partage de l'information</div><p>Ce que je sais, l'équipe le sait aussi.</p></div></li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- S5 — accepter la critique -->
+    <section class="screen" id="s5">
+      <div class="scene-data"><div class="mot-fond" style="font-size:135px;right:-14px;bottom:-16px;">FEEDBACK</div></div>
+      <div class="contenu">
+        <div class="punch-xl" id="p5">
+          <div class="q">Accepter la critique</div>
+          <div class="r">Savoir recevoir une critique, c'est déjà savoir <b>tirer parti d'un feedback</b>. Le mot vient de l'anglais « to feed » (nourrir) et « back » (en retour) : une critique qui nourrit, pas qui enfonce.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- S6 — transition -->
+    <section class="screen" id="s6">
+      <div class="scene-data"><div class="mot-fond" style="font-size:125px;left:-10px;top:38px;">MANAGER</div></div>
+      <div class="contenu centre">
+        <div class="eyebrow" id="ey6">Fin de la partie 03</div>
+        <div class="titre-kin grand" id="t6"><span>Le</span> <span>savoir-faire</span> <span>ne</span> <span>suffit</span> <span>pas</span> <span>sans</span> <span>le</span> <span>savoir-être</span></div>
+        <div class="souligne" id="p6">Partie 04 — Manager et communiquer</div>
+      </div>
+    </section>
+
+  </div>
+
+  <div id="sousbar">
+    <div class="avatar" id="avSpk"></div>
+    <div class="texte"><div class="nomvoix" id="nomSpk"></div><div id="txtSpk"></div></div>
+  </div>
+
+  <div id="barre">
+    <button id="suivant" type="button">
+      <span id="suivantTxt">Suivant</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.3"><path d="M9 6l6 6-6 6"/></svg>
+    </button>
+  </div>
+</div>
+
+<audio id="player"></audio>
+
+<script>
+function reveal(sel,delay){ delay = delay||0; document.querySelectorAll(sel).forEach(function(el,i){ setTimeout(function(){ el.classList.add('vu'); }, delay + i*110); }); }
+
+const steps = [
+  {screen:'s0', file:'101_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Chapitre trois, partie trois : le savoir-être. Il vaut mieux suivre le bon chemin en boitant que le mauvais d'un pas ferme, disait Saint Augustin.",
+   onStart:function(){}, chain:false},
+
+  {screen:'s1', file:'102_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Ce ne sont pas toujours les personnes qui posent problème, ce sont parfois les situations elles-mêmes qui appellent les comportements inappropriés. Un mauvais éclairage, un espace confiné, et la probabilité de se tromper grimpe.",
+   onStart:function(){ reveal('#p1'); }, chain:false},
+
+  {screen:'s2', file:'103_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"La diversité, a priori, tout le monde y est favorable. Mais certains stéréotypes ont la vie dure. Les femmes seraient moins fiables, les seniors réfractaires au changement, un bon commercial devrait forcément être beau.",
+   onStart:function(){ reveal('#ey2'); reveal('.titre-kin#t2 span',250); setTimeout(function(){ document.getElementById('p2b').classList.add('vu'); },900); reveal('#listeCite li',1300); }, chain:false},
+
+  {screen:'s3', file:'104_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Cinq attitudes dangereuses à repérer chez soi : l'anti-autorité, l'impulsivité, l'invulnérabilité, le machisme, la résignation.",
+   onStart:function(){ reveal('#ey3'); reveal('.titre-kin#t3 span',250); reveal('#listeAtt li',700); }, chain:false},
+
+  {screen:'s4', file:'105_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Travailler en équipe, c'est adopter deux règles simples : faire des consultations réciproques avant de décider seul, et partager l'information que l'on détient.",
+   onStart:function(){ reveal('#ey4'); reveal('.titre-kin#t4 span',250); reveal('#listeEquipe li',700); }, chain:false},
+
+  {screen:'s5', file:'106_mehdi.mp3', speaker:'mehdi', nom:'Mehdi',
+   texte:"Savoir recevoir une critique, c'est déjà savoir tirer parti d'un feedback. Le mot vient de l'anglais to feed, nourrir, et back, en retour : une critique qui nourrit, pas qui enfonce.",
+   onStart:function(){ reveal('#p5'); }, chain:false},
+
+  {screen:'s6', file:'107_claire.mp3', speaker:'claire', nom:'Claire',
+   texte:"Le savoir-faire ne suffit pas sans le savoir-être. Passons maintenant à manager et communiquer.",
+   onStart:function(){ reveal('#ey6'); reveal('.titre-kin#t6 span',250); setTimeout(function(){ document.getElementById('p6').classList.add('vu'); },1500); }, chain:false, dernier:true},
+];
+
+const screensOrder = [];
+steps.forEach(function(s){ if(screensOrder.indexOf(s.screen)===-1) screensOrder.push(s.screen); });
+const progressEl = document.getElementById('progress');
+screensOrder.forEach(function(id){ const d=document.createElement('div'); d.className='dot'; d.id='dot-'+id; d.innerHTML='<i></i>'; progressEl.appendChild(d); });
+
+let stepIndex = 0;
+const player = document.getElementById('player');
+const suivantBtn = document.getElementById('suivant');
+const suivantTxt = document.getElementById('suivantTxt');
+
+function setActiveScreen(id){ document.querySelectorAll('.screen').forEach(function(el){ el.classList.remove('actif'); }); document.getElementById(id).classList.add('actif'); }
+
+function updateProgress(screenId){
+  const idx = screensOrder.indexOf(screenId);
+  screensOrder.forEach(function(id,i){
+    const dot = document.getElementById('dot-'+id);
+    dot.classList.toggle('done', i < idx);
+    const bar = dot.querySelector('i');
+    if(i < idx) bar.style.width='100%'; else if(i > idx) bar.style.width='0%';
+  });
+}
+
+function avancer(){
+  const s = steps[stepIndex];
+  if(s.chain && stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.add('actif'); document.getElementById('dot-'+s.screen).querySelector('i').style.width='100%'; }
+}
+
+function playStep(i){
+  stepIndex = i;
+  const s = steps[i];
+  setActiveScreen(s.screen);
+  updateProgress(s.screen);
+  document.getElementById('nomSpk').textContent = s.nom;
+  document.getElementById('txtSpk').textContent = s.texte;
+  const av = document.getElementById('avSpk');
+  av.className = 'avatar '+s.speaker;
+  av.textContent = s.speaker === 'mehdi' ? 'M' : 'C';
+  suivantBtn.classList.remove('actif');
+  suivantTxt.textContent = s.dernier ? 'Partie 04' : 'Suivant';
+  s.onStart();
+  player.src = 'assets/audio/'+s.file;
+  player.play().catch(function(){});
+}
+
+player.addEventListener('ended', avancer);
+player.addEventListener('error', avancer);
+
+suivantBtn.addEventListener('click', function(){
+  if(!suivantBtn.classList.contains('actif')) return;
+  const cur = steps[stepIndex];
+  document.getElementById('dot-'+cur.screen).classList.add('done');
+  if(stepIndex < steps.length-1){ stepIndex++; playStep(stepIndex); }
+  else { suivantBtn.classList.remove('actif'); suivantTxt.textContent = 'Fin de la partie 03'; }
+});
+
+const _qs = new URLSearchParams(location.search);
+const _debugStep = parseInt(_qs.get('step'),10);
+playStep(isNaN(_debugStep) ? 0 : _debugStep);
+</script>
+</body>
+</html>
