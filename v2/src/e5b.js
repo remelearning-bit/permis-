@@ -43,7 +43,17 @@ const hot3=()=>chaud('hot3','Cargo sud','k22',[[55.5,57],[42.5,74.5]]);
 const hot4=()=>chaud('hot4','Autour du BD et du 2E','k23',[[13.5,38],[27.5,26],[27.5,38.5],[81.5,67]]);
 
 /* 5. les risques moteurs (diapos 170 à 172) */
-const moteurs=S('moteurs','Les dangers moteurs',['k24'],[['k24',.3,'Aspiration : 15 mètres','Devant les réacteurs.'],['k24',.55,"Souffle : trois longueurs d'appareil",'Derrière les réacteurs au roulage.'],['k24',.9,'Les projectiles',"Derrière un avion moteurs tournants : d'où la vérification du poste, propre de tout objet, avant et après l'arrivée."]]);
+const MOT3D=/*__MOT3D__*/"";
+const moteurs=()=>(async()=>{step();head(H5,'Les dangers moteurs');
+ const fr=document.createElement('iframe');fr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#cfd8dc';
+ fr.src=URL.createObjectURL(new Blob([MOT3D],{type:'text/html'}));VZ.innerHTML='';VZ.appendChild(fr);VZ.classList.add('on');
+ const shot=n=>{try{fr.contentWindow.postMessage({shot:n},'*')}catch(e){}};
+ await wait(FAST?0:700);
+ const L=label([0,0,0],{lead:false}).title('Les dangers moteurs');
+ await sayS('k24',[at('k24',.02,()=>shot(0)),at('k24',.3,()=>L.card('Aspiration : 15 mètres','Devant les réacteurs.',{a:null})),
+  at('k24',.55,()=>{shot(1);L.card("Souffle : trois longueurs d'appareil",'Derrière les réacteurs au roulage.',{a:null})}),
+  at('k24',.9,()=>L.card('Les projectiles',"Derrière un avion moteurs tournants : d'où la vérification du poste, propre de tout objet, avant et après l'arrivée.",{a:null}))]);
+ await cont(L);L.kill();await vzOff();URL.revokeObjectURL(fr.src);return null})();
 const helices=S('helices','Les hélices',['k25','k26'],[['k25',.3,'4 mètres minimum','Devant les hélices.'],['k25',.6,"Attendre l'arrêt complet",'Avant de pénétrer sur le poste.'],['k25',.9,'Silencieuses, mais elles tournent encore',"Silencieuses surtout après l'arrêt des moteurs, elles tournent encore. Une hélice qui tourne ne se voit pas."],['k26',.6,'Les hélicoptères','Même vigilance.']]);
 
 /* 6. les bonnes pratiques (diapos 173 à 185) */

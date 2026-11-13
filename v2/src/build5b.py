@@ -4,6 +4,8 @@ T=open('/home/claude/permis-/v2/preambule.html',encoding='utf-8').read()
 e1=open('/home/claude/w/e1.js',encoding='utf-8').read()
 common=e1[:e1.index('/* 1. la couverture et les quatre parties */')]
 js=common+open('/home/claude/w/e5b.js',encoding='utf-8').read().replace('/*__HELPERS__*/',open('/home/claude/w/helpers5.js',encoding='utf-8').read())
+mot=open('/home/claude/permis-/v2/src/mot3d.html',encoding='utf-8').read()
+js=js.replace('/*__MOT3D__*/""',json.dumps(mot).replace('</','<\\/'))
 lines=open('/home/claude/w/e5blines.json',encoding='utf-8').read()
 img={};dim={}
 for k in sorted(os.path.splitext(os.path.basename(x))[0] for x in glob.glob('/home/claude/w/e5bimg/*')):
