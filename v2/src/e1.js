@@ -42,6 +42,7 @@ Object.assign(IC,{
  plane:'<svg class="ic" viewBox="0 0 48 48"><path d="M24 4c2 0 3 2 3 5v10l15 9v4l-15-5v9l5 4v3l-8-2-8 2v-3l5-4v-9L6 32v-4l15-9V9c0-3 1-5 3-5z"/></svg>',
  key:'<svg class="ic" viewBox="0 0 48 48"><circle cx="15" cy="24" r="8"/><path d="M23 24h20M37 24v7M31 24v5"/></svg>'});
 document.head.insertAdjacentHTML('beforeend',`<style>
+@media (min-width:900px){.blsw{zoom:1.3}}
 .hd1 .k{color:var(--pierre)}
 .plan{list-style:none;margin:0 auto;padding:0;display:flex;flex-direction:column;gap:clamp(10px,2.2vh,22px);width:100%;max-width:920px}.plan li{font-size:clamp(20px,2.1vw,32px);font-weight:600;color:var(--marine);line-height:1.25;display:flex;gap:18px;align-items:baseline}.plan .no{font-weight:800;min-width:1.1em}.plan.infl{gap:clamp(6px,1.4vh,14px)}.plan.infl li{background:none;box-shadow:none!important;padding:0;flex-direction:row;align-items:baseline;text-align:left;position:static;font-size:clamp(18px,1.8vw,27px);opacity:.35;transition:opacity .4s}.plan.infl li.in{opacity:1}.plan.infl li.now{opacity:1;font-weight:800}.plan .dl{opacity:0;transition:opacity .4s}.plan .dl.in{opacity:1}
 .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,30px);width:100%;max-width:1100px}
@@ -159,6 +160,9 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
+const PT3D=/*__PT3D__*/"";
+function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;${css}"></iframe>`}
+function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* 1. la couverture et les quatre parties */
 async function cover(){step();await photo('aerien',FAST?10:1200);setCam({zoom:1.08});
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 1 · 5 h 00').card('La réglementation et les règles à respecter sur Roissy','Cinq heures, prise de service. Avant de prendre le volant, les textes qui fixent les règles.');
@@ -219,7 +223,7 @@ async function mpa(){step();head('1 · Le contexte réglementaire',"Les mesures 
 /* 5. véhicule, engin, matériel : sur la photo, puis à vous */
 const PV=[.12,.45],PE=[.43,.48],PM=[.78,.46];
 var CAPS={hd3:'Illustration',permis4:'',panneau:''};
-async function definitions(){step();await photo('hd3',FAST?10:500);setCam(PORT()?{mode:'contain'}:{zoom:1.08});await vzOff();
+async function definitions(){step();await goPh('hd3',PORT()?{mode:'contain'}:{zoom:1.08},500);
  const L=label([0,0,0],{lead:false}).title('Véhicule, engin, matériel');
  await sayS('e13',[at('e13',.02,()=>L.card('De quoi on parle','Les mesures particulières définissent trois mots.')),
   W('e13','Un véhicule',()=>L.card('Un véhicule','Un mobile autotracté immatriculé, conformément au code de la route.',{a:pt(...PV)})),
@@ -407,10 +411,10 @@ async function dispositif(){step();head("4 · L'autorisation de conduite",'Le te
  vue(`<div class="hero"><p class="huge tel">n°139/2014</p><p class="cap">Le règlement européen du 12 février 2014</p><p class="sub it" id="o1">Il impose à l'exploitant de l'aérodrome de mettre en place et de piloter un dispositif de formation à la circulation sur l'aire de mouvement.</p></div>`);
  await sayS('e32',[W('e32','Il impose',()=>show('#o1')),W('e32','Depuis le premier',()=>vue(`<div class="hero">${bigIc('cal')}<p class="huge tel">1er décembre 2018</p><p class="cap">Le dispositif est entièrement piloté par le Groupe ADP</p></div>`))]);
  await pause();return null}
-async function autorisations(){step();await photo('permis4',FAST?10:400);setCam({mode:'contain'});await vzOff();
+async function autorisations(){step();await goPh('permis4',{mode:'contain'},400);
  const L=label([0,0,0],{lead:false}).title('Les autorisations de conduite');
  const Z=(fx,fy,zoom)=>{const c=pt(fx,fy);return camTo({mode:'contain',x:c[0],z:c[2],zoom},1500)};
- await sayS('e33',[at('e33',.02,()=>L.card('Quatre autorisations','')),W('e33','T :',()=>{L.card('T',"L'aire de trafic, sauf ses voies de circulation avion. Les traversées marquées au sol sont autorisées.",{a:pt(.17,.28)});Z(.25,.25,1.6)}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:pt(.64,.28)});Z(.75,.25,1.6)}),
+ await sayS('e33',[W('e33','T :',()=>{L.card('T',"L'aire de trafic, sauf ses voies de circulation avion. Les traversées marquées au sol sont autorisées.",{a:pt(.17,.28)});Z(.25,.25,1.6)}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:pt(.64,.28)});Z(.75,.25,1.6)}),
   W('e33','R :',()=>{L.card('R','Les cheminements routiers autorisés, plus les voies avions sous clairance du contrôle.',{a:pt(.17,.75)});Z(.25,.75,1.6)}),W('e33','P :',()=>{L.card('P','Toutes zones.',{a:pt(.64,.75)});Z(.75,.75,1.6)})]);
  camTo({mode:'contain'},1200);
  await sayS('e34',[at('e34',.02,()=>L.card('Xavier','« Moi, c\'est le T. Si je dois traverser une voie avion pour rejoindre un poste, je fais comment ? »',{a:pt(.17,.28)}))]);
@@ -418,7 +422,7 @@ async function autorisations(){step();await photo('permis4',FAST?10:400);setCam(
  vue(`<div class="hero"><p class="huge" style="font-size:clamp(70px,9vw,140px)">T</p><p class="cap">Le T, c'est l'aire de trafic, sauf ses voies de circulation avion</p><ul class="chk plain" style="margin-top:clamp(8px,2vh,20px)"><li id="tt1"><b>${CHECK}</b>${nb('Les cheminements véhicules et les routes de service autorisés au permis T')}</li><li id="tt2"><b>${CHECK}</b>${nb('Les traversées de voies de circulation avion délimitées par des marquages au sol')}</li><li id="tt3"><b>${CHECK}</b>${nb('Les postes de stationnement avion, dans le cadre de vos activités')}</li></ul></div>`);
  head("4 · L'autorisation de conduite",'Ce que permet le T');
  await sayS('e35',[W('e35','Il vous permet',()=>on('#tt1','on')),W('e35','Sur les traversées',()=>on('#tt2','on')),W('e35','Et sur les postes',()=>on('#tt3','on')),
-  W('e35',"L'autorisation est",()=>vue(`<div class="side"><div>${img('hd5','Illustration')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">Délivrée par le Groupe ADP</p><p class="sub" style="text-align:left">Elle reste liée à votre activité : si vous changez de poste, le besoin est réexaminé.</p></div></div>`))]);
+  W('e35',"L'autorisation est",()=>{vue(`<div class="side"><div>${p3dHTML('width:100%;height:clamp(220px,42vh,420px)')}</div><div><p class="cap" style="text-align:left;margin:0 0 10px">Délivrée par le Groupe ADP</p><p class="sub" style="text-align:left">Elle reste liée à votre activité : si vous changez de poste, le besoin est réexaminé.</p></div></div>`);setTimeout(()=>p3dMount(),0)})]);
  await contV();return null}
 // le permis à cliquer : quatre zones sur la photo des quatre permis
 const PZ={t:[2,2,47,47],m:[51,2,47,47],r:[2,51,47,47],p:[51,51,47,47]};
@@ -441,7 +445,7 @@ async function quelleAut(){step();head("4 · L'autorisation de conduite",'Quelle
   if(b.dataset.k===g){fb.className='qfb2 ok';fb.innerHTML=nb(ok)}else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko('le '+g.toUpperCase(),ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<IT.length-1?'Suivant':'Continuer';q.appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  jlog('5 h 16',`Quelle autorisation : 4 périmètres${errTxt(E)}`);return gate('qa',E,4,18,'Quelle autorisation')}
-async function panneaux(){step();await photo('panneau',FAST?10:400);setCam({zoom:1.08});await vzOff();
+async function panneaux(){step();await goPh('panneau',{zoom:1.08},400);
  const L=label([0,0,0],{lead:false}).title('La signalisation');
  await info(L,'e37',[[.03,"Un panneau vous l'indique","Partout où votre autorisation de conduite n'est pas admise.",{a:pt(.53,.34)}],[K('e37','Avant les'),'Avant, sur fond blanc',"Aujourd'hui, le code couleur des permis se retrouve sur les panneaux.",{a:pt(.53,.34)}],[K('e37','Le message'),'Si le panneau est là, on ne passe pas','Même si on passait avant.',{a:pt(.53,.34)}]],{x:pt(.53,.4)[0],z:pt(.53,.4)[2],zoom:1.5});
  await photo('interdite');setCam({mode:'contain'});
@@ -449,10 +453,10 @@ async function panneaux(){step();await photo('panneau',FAST?10:400);setCam({zoom
  await cont(L);L.kill();return null}
 const BLS=[['Où','Bâtiment Pluton, 6 place de Berlin, Paris-Charles de Gaulle. Il a déménagé en mars 2026.','Il a déménagé'],['Quand','Du lundi au vendredi, selon les horaires en vigueur. Fermé les jours fériés.','Ouvert'],['Stationnement','Parking PH, gratuit deux heures.','Le parking'],["L'accueil des professionnels","C'est là aussi qu'on va en cas de perte du permis.",'On s\'adresse']];
 async function bls(){step();head("4 · L'autorisation de conduite",'Le Bureau Local de Sûreté');
- vue(`<div class="side"><div>${img('hd7','Illustration')}</div><div><p class="sub it" id="b0" style="text-align:left;margin:0 0 clamp(10px,2vh,20px);font-weight:600;color:var(--marine)">Les demandes, pour la théorie comme pour la pratique, s'y déposent.</p><ul class="conds">${BLS.map((m,i)=>`<li id="b${i+1}"><b>${i+1}</b><span>${m[0]}<small>${nb(m[1])}</small></span></li>`).join('')}</ul></div></div>`);
+ vue(`<div class="blsw" style="width:100%;max-width:820px;margin:0 auto"><div><p class="sub it" id="b0" style="text-align:left;margin:0 0 clamp(10px,2vh,20px);font-weight:600;color:var(--marine)">Les demandes, pour la théorie comme pour la pratique, s'y déposent.</p><ul class="conds">${BLS.map((m,i)=>`<li id="b${i+1}"><b>${i+1}</b><span>${m[0]}<small>${nb(m[1])}</small></span></li>`).join('')}</ul></div></div>`);
  await sayS('e39',[at('e39',.02,()=>show('#b0')),...BLS.map((m,i)=>W('e39',m[2],()=>on('#b'+(i+1)),.005))]);
  await pause(2200);return null}
-async function annexes(){step();await photo('annexe8',FAST?10:400);setCam({mode:'contain'});await vzOff();
+async function annexes(){step();await goPh('annexe8',{mode:'contain'},400);
  const L=label([0,0,0],{lead:false}).title('Les demandes à déposer');
  const z=(fy,zoom)=>camTo({mode:'contain',x:pt(.45,fy)[0],z:pt(.45,fy)[2],zoom},1600);
  L.card("L'annexe 8 : la demande d'autorisation","La demande d'autorisation de conduite, permis T. Version 8 du 6 novembre 2025.",{a:pt(.5,.06)});await cont(L,'Suivant');
