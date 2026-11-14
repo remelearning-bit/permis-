@@ -1,7 +1,7 @@
 /* ---------------- Étape 5, suite · Les risques sur l'aire de mouvement et les bonnes attitudes (diapos 150 à 186) ----------------
    Voix k01 à k39 existantes (pas de k27). Photos du support et images du PowerPoint. */
 const H5="Étape 5, suite · Les risques et les bonnes attitudes";
-var CAPS={c5b:'Photo du support REM Formation'};
+var CAPS={};
 /*__HELPERS__*/
 
 /* 1. la couverture */
