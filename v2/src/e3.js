@@ -1,3 +1,4 @@
+window.REDO=['aerien3'];
 
 /* ---------------- Étape 3 · L'accès au côté piste (diapos 78 à 86) ---------------- */
 document.head.insertAdjacentHTML('beforeend',`<style>

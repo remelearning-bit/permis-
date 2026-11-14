@@ -226,7 +226,7 @@ let CUR=null;let ord=1;
 let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
- const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
+ const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);const _rd=document.getElementById('rd');if(_rd)_rd.classList.toggle('on',(window.REDO||[]).includes(k));
  return anim(D,t=>{P.m.material.opacity=t;if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}})}
 /* un point de la photo affichée, en fractions de sa largeur et de sa hauteur */
 const pt=(fx,fy,k)=>{const P=k?plane(k):CUR;return [(fx-.5)*P.w,0,(fy-.5)*P.h]};

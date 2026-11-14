@@ -1,3 +1,4 @@
+window.REDO=['c9','concorde','uld','fodbin'];
 /* ---------------- Étape 9 · Les procédures d'urgence (diapos 233 à 248) ----------------
    Voix u01 à u23 existantes. La panne sur la voie avion se vit en 3D (panne.html, voix u06 et u07). Film du support (diapo 242).
    Photos du support. Questions : seuil de 50 %, seconde série après un échec. */

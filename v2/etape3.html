@@ -226,7 +226,7 @@ let CUR=null;let ord=1;
 let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
- const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
+ const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);const _rd=document.getElementById('rd');if(_rd)_rd.classList.toggle('on',(window.REDO||[]).includes(k));
  return anim(D,t=>{P.m.material.opacity=t;if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}})}
 /* un point de la photo affichée, en fractions de sa largeur et de sa hauteur */
 const pt=(fx,fy,k)=>{const P=k?plane(k):CUR;return [(fx-.5)*P.w,0,(fy-.5)*P.h]};
@@ -805,6 +805,13 @@ function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])
 window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
 function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
 function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
+/* tampon « photo à refaire » : posé sur les images listées dans REDO */
+(function(){const st=document.createElement('style');st.textContent='.rdw{position:relative;display:inline-block;max-width:100%}.rdw>img{display:block}.rds,#rd{position:absolute;left:10px;top:10px;z-index:7;pointer-events:none;background:#D6231F;color:#fff;font:800 13px/1.1 Barlow,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:2px solid #fff;transform:rotate(-4deg);box-shadow:0 2px 8px rgba(0,0,0,.3)}#rd{position:fixed;left:16px;top:16px;opacity:0;transition:opacity .3s}#rd.on{opacity:1}';document.head.appendChild(st);
+const rd=document.createElement('div');rd.id='rd';rd.textContent='Photo à refaire';document.body.appendChild(rd);
+const src=()=>{const s=new Set();(window.REDO||[]).forEach(k=>{[typeof IMG!=='undefined'&&IMG[k],typeof PHO!=='undefined'&&PHO[k]].forEach(v=>v&&s.add(v))});return s};
+function scan(){const S=src();if(!S.size)return;document.querySelectorAll('img').forEach(im=>{if(im.dataset.rd||!S.has(im.getAttribute('src')))return;im.dataset.rd=1;const p=im.parentElement;if(!p)return;if(getComputedStyle(p).position==='static')p.style.position='relative';const t=document.createElement('span');t.className='rds';t.textContent='Photo à refaire';p.appendChild(t)})}
+new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});setTimeout(scan,500)})();
+window.REDO=['aerien3'];
 
 /* ---------------- Étape 3 · L'accès au côté piste (diapos 78 à 86) ---------------- */
 document.head.insertAdjacentHTML('beforeend',`<style>

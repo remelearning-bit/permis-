@@ -1,3 +1,4 @@
+window.REDO=['t1','t2','fn','fs','vue'];
 const P=(k,t,x='')=>`<p class="lb">${nb(t)}</p>${x?`<p class="tx">${nb(x)}</p>`:''}`;
 const bub=(who,t)=>`<div class="bub"><small>${who}</small>${nb(t)}</div>`;
 const K=(id,w,d=.02)=>{const t=LINES[id].t;const i=t.indexOf(w);if(i<0){console.error('mot absent',id,w);return .5}return Math.max(.01,i/t.length-d)};
@@ -68,6 +69,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #sx .tg.k{background:var(--marine);color:#fff;border-color:var(--marine)}
 #sx .tg.sm{font-size:.82em}
 #sx .tg.on{opacity:1}#sx .tg.cur{background:#3C7DC4;color:#fff;border-color:#fff;z-index:2}
+.rds{position:absolute;left:10px;top:10px;z-index:7;pointer-events:none;background:#D6231F;color:#fff;font:800 13px/1.1 Barlow,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:2px solid #fff;transform:rotate(-4deg)}
 #sx .src{position:absolute;right:8px;bottom:6px;font-size:12px;color:#33475b;background:rgba(255,255,255,.85);padding:2px 8px;border-radius:6px}
 .sxw{position:relative;width:100%;height:100%}
 .qimg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center;width:100%;max-width:1220px}
@@ -222,7 +224,7 @@ async function auPoste(){step();if(!MV.classList.contains('on')){await mapReady;
 
 /* 5. les postes de stationnement, sur les photos du support */
 const SECT=[['vue','Les postes de stationnement','r11'],['t1','Terminal 1 et terminal 3','r12'],['t2','Terminal 2','r13'],['fn','Zone de fret nord','r14'],['fs','Zone de fret sud','r15']];
-function stageFor(k,host){const g=G[k];host.innerHTML=`<div id="sx"><div class="in"><img src="${PHO[k]}" alt=""><svg viewBox="0 0 1600 900" preserveAspectRatio="none">${g.polys.map(([id,i])=>{const p=(POLY[k]||{})[i];return p?`<path data-id="${id}" d="M${p.map(q=>q.join(' ')).join(' L')} Z"/>`:''}).join('')}</svg>${g.tags.map(t=>`<span class="tg ${t[4]||''}" data-id="${t[0]}" style="left:${t[2]/16}%;top:${t[3]/9}%">${t[1]}</span>`).join('')}</div><div class="src">Photo du support REM Formation</div></div>`;
+function stageFor(k,host){const g=G[k];host.innerHTML=`<div id="sx"><div class="in"><img src="${PHO[k]}" alt=""><svg viewBox="0 0 1600 900" preserveAspectRatio="none">${g.polys.map(([id,i])=>{const p=(POLY[k]||{})[i];return p?`<path data-id="${id}" d="M${p.map(q=>q.join(' ')).join(' L')} Z"/>`:''}).join('')}</svg>${g.tags.map(t=>`<span class="tg ${t[4]||''}" data-id="${t[0]}" style="left:${t[2]/16}%;top:${t[3]/9}%">${t[1]}</span>`).join('')}</div><span class="rds">Photo à refaire</span><div class="src">Photo du support REM Formation</div></div>`;
  const sx=host.querySelector('#sx'),inn=sx.querySelector('.in');let box={},Z=[800,450,1];
  const fit=()=>{if(!sx.isConnected)return;const W=sx.clientWidth,H=sx.clientHeight;let w=W,h=W*9/16;if(h>H){h=H;w=H*16/9}if(W<700){w=Math.min(W*1.6,H*16/9);h=w*9/16}box={w,h,W,H};inn.style.width=w+'px';inn.style.height=h+'px';inn.style.fontSize=Math.max(11,(W<700?w*1.25:w)/1600*22)+'px';zoom(...Z)};
  const zoom=(fx,fy,s)=>{Z=[fx,fy,s];const {w,h,W,H}=box;if(!W)return;const sw=s*w,sh=s*h;

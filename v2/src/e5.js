@@ -1,3 +1,4 @@
+window.REDO=['c5a'];
 /* ---------------- Étape 5 · La circulation des véhicules, première partie : les principes généraux (diapos 90 à 149) ----------------
    Voix c01 à c64 existantes. Photos du support et images du PowerPoint. Questions : seuil de 50 %, retour ciblé, seconde série (QCM REM et test Groupe ADP). */
 const H5='Étape 5 · La circulation des véhicules';

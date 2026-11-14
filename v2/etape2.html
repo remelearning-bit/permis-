@@ -226,7 +226,7 @@ let CUR=null;let ord=1;
 let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
- const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
+ const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);const _rd=document.getElementById('rd');if(_rd)_rd.classList.toggle('on',(window.REDO||[]).includes(k));
  return anim(D,t=>{P.m.material.opacity=t;if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}})}
 /* un point de la photo affichée, en fractions de sa largeur et de sa hauteur */
 const pt=(fx,fy,k)=>{const P=k?plane(k):CUR;return [(fx-.5)*P.w,0,(fy-.5)*P.h]};
@@ -365,7 +365,7 @@ const hand=()=>{};
 // la main se pose sur ce qu'il faut cliquer, seulement quand il n'y a qu'une seule chose à cliquer :
 // devant un choix, elle ne montre rien, pour ne pas souffler la réponse
 const HAND=document.getElementById('hand');
-const CLICK='#navgo .act,.tlab .act,.mk2.live b,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
+const CLICK='#navgo .act,.mk2.live b,.tlab .act,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
 function placeHand(){if(document.getElementById('jrn').classList.contains('on')){const r=document.getElementById('jclose').getBoundingClientRect();HAND.style.transform=`translate(${r.right-16}px,${r.bottom-14}px)`;HAND.classList.add('on');return}
  const W=innerWidth,H=innerHeight;const els=[...document.querySelectorAll(CLICK)].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<H&&r.right>0&&r.left<W&&+getComputedStyle(e).opacity>.5&&(!e.closest('#vid')||e.closest('#vid.on'))});
  if(els.length!==1){HAND.classList.remove('on');return}
@@ -713,6 +713,7 @@ const QUIZ=[
   opts:[["Sur les pistes de décollage.",0,"Les pistes sont sur l'aire de manœuvre : interdites au permis T."],["Sur les voies de circulation avion, taxiways et taxilanes.",0,"Les voies de circulation avion, même celles de l'aire de trafic, demandent une autorisation M, R ou P."],["Sur les cheminements véhicules, les routes de service et les postes avions des secteurs trafic (TRA) et/ou F.",1,"Le permis T, c'est l'aire de trafic : cheminements véhicules, routes de service et postes avions. Jamais les pistes ; les voies de circulation avion, seulement par les traversées marquées au sol."]]},
  {ph:"q3",cap:"Question d'entraînement 3",line:"rq3",q:"Depuis l'automne 2017, quelle est la nouvelle couleur du permis T ?",
   opts:[["Bleue",0,"Le bleu, c'est le permis M. Le permis T est vert."],["Orange",0,"L'orange, c'est le permis P. Le permis T est vert."],["Verte",1,"Le permis T est vert, comme sur la carte que vous aurez en main. Le M est bleu, le R violet, le P orange."]]}];
+window.REDO=['t1','t2','fn','fs','vue'];
 const P=(k,t,x='')=>`<p class="lb">${nb(t)}</p>${x?`<p class="tx">${nb(x)}</p>`:''}`;
 const bub=(who,t)=>`<div class="bub"><small>${who}</small>${nb(t)}</div>`;
 const TF=(id,c)=>{const A=(typeof TMAP!=='undefined')&&TMAP[id];if(!A||MUET)return c;for(let j=1;j<A.length;j++){if(c<=A[j][0]){const a=A[j-1],b=A[j];return b[0]>a[0]?a[1]+(b[1]-a[1])*(c-a[0])/(b[0]-a[0]):b[1]}}return A[A.length-1][1]};
@@ -784,6 +785,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #sx .tg.k{background:var(--marine);color:#fff;border-color:var(--marine)}
 #sx .tg.sm{font-size:.82em}
 #sx .tg.on{opacity:1}#sx .tg.cur{background:#3C7DC4;color:#fff;border-color:#fff;z-index:2}
+.rds{position:absolute;left:10px;top:10px;z-index:7;pointer-events:none;background:#D6231F;color:#fff;font:800 13px/1.1 Barlow,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:2px solid #fff;transform:rotate(-4deg)}
 #sx .src{position:absolute;right:8px;bottom:6px;font-size:12px;color:#33475b;background:rgba(255,255,255,.85);padding:2px 8px;border-radius:6px}
 .sxw{position:relative;width:100%;height:100%}
 .qimg{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:clamp(20px,3vw,48px);align-items:center;width:100%;max-width:1220px}
@@ -938,7 +940,7 @@ async function auPoste(){step();if(!MV.classList.contains('on')){await mapReady;
 
 /* 5. les postes de stationnement, sur les photos du support */
 const SECT=[['vue','Les postes de stationnement','r11'],['t1','Terminal 1 et terminal 3','r12'],['t2','Terminal 2','r13'],['fn','Zone de fret nord','r14'],['fs','Zone de fret sud','r15']];
-function stageFor(k,host){const g=G[k];host.innerHTML=`<div id="sx"><div class="in"><img src="${PHO[k]}" alt=""><svg viewBox="0 0 1600 900" preserveAspectRatio="none">${g.polys.map(([id,i])=>{const p=(POLY[k]||{})[i];return p?`<path data-id="${id}" d="M${p.map(q=>q.join(' ')).join(' L')} Z"/>`:''}).join('')}</svg>${g.tags.map(t=>`<span class="tg ${t[4]||''}" data-id="${t[0]}" style="left:${t[2]/16}%;top:${t[3]/9}%">${t[1]}</span>`).join('')}</div><div class="src">Photo du support REM Formation</div></div>`;
+function stageFor(k,host){const g=G[k];host.innerHTML=`<div id="sx"><div class="in"><img src="${PHO[k]}" alt=""><svg viewBox="0 0 1600 900" preserveAspectRatio="none">${g.polys.map(([id,i])=>{const p=(POLY[k]||{})[i];return p?`<path data-id="${id}" d="M${p.map(q=>q.join(' ')).join(' L')} Z"/>`:''}).join('')}</svg>${g.tags.map(t=>`<span class="tg ${t[4]||''}" data-id="${t[0]}" style="left:${t[2]/16}%;top:${t[3]/9}%">${t[1]}</span>`).join('')}</div><span class="rds">Photo à refaire</span><div class="src">Photo du support REM Formation</div></div>`;
  const sx=host.querySelector('#sx'),inn=sx.querySelector('.in');let box={},Z=[800,450,1];
  const fit=()=>{if(!sx.isConnected)return;const W=sx.clientWidth,H=sx.clientHeight;let w=W,h=W*9/16;if(h>H){h=H;w=H*16/9}if(W<700){w=Math.min(W*1.6,H*16/9);h=w*9/16}box={w,h,W,H};inn.style.width=w+'px';inn.style.height=h+'px';inn.style.fontSize=Math.max(11,(W<700?w*1.25:w)/1600*22)+'px';zoom(...Z)};
  const zoom=(fx,fy,s)=>{Z=[fx,fy,s];const {w,h,W,H}=box;if(!W)return;const sw=s*w,sh=s*h;
