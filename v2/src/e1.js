@@ -160,8 +160,11 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
-const PT3D=/*__PT3D__*/"";
-function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;${css}"></iframe>`}
+const PT3D=/*__PT3D__*/"";const PT4=/*__PT4__*/"";
+function p4HTML(css){return `<iframe class="p4" data-p4 title="Les quatre permis T, M, R et P en 3D" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])');if(!f)return null;f.dataset.m=1;if(PT4)f.src=URL.createObjectURL(new Blob([PT4],{type:'text/html'}));return f}
+window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
+function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
 function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* 1. la couverture et les quatre parties */
 async function cover(){step();await photo('aerien',FAST?10:1200);setCam({zoom:1.08});
@@ -411,13 +414,13 @@ async function dispositif(){step();head("4 · L'autorisation de conduite",'Le te
  vue(`<div class="hero"><p class="huge tel">n°139/2014</p><p class="cap">Le règlement européen du 12 février 2014</p><p class="sub it" id="o1">Il impose à l'exploitant de l'aérodrome de mettre en place et de piloter un dispositif de formation à la circulation sur l'aire de mouvement.</p></div>`);
  await sayS('e32',[W('e32','Il impose',()=>show('#o1')),W('e32','Depuis le premier',()=>vue(`<div class="hero">${bigIc('cal')}<p class="huge tel">1er décembre 2018</p><p class="cap">Le dispositif est entièrement piloté par le Groupe ADP</p></div>`))]);
  await pause();return null}
-async function autorisations(){step();await goPh('permis4',{mode:'contain'},400);
+async function autorisations(){step();vue(`<div style="width:100%;height:100%;display:flex;align-items:center">${p4HTML('width:100%;height:min(62vh,540px)')}</div>`);const F4=p4Mount();await wait(FAST?0:900);
  const L=label([0,0,0],{lead:false}).title('Les autorisations de conduite');
- const Z=(fx,fy,zoom)=>{const c=pt(fx,fy);return camTo({mode:'contain',x:c[0],z:c[2],zoom},1500)};
- await sayS('e33',[W('e33','T :',()=>{L.card('T',"L'aire de trafic, sauf ses voies de circulation avion. Les traversées marquées au sol sont autorisées.",{a:pt(.17,.28)});Z(.25,.25,1.6)}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:pt(.64,.28)});Z(.75,.25,1.6)}),
-  W('e33','R :',()=>{L.card('R','Les cheminements routiers autorisés, plus les voies avions sous clairance du contrôle.',{a:pt(.17,.75)});Z(.25,.75,1.6)}),W('e33','P :',()=>{L.card('P','Toutes zones.',{a:pt(.64,.75)});Z(.75,.75,1.6)})]);
- camTo({mode:'contain'},1200);
- await sayS('e34',[at('e34',.02,()=>L.card('Xavier','« Moi, c\'est le T. Si je dois traverser une voie avion pour rejoindre un poste, je fais comment ? »',{a:pt(.17,.28)}))]);
+ const Z=(k)=>{try{F4.contentWindow.postMessage({focus:k},'*')}catch(e){}};
+ await sayS('e33',[W('e33','T :',()=>{L.card('T',"L'aire de trafic, sauf ses voies de circulation avion. Les traversées marquées au sol sont autorisées.",{a:null});Z('t')}),W('e33','M :',()=>{L.card('M','Les cheminements routiers autorisés, plus les voies avions sous écoute de fréquence.',{a:null});Z('m')}),
+  W('e33','R :',()=>{L.card('R','Les cheminements routiers autorisés, plus les voies avions sous clairance du contrôle.',{a:null});Z('r')}),W('e33','P :',()=>{L.card('P','Toutes zones.',{a:null});Z('p')})]);
+ Z('t');
+ await sayS('e34',[at('e34',.02,()=>L.card('Xavier','« Moi, c\'est le T. Si je dois traverser une voie avion pour rejoindre un poste, je fais comment ? »',{a:null}))]);
  L.kill();
  vue(`<div class="hero"><p class="huge" style="font-size:clamp(70px,9vw,140px)">T</p><p class="cap">Le T, c'est l'aire de trafic, sauf ses voies de circulation avion</p><ul class="chk plain" style="margin-top:clamp(8px,2vh,20px)"><li id="tt1"><b>${CHECK}</b>${nb('Les cheminements véhicules et les routes de service autorisés au permis T')}</li><li id="tt2"><b>${CHECK}</b>${nb('Les traversées de voies de circulation avion délimitées par des marquages au sol')}</li><li id="tt3"><b>${CHECK}</b>${nb('Les postes de stationnement avion, dans le cadre de vos activités')}</li></ul></div>`);
  head("4 · L'autorisation de conduite",'Ce que permet le T');
@@ -427,9 +430,9 @@ async function autorisations(){step();await goPh('permis4',{mode:'contain'},400)
 // le permis à cliquer : quatre zones sur la photo des quatre permis
 const PZ={t:[2,2,47,47],m:[51,2,47,47],r:[2,51,47,47],p:[51,51,47,47]};
 async function quelleAut(){step();head("4 · L'autorisation de conduite",'Quelle autorisation ? À vous');
- vue(`<div class="pzw"><div class="pz" id="pz"><img src="${IMG.permis4}" alt="Les quatre permis T, M, R et P">${Object.entries(PZ).map(([k,[x,y,w,h]])=>`<button data-k="${k}" style="left:${x}%;top:${y}%;width:${w}%;height:${h}%" aria-label="${k.toUpperCase()}"></button>`).join('')}</div>
+ vue(`<div class="pzw"><div class="pz" id="pz">${p4HTML('width:100%;aspect-ratio:1.55;display:block')}${Object.entries(PZ).map(([k,[x,y,w,h]])=>`<button data-k="${k}" style="pointer-events:none;left:${x}%;top:${y}%;width:${w}%;height:${h}%" aria-label="${k.toUpperCase()}"></button>`).join('')}</div>
   <div class="qc" id="pq"><p class="n">À vous</p><p class="q">Pour chaque périmètre, cliquez sur le bon permis.</p><p class="qfb2" id="pfb"></p></div></div>`);
- await sayS('e36');
+ p4Mount();await sayS('e36');
  const QA2=[["L'aire de trafic, sauf ses voies de circulation avion.",'t',"Le T : l'aire de trafic, à l'exception des voies de circulation avion d'aire de trafic."],
   ["L'aire de mouvement en écoute de fréquence, sauf les pistes.",'m',"Le M : l'aire de mouvement en écoute de fréquence, sauf les pistes et leurs bandes, les voies de circulation avion S et K, et les routes réservées au permis P."],
   ["La même zone que le M, mais sous clairance des services de la circulation aérienne.",'r',"Le R : la même zone que le M, sous clairance."],
