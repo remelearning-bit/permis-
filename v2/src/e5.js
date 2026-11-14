@@ -1,9 +1,9 @@
-window.REDO=['c5a'];
+window.REDO=[];
 /* ---------------- Étape 5 · La circulation des véhicules, première partie : les principes généraux (diapos 90 à 149) ----------------
    Voix c01 à c64 existantes. Photos du support et images du PowerPoint. Questions : seuil de 50 %, retour ciblé, seconde série (QCM REM et test Groupe ADP). */
 const H5='Étape 5 · La circulation des véhicules';
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c5a:'Photo du support REM Formation'};
+var CAPS={};
 
 /* 1. la couverture */
 async function cover(){step();{const _p=photo('c5a',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}

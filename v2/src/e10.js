@@ -1,4 +1,4 @@
-window.REDO=['sgs','sgs2','remontees'];
+window.REDO=[];
 /* ---------------- Étape 10 · L'amélioration continue de la sécurité (diapos 249 à 270) ----------------
    Voix s01 à s24 existantes. Film du support (diapo 259). Photos du support et images du parcours.
    Questions : seuil de 50 %, seconde série après un échec. */

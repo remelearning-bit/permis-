@@ -1,11 +1,11 @@
-window.REDO=['c9','concorde','uld','fodbin'];
+window.REDO=[];
 /* ---------------- Étape 9 · Les procédures d'urgence (diapos 233 à 248) ----------------
    Voix u01 à u23 existantes. La panne sur la voie avion se vit en 3D (panne.html, voix u06 et u07). Film du support (diapo 242).
    Photos du support. Questions : seuil de 50 %, seconde série après un échec. */
 const H9='Étape 9 · Les procédures d\'urgence';
 const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c9:'Photo du support REM Formation',concorde:'Photo Toshihiko Sato, extranet ADP',uld:'Le bac de récupération des objets intrus Air France',fodbin:'Le bac de récupération de l\'huile de frein des aéronefs'};
+var CAPS={};
 
 async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);

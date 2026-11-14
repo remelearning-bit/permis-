@@ -1,4 +1,4 @@
-window.REDO=['aerien3'];
+window.REDO=[];
 
 /* ---------------- Étape 3 · L'accès au côté piste (diapos 78 à 86) ---------------- */
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -41,7 +41,7 @@ async function film(src,cred){const vv=$('#vv'),vid=$('#vid');const c=$('#vcred'
   const b=await new Promise(r=>VB.querySelectorAll('button').forEach(x=>x.onclick=()=>r(x)));VB.innerHTML='';if(!b.classList.contains('alt'))break;await open();seen=true}}
 
 /* 1. la couverture */
-var CAPS={aerien3:'Photo du support REM Formation'};
+var CAPS={aerien3:'Plan ADP · Où rouler avec le permis T'};
 async function cover(){step();{const _p=photo('aerien3',FAST?10:900);setCam({zoom:1.1});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 3 · 5 h 30').card("L'accès au côté piste","Pour entrer côté piste, il faut des titres spéciaux et passer par un point de contrôle.");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
