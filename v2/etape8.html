@@ -799,6 +799,12 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
+const PT3D=/*__PT3D__*/"";const PT4=/*__PT4__*/"";
+function p4HTML(css){return `<iframe class="p4" data-p4 title="Les quatre permis T, M, R et P en 3D" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])');if(!f)return null;f.dataset.m=1;if(PT4)f.src=URL.createObjectURL(new Blob([PT4],{type:'text/html'}));return f}
+window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
+function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* un biréacteur moyen-courrier générique, aux proportions d'un A320 (37,6 m de long, 35,8 m d'envergure, fuselage de 3,95 m),
    sans livrée de compagnie ; nez vers +z. Feux anticollision rouges dessus et dessous, feux de navigation, feux de roulage. */
 function makeAirliner(glowTex,o={}){
@@ -1298,7 +1304,7 @@ async function infoS(d){step();if(d.head)head(H8+(d.tm?' · '+HH(d.tm):''),d.hea
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();await photo('c8',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c8',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 8 · 7 h 30').card('L\'aire de manœuvre','Elle vous est interdite.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('m01',[at('m01',.4,()=>L.card('Pistes : permis P. Voies avion : permis M, R et P','Le permis T s\'arrête à la ligne de sécurité.'))]);

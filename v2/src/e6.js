@@ -7,7 +7,7 @@ var CAPS={c6:'Image du parcours REM Formation'};
 
 /* les écrans sur photo : chaque carte arrive quand la voix en parle */
 const HH=t=>t.replace(/ /g,'\u00a0');
-async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   const sw=(d.swaps||(d.swap?[d.swap]:[])).filter(x=>x[0]===id);
@@ -34,7 +34,7 @@ const ART={
  tel:`<svg viewBox="0 0 200 200"><rect x="64" y="24" width="72" height="152" rx="14" fill="#3a434c" stroke="#1d2329" stroke-width="5"/><rect class="scr" x="74" y="40" width="52" height="112" rx="4"/><circle cx="100" cy="164" r="5" fill="#8a949d"/></svg>`};
 
 /* 1. la couverture */
-async function cover(){step();await photo('c6',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c6',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 6 · 6 h 50').card('Avant de descendre du véhicule','Les règles générales de sécurité sur l\'aire de mouvement.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('g01');

@@ -5,7 +5,7 @@ var CAPS={c5b:'Photo du support REM Formation'};
 /*__HELPERS__*/
 
 /* 1. la couverture */
-async function cover(){step();await photo('c5b',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c5b',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 5, suite · 6 h 25').card("Les risques sur l'aire de mouvement et les bonnes attitudes","");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  for(const id of ['k01','k02','k03']){if(LINES[id].w==='X')await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier'))]);else await sayS(id)}
@@ -32,7 +32,7 @@ async function volant(){step();head(H5+' · 6 h 32','Au volant : stop, ou je pas
  return quiz('vol',mix('vol',VOLANT),'6 h 32','Au volant : sept situations',[5],6,true)}
 
 /* 4. les points chauds (diapos 165 à 169) : l'apprenant clique chaque cercle rouge */
-async function chaud(ph,cap,id,spots){step();await photo(ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function chaud(ph,cap,id,spots){step();await goPh(ph,{mode:'contain'});
  const L=label([0,0,0],{lead:false}).title('Les points chauds');L.card(cap,'',{a:null});
  await sayS(id);L.card(cap,`Cliquez sur chaque point chaud entouré de rouge (${spots.length}).`,{a:null});
  let n=0;const Ts=[];await Promise.all(spots.map(([x,y])=>target(pt(x/100,y/100),'',{delay:300,ref:T=>Ts.push(T)}).then(T=>{T.kill('ok');n++;L.card(cap,n<spots.length?`Encore ${spots.length-n}.`:'Les zones de vigilance de ce secteur.',{a:null})})));
@@ -44,7 +44,7 @@ const hot4=()=>chaud('hot4','Autour du BD et du 2E','k23',[[13.5,38],[27.5,26],[
 
 /* 5. les risques moteurs (diapos 170 à 172) */
 const MOT3D=/*__MOT3D__*/"";
-const moteurs=()=>(async()=>{step();head(H5,'Les dangers moteurs');
+const moteurs=()=>(async()=>{step();
  const fr=document.createElement('iframe');fr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#cfd8dc';
  fr.src=URL.createObjectURL(new Blob([MOT3D],{type:'text/html'}));VZ.innerHTML='';VZ.appendChild(fr);VZ.classList.add('on');
  const shot=n=>{try{fr.contentWindow.postMessage({shot:n},'*')}catch(e){}};

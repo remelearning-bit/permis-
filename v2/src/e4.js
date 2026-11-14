@@ -15,7 +15,7 @@ Object.assign(IC,{
  check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
 
 /* 1. la couverture */
-async function cover(){step();await photo('voiture',FAST?10:1200);setCam({mode:'contain'});
+async function cover(){step();{const _p=photo('voiture',FAST?10:900);setCam({mode:'contain'});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 4 · 5 h 45').card("L'inspection du véhicule avant utilisation","Le véhicule est devant vous. Avant de monter, on en fait le tour.");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('v01',[W('v01','Tout véhicule',()=>L.card('En bon état général','Tout véhicule ou engin qui circule sur les aires, et contrôlé régulièrement.'))]);

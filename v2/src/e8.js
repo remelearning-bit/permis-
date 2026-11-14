@@ -6,7 +6,7 @@ const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
 var CAPS={c8:'Photo du support REM Formation'};
 
-async function infoS(d){step();if(d.head)head(H8+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function infoS(d){step();if(d.head)head(H8+(d.tm?' · '+HH(d.tm):''),d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
@@ -14,7 +14,7 @@ async function infoS(d){step();if(d.head)head(H8+(d.tm?' · '+HH(d.tm):''),d.hea
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();await photo('c8',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c8',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 8 · 7 h 30').card('L\'aire de manœuvre','Elle vous est interdite.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('m01',[at('m01',.4,()=>L.card('Pistes : permis P. Voies avion : permis M, R et P','Le permis T s\'arrête à la ligne de sécurité.'))]);
@@ -32,7 +32,7 @@ const servitudes=()=>film('film-servitudes','film-servitudes','Le film : les ser
 const balisage=()=>film('film-balisage','film-balisage','Voie avion ou cheminement véhicule ?','Film du support de formation','7 h 37');
 
 /* 4 à 6. les écrans sur photo */
-const prevenir=S('zoneint','Prévenir les incursions',['m11'],[['m11',.05,'Sur piste et sur voie de circulation avion','Interdite au permis T. Les pistes sont réservées au permis P, les voies de circulation avion aux permis M, R et P.'],['m11',.55,'En cas de doute','Le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, 01 48 16 47 55.']],'Prévenir les incursions',{tm:'7 h 35'});
+const prevenir=S('zoneint','Prévenir les incursions',['m11'],[['m11','La zone est','Sur piste et sur voie de circulation avion','Interdite au permis T. Les pistes sont réservées au permis P, les voies de circulation avion aux permis M, R et P.'],['m11','En cas de doute','En cas de doute','Le numéro en bas à gauche de votre permis : le centre opérationnel côté piste, 01 48 16 47 55.']],'Prévenir les incursions',{tm:'7 h 35'});
 const ligne=S('ligne8','Rappel : la ligne de sécurité',['m12'],[['m12',.05,'Une ligne blanche continue','Derrière les postes de stationnement avion.'],['m12',.45,'Elle sépare deux zones','L\'aire de trafic et l\'aire de manœuvre. Avec un permis T, on ne la franchit pas.']],'La ligne de sécurité',{tm:'7 h 35'});
 const bandes=S('stopadp','Les bandes dégagées d\'obstacles',['m13'],[['m13',.03,'Les bandes aéronautiques','Ou bandes dégagées d\'obstacles, de part et d\'autre de la voie de circulation avion.'],['m13',.3,'Le stop routier','Sur la route de service : un repère visuel pour savoir si votre véhicule est hors de la bande.'],['m13',.7,'Après le stop','Tout ce qui s\'y trouve est dans la bande, et constitue un obstacle.']],'Les bandes dégagées d\'obstacles',{tm:'7 h 36'});
 

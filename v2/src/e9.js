@@ -4,9 +4,9 @@
 const H9='Étape 9 · Les procédures d\'urgence';
 const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
-var CAPS={c9:'Image du parcours REM Formation',uld:'Le bac de récupération des objets intrus Air France',fodbin:'Le bac de récupération de l\'huile de frein des aéronefs'};
+var CAPS={c9:'Photo du support REM Formation',concorde:'Photo Toshihiko Sato, extranet ADP',uld:'Le bac de récupération des objets intrus Air France',fodbin:'Le bac de récupération de l\'huile de frein des aéronefs'};
 
-async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
@@ -14,7 +14,7 @@ async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.hea
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();await photo('c9',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c9',FAST?10:900);setCam(PORT()?{mode:'contain'}:{zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 9 · 7 h 40').card('Les procédures d\'urgence','Ce qu\'on fait, et qui on appelle, en cas d\'urgence.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('u01',[at('u01',.35,()=>L.card('Ce qui peut arriver','L\'étape traite la collision, la panne sur la voie avion, l\'incendie, le blessé, les objets intrus, les drones et le conducteur perdu.'))]);
@@ -29,8 +29,10 @@ const collision=S('csa','La collision',['u04','u05'],[['u04',.05,'Véhicule cont
  ['u05',.75,'Et vous','Vous prévenez votre agent de maîtrise, et vous remplissez la notification d\'accident ou d\'incident, quatre volets, ou le Safety Portal.']],'La collision',{tm:'7 h 41'});
 
 /* 3. en panne sur la voie avion (diapo 236) : la démonstration en 3D, vécue à la première personne */
-async function panne(){step();head(H9+' · '+HH('7 h 42'),'En panne sur la voie avion');await vzOff();
- const f=document.createElement('iframe');f.src='panne.html';f.id='pf';f.allow='autoplay';document.body.appendChild(f);
+async function panne(){step();head(H9+' · '+HH('7 h 42'),'En panne sur la voie avion');
+ // la démonstration est une page à part : pendant son chargement, l'écran annonce ce qui vient, puis elle apparaît en fondu, plein écran
+ vue(`<div class="hero nph"><p class="cap">En panne sur la voie avion</p><p class="sub">La démonstration se prépare, quelques secondes.</p></div>`);
+ const f=document.createElement('iframe');f.src='panne.html';f.id='pf';f.allow='autoplay';f.onload=()=>setTimeout(()=>f.classList.add('in'),FAST?0:300);document.body.appendChild(f);
  await new Promise(r=>{const h=e=>{if(e.data==='panne-fin'){removeEventListener('message',h);r()}};addEventListener('message',h)});
  f.remove();jlog('7 h 42','Panne sur la voie avion : prévenir, feux de détresse, sortir et croiser les bras');
  vue(`<div class="hero nph"><p class="cap">En panne sur la voie avion</p><div class="p9">
@@ -113,7 +115,7 @@ async function fin(){step();head('Étape 9 terminée · 7 h 55','Neuvième case 
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Étape 10 · L'amélioration continue</a>`}
 const NEXT='etape10.html';
 document.head.insertAdjacentHTML('beforeend',`<style>
-#pf{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));width:100%;height:calc(100% - 46px - env(safe-area-inset-bottom));border:0;z-index:5;background:#e8ebed}
+#pf{position:fixed;inset:0;width:100%;height:100%;border:0;z-index:8;background:#e7eaea;opacity:0;transition:opacity .45s ease}#pf.in{opacity:1}
 .p9{display:flex;flex-direction:column;gap:10px;max-width:760px;text-align:left}.p9 p{margin:0;background:#fff;border-radius:12px;padding:12px 16px;font-size:clamp(16px,1.4vw,20px);color:#3d4d5c;box-shadow:0 4px 16px rgba(38,60,82,.08)}.p9 b{color:var(--marine)}
 .filmw{width:100%;max-width:1100px;display:flex;flex-direction:column;align-items:center;gap:8px;padding-bottom:64px}
 .filmw video{width:100%;max-height:68vh;border-radius:14px;background:#1d2329;box-shadow:0 8px 28px rgba(38,60,82,.18)}

@@ -167,7 +167,7 @@ window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=docum
 function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
 function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* 1. la couverture et les quatre parties */
-async function cover(){step();await photo('aerien',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('aerien',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 1 · 5 h 00').card('La réglementation et les règles à respecter sur Roissy','Cinq heures, prise de service. Avant de prendre le volant, les textes qui fixent les règles.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}L.kill();return null}
 const PARTS=[['1','Le contexte réglementaire et les consignes','book'],['2','Les sanctions','euro'],['3','Les acteurs du contrôle','eye'],['4',"L'obtention de l'autorisation de conduite",'card']];

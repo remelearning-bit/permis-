@@ -5,7 +5,7 @@ Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" 
 var CAPS={c5a:'Photo du support REM Formation'};
 
 /* 1. la couverture */
-async function cover(){step();await photo('c5a',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c5a',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 5 · 6 h 00').card('Je prends le volant','La circulation des véhicules côté piste. Le chapitre le plus long de la formation.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('c01');
@@ -15,7 +15,7 @@ async function cover(){step();await photo('c5a',FAST?10:1200);setCam({zoom:1.08}
  await cont(L,'Démarrer');L.kill();return null}
 
 /* un écran sur photo : chaque carte arrive quand la voix en parle ; Xavier est cité */
-async function infoS(d){step();if(d.head)head(H5,d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function infoS(d){step();if(d.head)head(H5,d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
@@ -107,7 +107,14 @@ const gabarit=S('gabarit','Les voies hors gabarit',['c48','c49'],[['c48',.5,'Hor
 const t1=S('t1cdg','Autour du terminal 1',['c50','c51','c52'],[['c50',.4,'Deux voies avion','Une voie extérieure et une voie intérieure. Le satellite reste toujours à la gauche du commandant de bord.'],['c51',.45,'Les cheminements','Extérieur : sens unique, dans le sens horaire. Intérieur : double sens.'],['c51',.85,'Autour des satellites','Sens unique, dans le sens antihoraire. Hauteur limitée à 3,50 m.'],['c52',.6,'Attention au poste 5',"S'il est libre, un avion peut venir y stationner : regardez la balise avant de poursuivre vers le stop."]],'La circulation');
 const satel=S('t1','Les satellites et la jetée Uniform',['c53'],[['c53',.5,'Huit postes par satellite','Sauf la jetée Uniform, entre le satellite 1 et le satellite 3 : douze postes à l\'extérieur, U06 à U17, et trois à l\'intérieur, U03 à U05.'],['c53',.9,'Deux accès','Par le cheminement intérieur, et par le cheminement extérieur entre U10 et U11.']],'La circulation');
 const s3s4=S('s3s4','Autour des satellites A, S3 et S4',['c54'],[['c54',.25,'Satellite A','Sens unique, antihoraire.'],['c54',.6,'S3','Sens unique pour les postes E01 à E29, K71 à K53 et F01 à F15. Double sens de K21 à K01.'],['c54',.9,'S4','Double sens, sauf sous la péninsule de correspondance, de K44 à K52.']],'La circulation');
-const autour=S('autour',"Autour de l'avion",['c55'],[['c55',.3,'Dans le sens horaire','Avant droite, avant gauche, arrière droite, arrière gauche.'],['c55',.55,'Au pas','Les véhicules avancent en position basse.'],['c55',.75,"Avant l'élévation",'Le véhicule doit être freiné, les béquilles baissées.'],['c55',.95,'Marche arrière guidée','Par un personnel ou par une caméra.']],'La circulation');
+const PER3D=/*__PER3D__*/"";
+const autour=()=>(async()=>{step();
+ const fr=document.createElement('iframe');fr.style.cssText='position:absolute;inset:0;width:100%;height:100%;border:0;background:#cfd8dc';
+ fr.src=URL.createObjectURL(new Blob([PER3D],{type:'text/html'}));VZ.innerHTML='';VZ.appendChild(fr);VZ.classList.add('on');
+ await wait(FAST?0:700);
+ const L=label([0,0,0],{lead:false}).title("Autour de l'avion");
+ await sayS('c55',[at('c55',.3,()=>L.card('Dans le sens horaire','Avant droite, avant gauche, arrière droite, arrière gauche.',{a:null})),at('c55',.55,()=>L.card('Au pas','Les véhicules avancent en position basse.',{a:null})),at('c55',.75,()=>L.card("Avant l'élévation",'Le véhicule doit être freiné, les béquilles baissées.',{a:null})),at('c55',.95,()=>L.card('Marche arrière guidée','Par un personnel ou par une caméra.',{a:null}))]);
+ await cont(L);L.kill();await vzOff();URL.revokeObjectURL(fr.src);return null})();
 const anticoll=S('anticoll','Les feux anticollision',['c56','c57','c58'],[['c56',.3,'Feux allumés','Mise en route imminente des moteurs : circuler à pied ou en véhicule devient dangereux.'],['c56',.6,"Trois longueurs d'appareil",'La distance minimale derrière un aéronef en mouvement.'],['c56',.8,'Une longueur',"Avion arrêté, à la mise en route : la zone d'évolution contrôlée doit être dégagée de tout matériel."],['c58',.6,'15 mètres',"La violence de l'aspiration est un grand danger jusqu'à 15 mètres devant le réacteur."]],'La circulation');
 const avant=S('avant','Avant de pénétrer sur le poste',['c59'],[['c59',.3,'Avion calé et feux éteints',''],['c59',.6,'Attendre le signe','Le pouce levé du responsable de zone avion.'],['c59',.85,'Circulation dans le sens horaire','']],'La circulation');
 const vigie=S('vigie','La vigie',['c60'],[['c60',.4,"À l'arrivée","Sécuriser le poste avion pour faciliter le placement de l'aéronef à son point de parking."],['c60',.8,'Au départ',"Sécuriser le poste avion pour faciliter le repoussage de l'aéronef sur la voie."]],'La circulation');

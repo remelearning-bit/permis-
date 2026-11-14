@@ -799,6 +799,12 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
+const PT3D=/*__PT3D__*/"";const PT4=/*__PT4__*/"";
+function p4HTML(css){return `<iframe class="p4" data-p4 title="Les quatre permis T, M, R et P en 3D" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])');if(!f)return null;f.dataset.m=1;if(PT4)f.src=URL.createObjectURL(new Blob([PT4],{type:'text/html'}));return f}
+window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
+function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* ---------------- Étape 6 · Les règles générales de sécurité sur l'aire de mouvement (diapos 187 à 196) ----------------
    Voix g01 à g18 existantes. Photos du support (diapos 191 à 195), illustrations au trait pour les équipements et la cabine.
    Questions : seuil de 50 %, seconde série après un échec. */
@@ -835,7 +841,7 @@ const ART={
  tel:`<svg viewBox="0 0 200 200"><rect x="64" y="24" width="72" height="152" rx="14" fill="#3a434c" stroke="#1d2329" stroke-width="5"/><rect class="scr" x="74" y="40" width="52" height="112" rx="4"/><circle cx="100" cy="164" r="5" fill="#8a949d"/></svg>`};
 
 /* 1. la couverture */
-async function cover(){step();await photo('c6',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c6',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 6 · 6 h 50').card('Avant de descendre du véhicule','Les règles générales de sécurité sur l\'aire de mouvement.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('g01');

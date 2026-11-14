@@ -681,7 +681,9 @@ Object.assign(IC,{
  plane:'<svg class="ic" viewBox="0 0 48 48"><path d="M24 4c2 0 3 2 3 5v10l15 9v4l-15-5v9l5 4v3l-8-2-8 2v-3l5-4v-9L6 32v-4l15-9V9c0-3 1-5 3-5z"/></svg>',
  key:'<svg class="ic" viewBox="0 0 48 48"><circle cx="15" cy="24" r="8"/><path d="M23 24h20M37 24v7M31 24v5"/></svg>'});
 document.head.insertAdjacentHTML('beforeend',`<style>
+@media (min-width:900px){.blsw{zoom:1.3}}
 .hd1 .k{color:var(--pierre)}
+.plan{list-style:none;margin:0 auto;padding:0;display:flex;flex-direction:column;gap:clamp(10px,2.2vh,22px);width:100%;max-width:920px}.plan li{font-size:clamp(20px,2.1vw,32px);font-weight:600;color:var(--marine);line-height:1.25;display:flex;gap:18px;align-items:baseline}.plan .no{font-weight:800;min-width:1.1em}.plan.infl{gap:clamp(6px,1.4vh,14px)}.plan.infl li{background:none;box-shadow:none!important;padding:0;flex-direction:row;align-items:baseline;text-align:left;position:static;font-size:clamp(18px,1.8vw,27px);opacity:.35;transition:opacity .4s}.plan.infl li.in{opacity:1}.plan.infl li.now{opacity:1;font-weight:800}.plan .dl{opacity:0;transition:opacity .4s}.plan .dl.in{opacity:1}
 .parts{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(14px,2vw,30px);width:100%;max-width:1100px}
 .parts .pt{background:#fff;border-radius:18px;box-shadow:0 8px 28px rgba(38,60,82,.12);padding:clamp(18px,2.2vw,30px) clamp(12px,1.4vw,20px);display:flex;flex-direction:column;align-items:center;text-align:center;gap:8px}
 .parts .pt .no{font-weight:800;font-size:clamp(30px,3.2vw,50px);line-height:1}
@@ -797,6 +799,12 @@ async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('#sq').appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r);nx.remove()}
  return E}
 
+const PT3D=/*__PT3D__*/"";const PT4=/*__PT4__*/"";
+function p4HTML(css){return `<iframe class="p4" data-p4 title="Les quatre permis T, M, R et P en 3D" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])');if(!f)return null;f.dataset.m=1;if(PT4)f.src=URL.createObjectURL(new Blob([PT4],{type:'text/html'}));return f}
+window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
+function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
+function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
 /* ---------------- Étape 10 · L'amélioration continue de la sécurité (diapos 249 à 270) ----------------
    Voix s01 à s24 existantes. Film du support (diapo 259). Photos du support et images du parcours.
    Questions : seuil de 50 %, seconde série après un échec. */
@@ -817,7 +825,7 @@ async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.he
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();await photo('c10',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c10',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 10 · 7 h 55').card('L\'amélioration continue de la sécurité','Comment on apprend de ce qui s\'est passé.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('s01',[at('s01',.3,()=>L.card('Le programme de l\'étape 10','Le système de gestion de la sécurité, les facteurs humains, les notifications.'))]);

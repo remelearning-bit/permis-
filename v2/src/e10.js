@@ -7,7 +7,7 @@ Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" 
 var CAPS={c10:'Image du parcours REM Formation'};
 
 async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.head);
- if(d.ph){await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff()}
+ if(d.ph){await goPh(d.ph,{mode:'contain'})}
  else{await vzOff();vue(`<div class="hero nph"><p class="cap">${nb(d.cap)}</p></div>`)}
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){const hk=d.swap&&d.swap[0]===id?[at(id,d.swap[1],()=>photo(d.swap[2],FAST?10:700))]:[];
@@ -18,7 +18,7 @@ async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.he
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();await photo('c10',FAST?10:1200);setCam({zoom:1.08});
+async function cover(){step();{const _p=photo('c10',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 10 · 7 h 55').card('L\'amélioration continue de la sécurité','Comment on apprend de ce qui s\'est passé.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('s01',[at('s01',.3,()=>L.card('Le programme de l\'étape 10','Le système de gestion de la sécurité, les facteurs humains, les notifications.'))]);
@@ -46,11 +46,11 @@ async function risque(){step();head(H10+' · '+HH('7 h 57'),'Situation à risque
  await sayS('s05');
  const E=await sortV(alt('risk',RISK1,RISK2),[['r','À risque','warn'],['c','Correcte','check2']],{label:'Situation',id:'risk'});
  jlog('7 h 57',`Situation à risque : 6 situations${errTxt(E)}`);return gate('risk',E,6,[1],'Situation à risque',2)}
-const culture=S('sgs2','Un outil de culture juste',['s06','s07'],[['s06',.05,'Je suis témoin ou impliqué : je notifie','Par la fiche de notification d\'événement.'],['s06',.6,'Ensuite','Une analyse, des actions correctives, un retour d\'expérience.'],
- ['s07',.05,'Vos remontées comptent','Sur Roissy : un tunnel pour la traversée du GE3, des procédures d\'avitaillement modifiées, des lignes de sécurité banalisées derrière les postes, un cédez-le-passage autour de LISA, un stop déplacé à la sortie de la route du S4.']],'Le système de gestion de la sécurité',{tm:'7 h 58',swap:['s07',.02,'remontees']});
+const culture=S('sgs2','Un outil de culture juste',['s06','s07'],[['s06','Je suis témoin','Je suis témoin ou impliqué : je notifie','Par la fiche de notification d\'événement.'],['s06','Ensuite','Ensuite','Une analyse, des actions correctives, un retour d\'expérience.'],
+ ['s07','Quelques exemples','Vos remontées comptent','Sur Roissy : un tunnel pour la traversée du GE3, des procédures d\'avitaillement modifiées, des lignes de sécurité banalisées derrière les postes, un cédez-le-passage autour de LISA, un stop déplacé à la sortie de la route du S4.']],'Le système de gestion de la sécurité',{tm:'7 h 58',swap:['s07',.02,'remontees']});
 
 /* 3. les facteurs humains (diapos 256 à 258) : quatre cartes à retourner */
-async function facteurs(){step();await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();head(H10+' · '+HH('8 h 00'),'Les facteurs humains : cliquez sur chaque carte');
+async function facteurs(){step();await goPh('c10',{mode:'contain'},500);head(H10+' · '+HH('8 h 00'),'Les facteurs humains : cliquez sur chaque carte');
  const C=[['s09','L\'addiction','Alcool, médicaments, drogues : somnolence, manque de vigilance, agressivité. Contrôle au volant sous l\'emprise d\'alcool ou de drogue : retrait immédiat du permis T, du badge et du permis de conduire.'],
   ['s10','La fatigue','Plus d\'erreurs, plus d\'omissions, une perception dégradée, de l\'irritabilité. Le cerveau n\'est pas le même à 15 h qu\'à 3 h du matin.'],
   ['s11','Le stress','Le déséquilibre entre ce qu\'on vous demande et vos ressources. Le premier sens perdu : l\'ouïe.'],
@@ -73,12 +73,12 @@ async function film(src,title,credit,tm){step();head(H10+' · '+HH(tm),title);
 const filmNotif=()=>film('film-notification','Le film : la notification des événements','Film du support de formation','8 h 02');
 const protection=S(null,'Notifier : un régime de protection',['s15'],[['s15',.03,'Le règlement européen 376/2014 et le code des transports','Ils protègent ceux qui notifient, face à leur employeur comme à l\'État.'],['s15',.35,'Pas de mesure sur la seule notification','Aucune mesure ne peut être prise sur des informations connues uniquement par une notification.'],
  ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],'Les notifications',{tm:'8 h 03',ic:'shield',more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
-const obligation=S(null,'L\'obligation de rendre compte',['s16','s17'],[['s16',.03,'Sans délai','Le code de l\'aviation civile oblige toute personne à rendre compte de tout incident ou accident dont elle a connaissance.'],['s16',.45,'Dans les 72 heures','En tort ou sans tort : aucune sanction.'],['s16',.75,'Ne pas rendre compte','Un an d\'emprisonnement et 15 000 € d\'amende.'],
- ['s17',.05,'À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],'Les notifications',{tm:'8 h 04',ic:'warn'});
+const obligation=S(null,'L\'obligation de rendre compte',['s16','s17'],[['s16',.03,'Sans délai','Le code de l\'aviation civile oblige toute personne à rendre compte de tout incident ou accident dont elle a connaissance.'],['s16','En tort','Dans les 72 heures','En tort ou sans tort : aucune sanction.'],['s16','Ne pas rendre','Ne pas rendre compte','Un an d\'emprisonnement et 15 000 € d\'amende.'],
+ ['s17','Une fuite','À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],'Les notifications',{tm:'8 h 04',ic:'warn'});
 const comment=S('fiche','Comment notifier',['s18'],[['s18',.03,'La fiche de notification d\'événement','La notification d\'accident ou d\'incident, en quatre volets.'],['s18',.4,'Ou le Safety Portal','safety-portal.fr/CDG, ouvert à tous les partenaires sur demande d\'ouverture de compte.'],['s18',.75,'L\'extranet opérationnel du Groupe ADP','Les références réglementaires de l\'aéroport, accessible à tout titulaire d\'un badge rouge.']],'Les notifications',{tm:'8 h 05',more:[['72 heures','Le délai pour notifier au service de gestion de la sécurité, à compter de la connaissance de l\'événement.'],['Le signalement volontaire','On peut notifier tout événement, même s\'il n\'est pas dans la liste réglementaire.'],['Si l\'outil est en panne','Le formulaire CRESEA, à transmettre par mail : airsidesafety.CDG@adp.fr.']]});
 
 /* 5. les questions d'entraînement */
-async function questions(){step();await photo('c10',FAST?10:500);setCam({mode:'contain'});await vzOff();head(H10+' · '+HH('8 h 06'),"Questions d'entraînement");ALT.q10=1;const two=(TRY.q10||0)%2;
+async function questions(){step();await goPh('c10',{mode:'contain'},500);head(H10+' · '+HH('8 h 06'),"Questions d'entraînement");ALT.q10=1;const two=(TRY.q10||0)%2;
  const Q=two?[{bk:[8],fixed:1,q:"J'ai causé un incident, sans le vouloir, et je le déclare dans les 72 heures :",o:[["Je suis sanctionné, puisque je suis en tort.",0,"Non : en tort ou sans tort, déclaré dans les 72 heures, aucune sanction."],["Aucune sanction : je suis protégé par la notification.",1,"Le code de l'aviation civile : déclaré dans les 72 heures, aucune sanction."],["Je dois attendre que quelqu'un d'autre le déclare.",0,"Non : toute personne qui en a connaissance doit rendre compte, sans délai."]]},
    {bk:[4],fixed:1,q:"Un contrôle au volant sous l'emprise d'alcool ou de drogue, c'est :",o:[["Un simple avertissement la première fois.",0,"Non : le retrait est immédiat."],["Le retrait immédiat du permis T et du badge, et du permis de conduire.",1,"Alcool ou drogue au volant : retrait immédiat du permis T et du badge, et retrait du permis de conduire."],["Le retrait du permis T seulement.",0,"Non : le badge et le permis de conduire sont aussi retirés."]]}]
   :[{line:'s19',bk:[3,7],fixed:1,q:"La culture juste pardonne les fautes intentionnelles ?",o:[["Vrai.",0,"Faux : la protection tombe en cas de manquement délibéré."],["Faux.",1,"La culture juste protège celui qui notifie une erreur, pas celui qui enfreint les règles délibérément."]]},

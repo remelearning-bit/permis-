@@ -14,14 +14,16 @@ const scene=new THREE.Scene();scene.background=new THREE.Color(0xe7eaea);
 const cam=new THREE.PerspectiveCamera(48,1,1,4000);cam.up.set(0,0,-1);
 const PW=160; // largeur de chaque photo dans la scène
 const LOADER=new THREE.TextureLoader();const PH={};
-function plane(k){if(PH[k])return PH[k];const [w,h]=DIM[k];const H=PW*h/w;const tex=LOADER.load(IMG[k]);tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
- const m=new THREE.Mesh(new THREE.PlaneGeometry(PW,H),new THREE.MeshBasicMaterial({map:tex,transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.visible=false;scene.add(m);
- return PH[k]={k,m,w:PW,h:H}}
+function plane(k){if(PH[k])return PH[k];const [w,h]=DIM[k];const H=PW*h/w;let ok;const ready=Promise.race([new Promise(r=>ok=r),new Promise(r=>setTimeout(r,2500))]);const tex=LOADER.load(IMG[k],t=>{try{R.initTexture(t)}catch(e){}ok()},undefined,()=>ok());tex.colorSpace=THREE.SRGBColorSpace;tex.anisotropy=8;
+ const m=new THREE.Mesh(new THREE.PlaneGeometry(PW,H),new THREE.MeshBasicMaterial({map:tex,alphaMap:FEATHER(),transparent:true,opacity:0,depthWrite:false}));m.rotation.x=-Math.PI/2;m.visible=false;scene.add(m);
+ return PH[k]={k,m,w:PW,h:H,ready}}
 let CUR=null;let ord=1;
+/* bords de photo adoucis : la photo se fond dans le fond clair au lieu d'un cadre net */
+let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
  const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
- return anim(D,t=>{P.m.material.opacity=t;if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}})}
+ return P.ready.then(()=>anim(D,t=>{P.m.material.opacity=1-Math.pow(1-t,3);if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}}))}
 /* un point de la photo affichée, en fractions de sa largeur et de sa hauteur */
 const pt=(fx,fy,k)=>{const P=k?plane(k):CUR;return [(fx-.5)*P.w,0,(fy-.5)*P.h]};
 /* la caméra : un point visé sur la photo et un recul ; le cadrage laisse la place au panneau */
@@ -41,6 +43,26 @@ function view(o={}){const k=CUR.k;const d=fitD(k,o.mode)/(o.zoom||1);let x=o.x??
 let mv=null;
 function camTo(o,D=1600){drift=null;const a={...V},b=view(o);if(FAST)D=60;return new Promise(r=>{mv={t0:performance.now(),D,a,b,r}})}
 function setCam(o){Object.assign(V,view(o))}
+/* nouvelle photo + cadrage + retrait du panneau en même temps : la voix part sans attendre */
+async function goPh(k,o,D=500){const p=photo(k,FAST?10:D);if(VZ.classList.contains('on'))setCam(o);else camTo(o,FAST?10:D);await Promise.all([p,vzOff()])}
+/* sur téléphone, une photo en paysage reste petite : « Agrandir » l'ouvre en plein écran, on la fait glisser, on touche pour zoomer ; la voix attend */
+(function(){const css=`#zbtn{position:fixed;right:12px;bottom:calc(112px + env(safe-area-inset-bottom));z-index:7;display:none;align-items:center;gap:6px;padding:9px 14px;border-radius:22px;border:2px solid var(--marine,#263C52);background:#fff;color:var(--marine,#263C52);font:700 16px Barlow,system-ui,sans-serif;box-shadow:0 3px 12px rgba(38,60,82,.18);cursor:pointer}
+#zbtn.on{display:flex}#zbtn svg{width:18px;height:18px}
+#zv{position:fixed;inset:0;z-index:45;background:#e7eaea;display:none;flex-direction:column}#zv.on{display:flex}
+#zv .zh{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px calc(10px);background:#f7f8f8;border-bottom:1px solid rgba(38,60,82,.12);font:600 15px Barlow,system-ui,sans-serif;color:#5d6b78}
+#zv .zh button{padding:9px 16px;border-radius:20px;border:0;background:var(--orange,#e8501c);color:#fff;font:700 16px Barlow,system-ui,sans-serif}
+#zv .zs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;display:flex}#zv .zs img{display:block;margin:auto;max-width:none;height:auto;flex:none}`;
+document.head.insertAdjacentHTML('beforeend','<style>'+css+'</style>');
+const b=document.createElement('button');b.id='zbtn';b.type='button';b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg>Agrandir';document.body.appendChild(b);
+const v=document.createElement('div');v.id='zv';v.innerHTML='<div class="zh"><span>Faites glisser la photo, touchez-la pour zoomer. Tournez le téléphone pour la voir en entier.</span><button type="button">Fermer</button></div><div class="zs"><img alt=""></div>';document.body.appendChild(v);
+const im=v.querySelector('img'),sc=v.querySelector('.zs');let wasPlaying=false;
+function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientWidth,H=sc.clientHeight;let w=a>=1?Math.min(W*1.7,H*a):Math.min(W,H*a);if(v.classList.contains('big'))w*=2.2;im.style.width=Math.round(w)+'px'}
+ function center(){size();sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2;sc.scrollTop=(sc.scrollHeight-sc.clientHeight)/2}
+b.onclick=()=>{if(!CUR||!IMG[CUR.k])return;im.src=IMG[CUR.k];v.classList.remove('big');v.classList.add('on');wasPlaying=!!(curAudio&&!curAudio.paused);if(wasPlaying)curAudio.pause();(im.complete?center():im.onload=center)};
+v.querySelector('.zh button').onclick=()=>{v.classList.remove('on');if(wasPlaying&&curAudio)curAudio.play().catch(()=>{})};
+im.onclick=e=>{const r=im.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;v.classList.toggle('big');size();requestAnimationFrame(()=>{sc.scrollLeft=fx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=fy*sc.scrollHeight-sc.clientHeight/2})};
+setInterval(()=>{const show=PORT()&&CUR&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
+
 /* plans nets et zoomables : le plan ADP d'origine occupe toute la page, on peut le zoomer et le déplacer pendant que la voix continue */
 (function(){const MAP={planpoint:['circulation',''],planrestreint:['circulation','T'],zone30:['vitesses',''],hot1:['hot-t1',''],hot2:['hot-ac',''],hot3:['hot-cargo',''],hot4:['hot-bd2e','']};
 document.head.insertAdjacentHTML('beforeend','<style>#pv{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));z-index:2;background:#fff;opacity:0;pointer-events:none;transition:opacity .5s ease}body.plan #zbtn{display:none!important}#pv.on{opacity:1;pointer-events:auto}#pv iframe{border:0;width:100%;height:100%;display:block}</style>');
@@ -119,13 +141,14 @@ const VO=new Audio();VO.preload='auto';let voUnlocked=false;
 let unlockPend=false;
 const unlock=()=>{if(voUnlocked||FAST||MUET)return;voUnlocked=true;unlockPend=true;try{VO.muted=true;VO.src=AUDIO+'p01.mp3';const p=VO.play();const end=()=>{if(unlockPend){VO.pause();unlockPend=false}VO.muted=false};if(p)p.then(end,end);else end()}catch(e){VO.muted=false}};
 addEventListener('pointerdown',unlock,true);addEventListener('click',unlock,true);addEventListener('touchend',unlock,true);
-function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];
+const PF=new Set();function prefetchNext(id){if(FAST||MUET)return;const ks=Object.keys(LINES),i=ks.indexOf(id);if(i<0)return;for(let j=i+1;j<=i+2&&j<ks.length;j++){const u=AUDIO+ks[j]+'.mp3';if(!PF.has(u)){PF.add(u);fetch(u).catch(()=>{})}}}
+function say(id,hooks=[]){return new Promise(res=>{const L=LINES[id];prefetchNext(id);
  // le sous-titre montre la phrase en cours, pas toute la réplique : il reste court et ne cache pas l'écran
  const who=`<b>${L.w==='X'?'Xavier':'Damienne'}</b> · `,parts=[];{const re=/[^.!?]+[.!?]*\s*/g;let m;while((m=re.exec(L.t)))parts.push([m.index,m[0].trim()])}
  let pi=-1;const showAt=f=>{const c=f*L.t.length;let i=0;while(i+1<parts.length&&parts[i+1][0]<=c)i++;if(i!==pi){pi=i;sub.innerHTML=who+(parts[i]?parts[i][1]:L.t)}};showAt(0);
  const a=FAST?new Audio(AUDIO+id+'.mp3'):VO;if(!FAST){unlockPend=false;a.onended=a.onerror=null;a.pause();a.muted=false;a.src=AUDIO+id+'.mp3';a.playbackRate=1}curAudio=a;if(FAST)a.playbackRate=16;a.muted=FAST;const hs=hooks.slice().sort((x,y)=>x[0]-y[0]);let k=0,done=false;
  const tick=()=>{if(done)return;const d=a.duration||0;const f=d?a.currentTime/d:0;showAt(f);while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}requestAnimationFrame(tick)};
- const fin=()=>{if(done)return;done=true;while(k<hs.length){hs[k][1]();k++}setTimeout(res,FAST?20:350);const me=sub.innerHTML;setTimeout(()=>{if(sub.innerHTML===me)sub.innerHTML=''},FAST?50:2500)};
+ const fin=()=>{if(done)return;done=true;while(k<hs.length){hs[k][1]();k++}setTimeout(res,FAST?20:120);const me=sub.innerHTML;setTimeout(()=>{if(sub.innerHTML===me)sub.innerHTML=''},FAST?50:2500)};
  a.onended=fin;a.onerror=()=>{a.onerror=null;if(!MUET&&!FAST)document.body.classList.add('subs');const ms=Math.max(2500,L.t.length*62);let t0=performance.now();const fake=()=>{const f=(performance.now()-t0)/(FAST?ms/16:ms);showAt(Math.min(f,.999));while(k<hs.length&&f>=hs[k][0]){hs[k][1]();k++}if(f>=1)fin();else requestAnimationFrame(fake)};fake()};
  a.play().then(()=>tick()).catch(()=>{if(a.onerror)a.onerror()})})}
 $('#brep').onclick=()=>{if(curAudio){curAudio.currentTime=0;curAudio.play().catch(()=>{})}};
@@ -138,7 +161,7 @@ const hand=()=>{};
 // la main se pose sur ce qu'il faut cliquer, seulement quand il n'y a qu'une seule chose à cliquer :
 // devant un choix, elle ne montre rien, pour ne pas souffler la réponse
 const HAND=document.getElementById('hand');
-const CLICK='#navgo .act,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
+const CLICK='#navgo .act,.tlab .act,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
 function placeHand(){if(document.getElementById('jrn').classList.contains('on')){const r=document.getElementById('jclose').getBoundingClientRect();HAND.style.transform=`translate(${r.right-16}px,${r.bottom-14}px)`;HAND.classList.add('on');return}
  const W=innerWidth,H=innerHeight;const els=[...document.querySelectorAll(CLICK)].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<H&&r.right>0&&r.left<W&&+getComputedStyle(e).opacity>.5&&(!e.closest('#vid')||e.closest('#vid.on'))});
  if(els.length!==1){HAND.classList.remove('on');return}
@@ -213,13 +236,14 @@ async function info(L,id,cards=[],o=null){await sayS(id,cards.map(c=>at(id,c[0],
 async function pick(L,opts,goodKey,okT,koT,nextTxt,o={}){const w=document.createElement('div');w.style.pointerEvents='auto';(o.host||L.el).appendChild(w);
  const bs=opts.map(([k,t])=>{const b=document.createElement('button');b.className='ans';b.dataset.b=k;b.innerHTML=nb(t);b.style.opacity=0;w.appendChild(b);return b});
  for(const b of bs){await wait(FAST?0:260);b.style.transition='opacity .35s';b.style.opacity=1}
+ try{w.scrollIntoView({block:'nearest',behavior:FAST?'auto':'smooth'})}catch(e){}
  let errs=0;const fb=document.createElement('p');fb.className='fb';w.appendChild(fb);
  for(;;){const p=await new Promise(r=>bs.forEach(x=>{if(!x.classList.contains('off'))x.onclick=()=>r(x)}));const good=p.dataset.b===goodKey;
   if(good||!o.retry){bs.forEach(x=>{x.classList.add('off');x.onclick=null;if(x.dataset.b===goodKey)x.classList.add('ok');else if(x===p)x.classList.add('ko')});
    if(!good)errs++;fb.className='fb '+(good?'ok':'ko');
    fb.innerHTML=good?nb(okT):(o.once?(o.x&&typeof koT==='object'&&koT[p.dataset.b]?`<b>${nb('Réponse attendue : '+lbOf(opts,goodKey)+'.')}</b> <span class="xp">${nb(xclean(koT[p.dataset.b]))}</span>`:xko(lbOf(opts,goodKey),okT)):nb(typeof koT==='object'?(koT[p.dataset.b]||koT._):koT));
    if(o.onDone)o.onDone(good,errs);break}
-  errs++;p.classList.add('off','ko');p.onclick=null;fb.className='fb ko';fb.innerHTML=nb(typeof koT==='object'?(koT[p.dataset.b]||koT._):koT);if(o.onErr)o.onErr(p.dataset.b)}
+  errs++;p.classList.add('off','ko');p.onclick=null;fb.className='fb ko';fb.innerHTML=nb(typeof koT==='object'?(koT[p.dataset.b]||koT._):koT);try{w.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}if(o.onErr)o.onErr(p.dataset.b)}
  const nx=document.createElement('button');nx.className='act';nx.textContent=nextTxt;w.appendChild(nx);await new Promise(r=>nx.onclick=r);w.remove();return (o.retry||o.once)?errs:errs===0}
 // classer : chaque élément, puis le choix parmi les catégories
 async function sortAct(L,items,buckets,label='Élément'){let n=0;
@@ -247,20 +271,21 @@ async function gate(id,E,n,back,what){const ok=Math.max(0,n-E),need=needOf(n);TR
 /* ---------------- navigation libre : ?nav ouvre la liste des écrans, ?nav&s=N démarre à l'écran N ---------------- */
 const NAV=Q.has('nav');let NAVI=0;
 function navUrl(i){const q=new URLSearchParams(location.search);q.set('nav','');q.set('s',i);return location.pathname+'?'+q.toString().replace('nav=&','nav&').replace(/nav=$/,'nav')}
+async function sonOk(){try{const a=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');return await Promise.race([a.play().then(()=>true),new Promise(r=>setTimeout(()=>r(false),800))])}catch(e){return false}}
 async function runSeq(seq){let start=0;
  if(NAV){document.body.classList.add('nav');start=Math.max(0,Math.min(seq.length-1,+(Q.get('s')||0)));
   const b=document.createElement('button');b.textContent='Écrans';const bar=document.getElementById('bar');bar.insertBefore(b,bar.querySelector('.sp').nextSibling);
   const nl=document.createElement('div');nl.id='navl';document.body.appendChild(nl);
   b.onclick=()=>{nl.innerHTML=`<div class="box"><p class="n" style="font-weight:600;color:var(--pierre);margin:0">Navigation libre</p><p style="font-weight:700;font-size:var(--A);margin:4px 0 0">Les écrans de la page</p><ol>${seq.map((x,i)=>`<li class="${i===NAVI?'cur':''}"><a href="${navUrl(i)}">${nb(x[0])}</a></li>`).join('')}</ol><button class="act" id="navx">Fermer</button></div>`;nl.classList.add('on');document.getElementById('navx').onclick=()=>nl.classList.remove('on')};
   const nx=document.createElement('button');nx.textContent=innerWidth<560?'Suivant ›':'Écran suivant ›';bar.insertBefore(nx,b.nextSibling);nx.onclick=()=>{if(NAVI<seq.length-1)location.href=navUrl(NAVI+1)};
-  if(start>0){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Lancer l'écran</button></div>`;document.body.appendChild(g);
+  if(start>0&&!MUET&&!(await sonOk())){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Lancer l'écran</button></div>`;document.body.appendChild(g);
    await new Promise(r=>g.querySelector('button').onclick=r);g.remove()}}
  let r=null;for(let i=start;i<seq.length;i++){NAVI=i;r=await seq[i][1](r);if(r&&r.goto!=null){i=r.goto-1;r=null}}}
 /* ---------------- Préambule et introduction (diapos 1 à 18) ----------------
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
 document.head.insertAdjacentHTML('beforeend',`<style>
-#vz .stage.fr{opacity:0;transition:opacity .6s ease}#vz .stage.fr.in{opacity:1}
+#vz .stage.fr{opacity:0;transition:opacity .4s ease .08s}#vz .stage.fr.in{opacity:1}
 #vz.clear{background:transparent}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(8px,1.8vh,20px);width:100%;max-width:1100px}
 .hero .cap{font-weight:700;font-size:clamp(26px,2.8vw,44px);line-height:1.12;margin:0;max-width:26ch}
@@ -330,7 +355,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .qc .n{font-weight:600;font-size:var(--B);color:var(--pierre);margin:0 0 6px}.qc .q{font-weight:700;font-size:var(--A);line-height:1.18;margin:0}
 .qc .ans{pointer-events:auto;display:block;width:100%;text-align:left;margin-top:10px;padding:12px 16px;border:2px solid var(--orangeV);border-radius:12px;background:#fff;color:var(--marine);font:600 var(--B)/1.25 Barlow,system-ui,sans-serif;cursor:pointer}
 .qc .ans.ok{border-color:var(--vert);background:var(--vert);color:#fff}.qc .ans.ko{border-color:var(--orangeV);background:var(--orangeV);color:#fff}
-.qc .ans.off{cursor:default;opacity:.55}.qc .ans.off.ok,.qc .ans.off.ko{opacity:1}.qc .fb{margin:10px 0 0}.qc .fb:empty{display:none}.qc .act{margin-top:14px}
+.qc .ans.off{cursor:default;opacity:.55}.qc .ans.off.ok,.qc .ans.off.ko{opacity:1}.qc .fb{margin:10px 0 0}.qc .fb:empty{display:none}#vz .stage{overflow-y:auto;overscroll-behavior:contain;scrollbar-width:thin}@media (max-width:700px){#vz .stage>.qc,#vz .stage>.sortw,#vz .stage>.qimg,#vz .stage>:has(>.qc),#vz .stage>:has(>.sortw),#vz .stage>:has(>.qimg){margin-top:0}}.qc .act{margin-top:14px}
 .obj{display:grid;grid-template-columns:auto 1fr;gap:clamp(22px,3.4vw,56px);align-items:center;width:100%;max-width:1000px;text-align:left;margin:0 auto}
 .obj .no{width:clamp(110px,13vw,190px);height:clamp(110px,13vw,190px);border-radius:50%;background:var(--marine);color:#fff;font-weight:800;font-size:clamp(64px,8vw,116px);display:flex;align-items:center;justify-content:center}
 .obj .cap{font-weight:700;font-size:clamp(28px,3vw,46px);line-height:1.1;margin:0 0 12px}.obj .sub{font-size:clamp(18px,1.6vw,25px);line-height:1.42;color:#33475b;margin:0;max-width:40ch}
@@ -406,7 +431,7 @@ const K=(id,w,d=.02)=>{const t=LINES[id].t;const i=t.indexOf(w);if(i<0){console.
 const W=(id,w,fn,d)=>[K(id,w,d),fn];
 // un nouveau plan, en fondu enchaîné sur le précédent
 function vue(html){const old=[...VZ.querySelectorAll('.stage')];const st=document.createElement('div');st.className='stage fr';st.innerHTML=html;VZ.appendChild(st);VZ.classList.add('on');
- requestAnimationFrame(()=>requestAnimationFrame(()=>st.classList.add('in')));old.forEach(o=>{o.classList.remove('in');o.style.opacity=0;o.style.transition='opacity .5s';setTimeout(()=>o.remove(),600)});return st}
+ requestAnimationFrame(()=>requestAnimationFrame(()=>st.classList.add('in')));old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .25s';o.style.opacity=0;setTimeout(()=>o.remove(),320)});return st}
 const cur=()=>VZ.querySelector('.stage:last-child')||VZ;
 const on=(sel,cls='in')=>cur().querySelectorAll(sel).forEach(e=>e.classList.add(cls));
 const $c=sel=>cur().querySelector(sel);
@@ -496,7 +521,7 @@ async function candidat(){step();head('Préambule','Le candidat');
  await wait(2500);return null}
 
 /* 5. l'attestation : la photo de l'Annexe 8, parcourue partie par partie */
-async function attestation(){step();await photo('annexe',FAST?10:400);setCam({mode:'contain'});await vzOff();
+async function attestation(){step();await goPh('annexe',{mode:'contain'},400);
  const L=label(pt(.42,.03,'annexe')).title("L'attestation de réussite").card('Annexe 8',"Le document « Demande d'autorisation de conduite, permis T ». Ici, un exemple fictif.",{a:pt(.42,.03)});
  const Z=(fx,fy,zoom,D)=>{const c=pt(fx,fy);return camTo({x:c[0],z:c[2],zoom,mode:'contain'},D)};
  await sayS('p10b',[W('p10b',"l'attestation",()=>{L.card('Partie 2 · Formation théorique','Remplie par le centre de formation agréé : il atteste que vous avez réussi la théorie.',{a:pt(.5,.21)});Z(.46,.27,PORT()?1.6:2.6,2200)}),
@@ -637,7 +662,7 @@ async function survol(){step();await vzOff();FILM.currentTime=0;FV.cx=.47;FV.fil
  const pan=c=>{const p=ov.querySelector('.pan');if(!PORT()){p.style.transform='';return}if(PANEL)ov.style.paddingTop=Math.round(PANEL.y+PANEL.h+12)+'px';const w=p.offsetWidth,vw=ov.querySelector('.win').offsetWidth;p.style.transform=`translateX(${-Math.max(0,Math.min(w-vw,c*w-vw/2))}px)`};
  let PC=.34;requestAnimationFrame(()=>{ov.classList.add('on');pan(PC)});(function keep(){if(!ov.isConnected)return;if(PORT()&&PANEL)ov.style.paddingTop=Math.round(PANEL.y+PANEL.h+12)+'px';requestAnimationFrame(keep)})();
  const ring=k=>ov.querySelector(`[data-h="${k}"]`).classList.add('on');const past=ks=>ks.forEach(k=>ov.querySelector(`[data-h="${k}"]`).classList.add('past'));
- await sayS('i06',[at('i06',.02,()=>L.card('Le plan des halls','')),W('i06','une rangée',()=>L.card('Une rangée','2B, 2D, 2F.')),W('i06','deux B',()=>ring('B'),.005),W('i06','deux D',()=>ring('D'),.005),W('i06','deux F',()=>ring('F'),.005),
+ await sayS('i06',[W('i06','une rangée',()=>L.card('Une rangée','2B, 2D, 2F.')),W('i06','deux B',()=>ring('B'),.005),W('i06','deux D',()=>ring('D'),.005),W('i06','deux F',()=>ring('F'),.005),
   W('i06','En face',()=>{past(['B','D','F']);L.card('En face','2A, 2C, 2E.')}),W('i06','deux A',()=>ring('A'),.005),W('i06','deux C',()=>ring('C'),.005),W('i06','deux E',()=>ring('E'),.005),
   W('i06','Et, à part',()=>{past(['A','C','E']);L.card('À part','2G.');PC=.8;pan(PC)}),W('i06','deux G',()=>ring('G'),.005)]);
  L.card('Les trois aérogares','Cliquez sur « Remonter » pour revenir au-dessus de la plateforme.');await contLab(L,'Remonter');ov.classList.remove('on');setTimeout(()=>ov.remove(),600);
@@ -648,7 +673,10 @@ async function contLab(L,txt){const id='c'+Math.random().toString(36).slice(2,7)
 /* 11. quel terminal ? on répond en cliquant sur le film */
 async function quelTerminal(L){L.title('Quel terminal ?');
  // retour à la vue du début, où l'on voit les trois aérogares
- FILM.style.opacity=0;await wait(700);FILM.currentTime=5.8;await wait(250);FILM.style.opacity=1;
+ // fondu enchaîné : l'image en cours reste affichée le temps que le film revienne au début, puis s'efface
+ {const sn=document.createElement('canvas');sn.width=FILM.videoWidth||16;sn.height=FILM.videoHeight||9;try{sn.getContext('2d').drawImage(FILM,0,0)}catch(e){}
+  const cs=getComputedStyle(FILM);Object.assign(sn.style,{position:'fixed',left:cs.left,top:cs.top,width:cs.width,height:cs.height,transform:cs.transform,objectFit:'cover',zIndex:cs.zIndex,pointerEvents:'none',transition:'opacity .7s'});FILM.after(sn);
+  FILM.currentTime=5.8;await new Promise(r=>{FILM.addEventListener('seeked',r,{once:true});setTimeout(r,900)});sn.style.opacity=0;setTimeout(()=>sn.remove(),760)}
  await sayS('i08',[at('i08',.02,()=>L.card('À vous','Je vous décris une aérogare : cliquez dessus, sur le film.'))]);
  const IT=mix('qt',[["Un bâtiment circulaire, des satellites tout autour, la circulation la plus contrainte.",'t1',"Le terminal 1, le plus ancien : le bâtiment circulaire, avec ses satellites tout autour, et la circulation la plus contrainte.","Pas celle-ci. Cherchez le bâtiment rond, entouré de ses satellites."],
   ["Des vols charter et à bas coût, peu de volume mais beaucoup de coactivité sur peu de surface.",'t3',"Le terminal 3 : des vols charter et à bas coût, peu de volume, mais beaucoup de coactivité sur peu de surface.","Pas celle-ci. Relisez : peu de volume, beaucoup de coactivité sur peu de surface."],

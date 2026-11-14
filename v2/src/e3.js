@@ -41,7 +41,7 @@ async function film(src,cred){const vv=$('#vv'),vid=$('#vid');const c=$('#vcred'
 
 /* 1. la couverture */
 var CAPS={aerien3:'Photo du support REM Formation'};
-async function cover(){step();await photo('aerien3',FAST?10:1200);setCam({zoom:1.1});
+async function cover(){step();{const _p=photo('aerien3',FAST?10:900);setCam({zoom:1.1});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 3 · 5 h 30').card("L'accès au côté piste","Pour entrer côté piste, il faut des titres spéciaux et passer par un point de contrôle.");
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('a01',[W('a01','Il faut',()=>L.card('Des titres spéciaux, des points de passage précis','Les personnes et les véhicules y sont contrôlés.'))],{zoom:1.08});
