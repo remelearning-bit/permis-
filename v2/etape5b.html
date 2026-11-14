@@ -811,7 +811,7 @@ const rd=document.createElement('div');rd.id='rd';rd.textContent='Photo à refai
 const src=()=>{const s=new Set();(window.REDO||[]).forEach(k=>{[typeof IMG!=='undefined'&&IMG[k],typeof PHO!=='undefined'&&PHO[k]].forEach(v=>v&&s.add(v))});return s};
 function scan(){const S=src();if(!S.size)return;document.querySelectorAll('img').forEach(im=>{if(im.dataset.rd||!S.has(im.getAttribute('src')))return;im.dataset.rd=1;const p=im.parentElement;if(!p)return;if(getComputedStyle(p).position==='static')p.style.position='relative';const t=document.createElement('span');t.className='rds';t.textContent='Photo à refaire';p.appendChild(t)})}
 new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});setTimeout(scan,500)})();
-window.REDO=['brume','vc4','d_batiments'];
+window.REDO=['d_batiments'];
 /* ---------------- Étape 5, suite · Les risques sur l'aire de mouvement et les bonnes attitudes (diapos 150 à 186) ----------------
    Voix k01 à k39 existantes (pas de k27). Photos du support et images du PowerPoint. */
 const H5="Étape 5, suite · Les risques et les bonnes attitudes";

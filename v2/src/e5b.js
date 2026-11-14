@@ -1,4 +1,4 @@
-window.REDO=['brume','vc4','d_batiments'];
+window.REDO=['d_batiments'];
 /* ---------------- Étape 5, suite · Les risques sur l'aire de mouvement et les bonnes attitudes (diapos 150 à 186) ----------------
    Voix k01 à k39 existantes (pas de k27). Photos du support et images du PowerPoint. */
 const H5="Étape 5, suite · Les risques et les bonnes attitudes";
