@@ -699,7 +699,7 @@ async function terminal4(){step();head('Introduction',"Un mot sur l'avenir");
  await contV();return null}
 
 /* 13. les pistes : la photo du support, zoom sur chaque doublet ; puis le permis et sa première case */
-async function pistes(){step();await photo('pistes',FAST?10:400);const PM=PORT()?{mode:'contain'}:{};setCam({zoom:1,...PM});await vzOff();
+async function pistes(){step();await photo('pistes',FAST?10:400);setCam({zoom:1});const PM={};await vzOff();
  const L=label([0,0,0],{lead:false}).title('La configuration des pistes');
  const Z=(fx,fy,zoom,D)=>{const c=pt(fx,fy);return camTo({x:c[0],z:c[2],zoom,...PM},D)};
  await sayS('i10',[at('i10',.02,()=>L.card('Quatre pistes parallèles','En deux doublets.')),
