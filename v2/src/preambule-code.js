@@ -440,7 +440,7 @@ const HANDSVG=document.getElementById('hand').outerHTML.replace('id="hand"','');
 const bigIc=k=>IC[k].replace('class="ic"','class="ic hic"');
 
 /* 1. la couverture */
-async function cover(){await photo('cov',FAST?10:1200);if(PORT()){const c=pt(.3,.5);setCam({mode:'contain',zoom:1.5,x:c[0],z:c[2]})}else setCam({zoom:1});
+async function cover(){await photo('cov',FAST?10:1200);if(PORT()){setCam({zoom:1})}else setCam({zoom:1});
  const L=label([0,0,0],{big:1,lead:false}).title('Permis T · Paris-Charles de Gaulle').card('Autorisation de conduite en zone côté piste','Préambule et introduction.');
  await cont(L,'Démarrer');step();try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){} // on recommence le préambule : son journal repart de zéro, les autres étapes restent
  await sayS('p01',[at('p01',.02,()=>L.card('Damienne et Xavier','Ils passent la matinée avec vous sur Roissy-Charles de Gaulle. À la fin, vous aurez votre permis T.'))],{zoom:1.08});
