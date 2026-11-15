@@ -61,7 +61,7 @@ function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientW
 b.onclick=()=>{if(!CUR||!IMG[CUR.k])return;im.src=IMG[CUR.k];v.classList.remove('big');v.classList.add('on');wasPlaying=!!(curAudio&&!curAudio.paused);if(wasPlaying)curAudio.pause();(im.complete?center():im.onload=center)};
 v.querySelector('.zh button').onclick=()=>{v.classList.remove('on');if(wasPlaying&&curAudio)curAudio.play().catch(()=>{})};
 im.onclick=e=>{const r=im.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;v.classList.toggle('big');size();requestAnimationFrame(()=>{sc.scrollLeft=fx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=fy*sc.scrollHeight-sc.clientHeight/2})};
-setInterval(()=>{const show=PORT()&&CUR&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
+setInterval(()=>{const show=PORT()&&CUR&&!(window.NOZOOM||[]).includes(CUR.k)&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
 
 /* plans nets et zoomables : le plan ADP d'origine occupe toute la page, on peut le zoomer et le déplacer pendant que la voix continue */
 (function(){const MAP={planpoint:['circulation',''],planrestreint:['circulation','T'],zone30:['vitesses',''],hot1:['hot-t1',''],hot2:['hot-ac',''],hot3:['hot-cargo',''],hot4:['hot-bd2e','']};

@@ -1,3 +1,4 @@
+window.NOZOOM=['c9m'];
 window.REDO=[];
 /* ---------------- Étape 9 · Les procédures d'urgence (diapos 233 à 248) ----------------
    Voix u01 à u23 existantes. La panne sur la voie avion se vit en 3D (panne.html, voix u06 et u07). Film du support (diapo 242).
@@ -15,7 +16,7 @@ async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.hea
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
-async function cover(){step();{const _p=photo('c9',FAST?10:900);setCam(PORT()?{mode:'contain'}:{zoom:1.08});await _p;await wait(350)}
+async function cover(){step();{const _p=photo(PORT()?'c9m':'c9',FAST?10:900);setCam({mode:'contain'});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 9 · 7 h 40').card('Les procédures d\'urgence','Ce qu\'on fait, et qui on appelle, en cas d\'urgence.');
  await cont(L,"C'est parti");try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await sayS('u01',[at('u01',.35,()=>L.card('Ce qui peut arriver','L\'étape traite la collision, la panne sur la voie avion, l\'incendie, le blessé, les objets intrus, les drones et le conducteur perdu.'))]);
