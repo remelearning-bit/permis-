@@ -76,7 +76,8 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
   {k:'carburant',p:[-1.80,.95,-1.02],yaw:3.95,n:'Le carburant ou la charge des batteries',x:'Le niveau de carburant, ou la charge des batteries pour un véhicule électrique comme celui-ci.'},
   {k:'urgence',p:[1.55,1.30,.25],yaw:.05,n:"L'arrêt d'urgence",x:"Le fonctionnement du système d'arrêt d'urgence, pour les véhicules qui en sont équipés."},
   {k:'marquage',p:[-.20,.70,-1.02],yaw:4.71,n:'Le balisage et le marquage',x:'Le logo de la société et le numéro du véhicule.'},
-  {k:'equipements',p:[-2.40,1.45,0],yaw:3.14,n:'Les équipements de sécurité',x:'Si besoin : extincteur, brise-vitre, coupe-sangle.'}];
+  {k:'equipements',p:[-2.40,1.45,0],yaw:3.14,n:'Les équipements de sécurité',x:'Si besoin : extincteur, brise-vitre, coupe-sangle.'},
+  {k:'trappes',p:[-1.80,1.16,-1.02],yaw:3.95,n:'Les trappes',x:'Un point de contrôle de plus : les trappes du véhicule.',nov:1}];
  const tg=PTS.map((q,i)=>{const b=document.createElement('button');b.className='vpt';b.innerHTML=`<i>${i+1}</i><span>${nb(q.n)}</span>`;host.appendChild(b);return b});
  const v=new THREE.Vector3(),cp=new THREE.Vector3();let live=true;
  const loop=()=>{if(!live)return;requestAnimationFrame(loop);
@@ -89,13 +90,13 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
  const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Le véhicule tourne jusqu\'à chaque point. Cliquez sur le point quand il devient orange. Vous pouvez aussi faire glisser pour tourner autour.',{a:null});
  await sayS('v04');
  for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on');await new Promise(r=>{const w=()=>goal===null?r():requestAnimationFrame(w);w()});b.classList.add('live');
-  L.card(`Point ${i+1} sur 7`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
+  L.card(`Point ${i+1} sur 8`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
   await new Promise(r=>b.onclick=r);b.onclick=null;b.classList.remove('live');b.classList.add('done');
-  L.card(q.n,q.x,{a:null});await sayS('v'+String(5+i).padStart(2,'0'))}
+  L.card(q.n,q.x,{a:null});if(q.nov){await contLab(L,'Continuer')}else await sayS('v'+String(5+i).padStart(2,'0'))}
  goal=.75;
  await sayS('v12',[at('v12',.02,()=>L.card('« Et si je trouve quelque chose qui ne va pas ? »','Xavier',{a:null}))]);
  await sayS('v13',[at('v13',.02,()=>L.card('Le véhicule ne part pas',"Et l'entreprise doit pouvoir justifier à tout moment de l'entretien périodique de sa flotte : consigne d'exploitation n°12.",{a:null}))]);
- jlog('5 h 50','Tour du véhicule : les sept points vérifiés');
+ jlog('5 h 50','Tour du véhicule : les huit points vérifiés');
  await contLab(L,'Continuer');live=false;L.kill();host.remove();rd.dispose();return null}
 document.head.insertAdjacentHTML('beforeend',`<style>
 #van3d{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));z-index:1;touch-action:none;cursor:grab}

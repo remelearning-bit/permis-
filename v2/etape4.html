@@ -169,7 +169,7 @@ body.subs #cap{bottom:auto;top:16px}
 .permis li.on{color:var(--marine);font-weight:600}.permis li.on b{border-color:var(--marine);color:var(--marine)}
 .permis li.now b{background:var(--orangeV);border-color:var(--orangeV);color:#fff}
 @media (max-width:700px){#vz .stage{top:118px;bottom:84px;align-items:flex-start;overflow:hidden}.row{flex-direction:column;gap:14px}.col{flex-direction:row;text-align:left;gap:14px;align-items:center}.col .tx{max-width:none;margin:0}.col .lb{margin:0 0 4px}#vz .big{font-size:64px}.frise{grid-auto-flow:row}.frise:before{left:10px;right:auto;top:0;bottom:0;width:4px;height:auto}.frise .st{text-align:left;padding:0 0 0 40px}.frise .st:before{left:10px;top:4px}.permis{grid-template-columns:1fr}.permis .T{display:none}.permis ol{grid-template-columns:1fr}.ic{width:44px;height:44px;flex:none}}
-.lab .jl{max-height:min(40vh,380px);overflow-y:auto;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:thin}</style></head>
+.lab .jl{max-height:min(40vh,380px);overflow-y:auto;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:thin}</style><style id="main-bleue">#hand path{fill:var(--marine,#263c52);stroke:#FFC400;stroke-width:2.6}</style></head>
 <body>
 <div id="load" style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#e7eaea;color:#263C52;font-family:Barlow,system-ui,sans-serif;text-align:center;padding:24px;transition:opacity .4s"><p style="margin:0;font-weight:700;font-size:clamp(22px,3vw,34px)" id="loadt">Permis T</p><p style="margin:0;font-size:clamp(17px,2vw,21px);color:#5d6b78">Chargement de l'étape, quelques secondes.</p></div>
 <script>document.getElementById('loadt').textContent=document.title.replace(/^Permis T · /,'');addEventListener('DOMContentLoaded',()=>{const l=document.getElementById('load');if(l){l.style.opacity=0;setTimeout(()=>l.remove(),450)}})</script>
@@ -265,7 +265,7 @@ function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientW
 b.onclick=()=>{if(!CUR||!IMG[CUR.k])return;im.src=IMG[CUR.k];v.classList.remove('big');v.classList.add('on');wasPlaying=!!(curAudio&&!curAudio.paused);if(wasPlaying)curAudio.pause();(im.complete?center():im.onload=center)};
 v.querySelector('.zh button').onclick=()=>{v.classList.remove('on');if(wasPlaying&&curAudio)curAudio.play().catch(()=>{})};
 im.onclick=e=>{const r=im.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;v.classList.toggle('big');size();requestAnimationFrame(()=>{sc.scrollLeft=fx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=fy*sc.scrollHeight-sc.clientHeight/2})};
-setInterval(()=>{const show=PORT()&&CUR&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
+setInterval(()=>{const show=PORT()&&CUR&&!(window.NOZOOM||[]).includes(CUR.k)&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
 
 /* plans nets et zoomables : le plan ADP d'origine occupe toute la page, on peut le zoomer et le déplacer pendant que la voix continue */
 (function(){const MAP={planpoint:['circulation',''],planrestreint:['circulation','T'],zone30:['vitesses',''],hot1:['hot-t1',''],hot2:['hot-ac',''],hot3:['hot-cargo',''],hot4:['hot-bd2e','']};
@@ -811,6 +811,28 @@ const rd=document.createElement('div');rd.id='rd';rd.textContent='Photo à refai
 const src=()=>{const s=new Set();(window.REDO||[]).forEach(k=>{[typeof IMG!=='undefined'&&IMG[k],typeof PHO!=='undefined'&&PHO[k]].forEach(v=>v&&s.add(v))});return s};
 function scan(){const S=src();if(!S.size)return;document.querySelectorAll('img').forEach(im=>{if(im.dataset.rd||!S.has(im.getAttribute('src')))return;im.dataset.rd=1;const p=im.parentElement;if(!p)return;if(getComputedStyle(p).position==='static')p.style.position='relative';const t=document.createElement('span');t.className='rds';t.textContent='Photo à refaire';p.appendChild(t)})}
 new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});setTimeout(scan,500)})();
+/* ---------------- le pas à pas numéroté (validé sur maquette) : pastilles 1 à N, une carte, compteur « n sur N vus » ---------------- */
+async function stepper(d){step();if(d.head)head(d.head,d.sub||'');
+ if(d.ph){await goPh(d.ph,{mode:'contain'},500)}else{await vzOff();vue(`<div class="hero nph"><p class="cap">${nb(d.cap)}</p></div>`)}
+ const L=label([0,0,0],{lead:false}).title(d.cap);const id='stp'+Math.random().toString(36).slice(2,6),N=d.items.length;
+ L.html(`<div class="stp" id="${id}"><div class="pls">${d.items.map((x,i)=>`<button class="opt pl" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn">Cliquez sur chaque numéro</p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
+ const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
+ const paint=i=>{pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});const it=d.items[i];R.querySelector('.cd .t').innerHTML=nb(it[1]);R.querySelector('.cd .s').innerHTML=nb(it[2]);R.querySelector(".nv").textContent=seen.size+' sur '+N+' vus'};
+ while(seen.size<N){const left=pl.filter((b,k)=>!seen.has(k));
+  const b=await new Promise(r=>pl.forEach(x=>x.onclick=()=>r(x)));const i=+b.dataset.i;const first=!seen.has(i);seen.add(i);paint(i);
+  if(first&&d.items[i][0])await sayS(d.items[i][0])}
+ if(d.log)jlog(d.log[0],d.log[1]);
+ await cont(L);L.kill();return null}
+document.head.insertAdjacentHTML('beforeend',`<style>
+.stp .pl.opt::before,.stp .pl.opt::after{content:none;display:none}
+.stp .pls{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 6px}
+.stp .pl{pointer-events:auto;display:inline-flex;align-items:center;justify-content:center;padding:0;position:relative;width:44px;height:44px;border-radius:50%;border:2px solid var(--marine);background:#fff;color:var(--marine);font:800 20px/1 Barlow,system-ui,sans-serif;cursor:pointer}
+.stp .pl.cur{background:#FFC400;border-color:#FFC400;color:var(--marine)}
+.stp .pl.vu{background:var(--marine);color:#fff}
+.stp .hn{margin:0 0 10px;font-weight:700;font-size:var(--B);color:var(--pierre)}
+.stp .cd{min-height:6.2em}.stp .cd .t:empty,.stp .cd .s:empty{display:none}
+.stp .nv{margin:12px 0 0;font-weight:700;font-size:var(--B);color:var(--pierre)}
+</style>`);
 /* ---------------- Étape 4 · L'inspection du véhicule avant utilisation (diapos 87 à 89) ----------------
    Sources : diapo 88 (les sept points), consigne d'exploitation n°12 (§ 3.2, 4.1, 4.2), test Groupe ADP V6 et QCM REM (chapitre 4).
    Voix v01 à v16 existantes. Les écrans tirés de la consigne n°12 n'ont pas encore de voix : l'apprenant clique pour avancer. */
@@ -914,7 +936,8 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
   {k:'carburant',p:[-1.80,.95,-1.02],yaw:3.95,n:'Le carburant ou la charge des batteries',x:'Le niveau de carburant, ou la charge des batteries pour un véhicule électrique comme celui-ci.'},
   {k:'urgence',p:[1.55,1.30,.25],yaw:.05,n:"L'arrêt d'urgence",x:"Le fonctionnement du système d'arrêt d'urgence, pour les véhicules qui en sont équipés."},
   {k:'marquage',p:[-.20,.70,-1.02],yaw:4.71,n:'Le balisage et le marquage',x:'Le logo de la société et le numéro du véhicule.'},
-  {k:'equipements',p:[-2.40,1.45,0],yaw:3.14,n:'Les équipements de sécurité',x:'Si besoin : extincteur, brise-vitre, coupe-sangle.'}];
+  {k:'equipements',p:[-2.40,1.45,0],yaw:3.14,n:'Les équipements de sécurité',x:'Si besoin : extincteur, brise-vitre, coupe-sangle.'},
+  {k:'trappes',p:[-1.80,1.16,-1.02],yaw:3.95,n:'Les trappes',x:'Un point de contrôle de plus : les trappes du véhicule.',nov:1}];
  const tg=PTS.map((q,i)=>{const b=document.createElement('button');b.className='vpt';b.innerHTML=`<i>${i+1}</i><span>${nb(q.n)}</span>`;host.appendChild(b);return b});
  const v=new THREE.Vector3(),cp=new THREE.Vector3();let live=true;
  const loop=()=>{if(!live)return;requestAnimationFrame(loop);
@@ -927,13 +950,13 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
  const L=label([0,0,0],{lead:false,dock:true}).title('Le tour du véhicule').card('À vous','Le véhicule tourne jusqu\'à chaque point. Cliquez sur le point quand il devient orange. Vous pouvez aussi faire glisser pour tourner autour.',{a:null});
  await sayS('v04');
  for(let i=0;i<PTS.length;i++){const q=PTS[i],b=tg[i];goal=q.yaw;b.classList.add('on');await new Promise(r=>{const w=()=>goal===null?r():requestAnimationFrame(w);w()});b.classList.add('live');
-  L.card(`Point ${i+1} sur 7`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
+  L.card(`Point ${i+1} sur 8`,`Cliquez sur le point ${i+1} : ${q.n.toLowerCase()}.`,{a:null});
   await new Promise(r=>b.onclick=r);b.onclick=null;b.classList.remove('live');b.classList.add('done');
-  L.card(q.n,q.x,{a:null});await sayS('v'+String(5+i).padStart(2,'0'))}
+  L.card(q.n,q.x,{a:null});if(q.nov){await contLab(L,'Continuer')}else await sayS('v'+String(5+i).padStart(2,'0'))}
  goal=.75;
  await sayS('v12',[at('v12',.02,()=>L.card('« Et si je trouve quelque chose qui ne va pas ? »','Xavier',{a:null}))]);
  await sayS('v13',[at('v13',.02,()=>L.card('Le véhicule ne part pas',"Et l'entreprise doit pouvoir justifier à tout moment de l'entretien périodique de sa flotte : consigne d'exploitation n°12.",{a:null}))]);
- jlog('5 h 50','Tour du véhicule : les sept points vérifiés');
+ jlog('5 h 50','Tour du véhicule : les huit points vérifiés');
  await contLab(L,'Continuer');live=false;L.kill();host.remove();rd.dispose();return null}
 document.head.insertAdjacentHTML('beforeend',`<style>
 #van3d{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));z-index:1;touch-action:none;cursor:grab}

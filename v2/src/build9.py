@@ -4,7 +4,7 @@ T=open('/home/claude/permis-/v2/preambule.html',encoding='utf-8').read()
 e1=open('/home/claude/w/e1.js',encoding='utf-8').read()
 common=e1[:e1.index('/* 1. la couverture et les quatre parties */')]
 e5src=open('/home/claude/w/e9.js',encoding='utf-8').read()
-js=common+e5src
+js=common+open('/home/claude/w/stepper3.js',encoding='utf-8').read()+e5src
 lines=open('/home/claude/w/e9lines.json',encoding='utf-8').read()
 img={};dim={}
 for k in sorted(os.path.splitext(os.path.basename(x))[0] for x in glob.glob('/home/claude/w/e9img/*')):
@@ -20,7 +20,7 @@ for name,val in [('LINES',lines),('IMG',json.dumps(img)),('DIM',json.dumps(dim))
 T=T.replace('<title>Permis T · Préambule et introduction</title>',"<title>Permis T · Étape 9 · Les procédures d'urgence</title>")
 T=T.replace('<span class="st">Préambule</span>',"<span class=\"st\">Étape 9 · Les procédures d'urgence</span>")
 T=T.replace("const ETAPE='p';","const ETAPE='e9';").replace("VO.src=AUDIO+'p01.mp3'","VO.src=AUDIO+'u01.mp3'")
-T=T.replace('const NSTEP=13;','const NSTEP=15;')
+T=T.replace('const NSTEP=13;','const NSTEP=16;')
 a=T.index("const P=(k,t,x='')=>");b=T.index('\nwindow.V2=')
 T=T[:a]+js+T[b:]
 T=T.replace('/* ---------------- Préambule et introduction (diapos 1 à 18) ----------------','/* ---------------- styles communs des plans (repris du préambule) ----------------')

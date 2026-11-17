@@ -12,6 +12,7 @@ async function infoS(d){step();if(d.head)head(H9+(d.tm?' · '+HH(d.tm):''),d.hea
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
+ for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
  await cont(L);L.kill();return null}
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
@@ -50,7 +51,7 @@ const incendie=S('incendie','En cas d\'incendie',['u08','u09'],[['u08',.1,'Prot�
 /* 5. les objets intrus (diapos 239 à 244) */
 const fod=S('fodpiste','Les objets intrus',['u10'],[['u10',.05,'Un objet intrus, un FOD','Un objet inanimé sur l\'aire de mouvement, sans fonction opérationnelle ou aéronautique, qui peut constituer un danger pour l\'exploitation des aéronefs.'],
  ['u10',.45,'Aéronautiques','Écrous, boulons, bouchons de réservoir, fragments de train ou de pneu, jauge à huile, feuille de métal.'],['u10',.72,'Non aéronautiques','Outils, fournitures de restauration, badges, stylos, étiquettes bagages, plastique, bois, béton, caoutchouc des joints.']],'Les objets intrus',{tm:'7 h 45'});
-const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46'});
+const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46',more:[['Détecter : contrôlez la zone',"Contrôlez la zone d'évolution contrôlée avant l'arrivée et après le départ de l'avion."],['Pièce d\'avion, ou objet hors de portée',"Contactez le centre opérationnel côté piste pour les objets intrus aéronautiques, pièces d'avion par exemple, et pour ceux qui sont hors de portée, en secteur interdit."]]});
 const concorde=S('concorde','Ce que coûte un objet intrus',['u12'],[['u12',.1,'Gonesse, 25 juillet 2000','Au décollage, le Concorde roule sur une lamelle métallique perdue par un DC-10 de Continental Airlines. Il s\'écrase une minute vingt plus tard.'],['u12',.7,'113 morts','109 à bord, 4 au sol.']],'Les objets intrus',{tm:'7 h 46'});
 async function film(src,title,credit,tm){step();head(H9+' · '+HH(tm),title);
  vue(`<div class="filmw"><video id="fv" src="../video/${src}.mp4" poster="../video/${src}.jpg" controls playsinline preload="auto"></video><p class="cr">${nb(credit)}</p></div>`);
@@ -65,6 +66,14 @@ const poste=S('poste9','Sur le poste avion',['u14','u15'],[['u14',.05,'Je range'
 /* 6. les drones (diapo 245) */
 const drones=S('drone','Les drones',['u16','u17'],[['u16',.05,'Un appareil sans pilote à bord','Piloté à distance, avec plus ou moins d\'autonomie.'],['u16',.35,'Si vous en voyez un','Notez l\'heure de début et de fin du vol, le sens du vol, les couleurs.'],['u16',.7,'Drone en visuel','Signalement immédiat au centre opérationnel côté piste, puis notification sur le Safety Portal.'],
  ['u17',.05,'Une menace qui monte','Au Royaume-Uni, environ 330 collisions évitées de justesse entre drones et avions en 8 ans, près de 130 en 2018.'],['u17',.7,'Un vol de drone sur Roissy','Se demande à la direction de l\'aéroport, au moins 35 jours avant.']],'Les drones',{tm:'7 h 50'});
+
+/* 6 bis. intrusion ou comportement suspect (ajout validé, planche A) : écran sans voix pour l'instant */
+const intrusion=()=>stepper({head:H9+' · '+HH('7 h 51'),ph:'intrusion',cap:'Intrusion ou comportement suspect',items:[
+ [null,'Suspendre le trafic','Contactez le centre opérationnel côté piste, 01 48 16 47 55, choix 7, pour suspendre le trafic.'],
+ [null,'Alerter la gendarmerie','Alertez le Centre Opérationnel et de Renseignement de la gendarmerie des transports aériens : 01 48 62 17 00.'],
+ [null,'Rester en sécurité',"Ne vous mettez pas en danger et ne circulez pas sur les voies avions, sous peine d'être aspiré ou soufflé."],
+ [null,'Garder le contact visuel',"Maintenez si possible le contact visuel avec l'individu, pour renseigner et faciliter l'intervention des services compétents de l'État."]],
+ log:['7 h 51','Intrusion ou comportement suspect : suspendre le trafic, alerter la gendarmerie, rester en sécurité']});
 
 /* 7. conducteur perdu, et les numéros (diapos 246, 247) */
 const perdu=S('numeros','Conducteur perdu, et les numéros',['u18','u19'],[['u18',.05,'Perdu ou incertain de sa position','J\'appelle ma régulation ou mon agent de maîtrise, avec les indices autour de moi : numéros de bâtiments, de postes avion. La plupart des véhicules sont géolocalisés.'],['u18',.8,'Ou','Le centre opérationnel côté piste, le numéro du permis.'],
@@ -124,5 +133,5 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .filmw .cr{margin:0;font-size:14px;color:#5d6f80}
 </style>`);
 runSeq([['Couverture',cover],['La collision',collision],['En panne sur la voie avion',panne],["En cas d'incendie",incendie],['Les objets intrus',fod],["Le responsable d'un objet intrus",responsable],
- ['Ce que coûte un objet intrus',concorde],['Le film : les objets intrus',filmFod],['Nettoyer lorsque vous partez',nettoyer],['Sur le poste avion',poste],['Les drones',drones],
+ ['Ce que coûte un objet intrus',concorde],['Le film : les objets intrus',filmFod],['Nettoyer lorsque vous partez',nettoyer],['Sur le poste avion',poste],['Les drones',drones],['Intrusion ou comportement suspect',intrusion],
  ['Conducteur perdu, et les numéros',perdu],["Qui j'appelle ? À vous",qui],["Questions d'entraînement",questions],["Fin de l'étape 9",fin]]);

@@ -68,7 +68,20 @@ async function info2(){step();head(H5,"L'information des conducteurs");
   <div class="card2 it" id="i2">${IC.doc}<p class="lb">Comment</p><p class="tx" style="max-width:none;margin:0">${nb("Affichage dynamique dans les salles de repos. Notes d'information remises en main propre, contre émargement. Formation théorique et pratique avec un formateur.")}</p></div></div>`);
  await sayS('k36',[at('k36',.05,()=>show('#i1',true)),at('k36',.6,()=>show('#i2',true))]);undim();
  await contV();return null}
-const degivrage=S('degivrage','Dégivrage et chargement',['k37'],[['k37',.4,'Les baies de dégivrage','Connaître les règles de circulation sur les baies de dégivrage, et leurs voies d\'accès.'],['k37',.8,'Le chargement','Adapter votre conduite en fonction de votre chargement.']]);
+/* ajout validé (planche C) : matériel soufflé, écran sans voix pour l'instant */
+const souffle=()=>stepper({head:H5,ph:'soufflet',cap:'Matériel soufflé : la conduite à tenir',items:[
+ [null,'Le périmètre de sécurité',"Trois fois la longueur de l'avion, au démarrage, au roulage ou en virage. Attention aux projectiles et à la mise en route des avions."],
+ [null,'Protégez-vous','En cas de matériel soufflé, protégez-vous d\'abord.'],
+ [null,'Prévenez','Contactez le contrôleur de la zone, ou le centre opérationnel côté piste si vous n\'avez pas de radio : 01 48 16 47 55. Choix 1 sur le secteur TRA, choix 2 sur le secteur MAN.'],
+ [null,'Arrimez','Arrimez votre matériel et ne le laissez pas au sol.']]});
+/* ajout validé (planche I, annexe 5) : les hélicoptères, écran sans voix pour l'instant */
+const helico=()=>stepper({head:H5,ph:'heli',cap:'Les hélicoptères',items:[
+ [null,'Le souffle',"Le déplacement d'air produit par les hélicoptères soulève et déplace ce qui peut se trouver au sol. Le souffle peut projeter des graviers et cailloux sur plus de 40 mètres."],
+ [null,"Avant l'arrivée","Vérifier que sur l'aire de poser et sur ses abords, aucun objet ne pourra s'envoler en présence du souffle."],
+ [null,"Avant d'approcher","Attendre l'extinction des feux anticollisions et l'arrêt complet des 2 rotors avant tout accès à son aire de stationnement."],
+ [null,'Les postes concernés','Certains postes avions sont prévus pour accueillir des hélicoptères.'],
+ [null,'La règle','Respecter les distances de sécurité.']]});
+const degivrage=S('degivrage','Dégivrage et chargement',['k37'],[['k37',.4,'Les baies de dégivrage','Connaître les règles de circulation sur les baies de dégivrage, et leurs voies d\'accès.'],['k37',.8,'Le chargement',"Adapter votre conduite en fonction de votre chargement : marchandises dangereuses, arrimage. Arrimage : voir l'étape 9."]]);
 
 /* 7. la question du chapitre (diapo 186) */
 async function question(){step();head(H5+' · 6 h 46',"Une question d'entraînement");ALT.q5b=1;const two=(TRY.q5b||0)%2;
@@ -89,6 +102,6 @@ const NEXT='etape6.html';
 runSeq([['Couverture',cover],['Cinq règles à respecter',cinq],["Les zones d'attente",attente],['La priorité',priorite],['Feux anticollision allumés',anticol],
  ['Traverser une voie de circulation avion',traverse],['Au volant ? À vous',volant],
  ['Points chauds : terminal 1',hot1],['Points chauds : terminaux A et C',hot2],['Points chauds : cargo sud',hot3],['Points chauds : BD et 2E',hot4],
- ['Les dangers moteurs',moteurs],['Les hélices',helices],['Les bonnes pratiques',pratiques],['En faible visibilité',visib],['La marche arrière',recul],
+ ['Les dangers moteurs',moteurs],['Matériel soufflé',souffle],['Les hélices',helices],['Les hélicoptères',helico],['Les bonnes pratiques',pratiques],['En faible visibilité',visib],['La marche arrière',recul],
  ['Les accidents sur Roissy',accidents],["Ça n'arrive pas qu'aux autres",a380],["L'information des conducteurs",info2],['Dégivrage et chargement',degivrage],
  ["Question d'entraînement",question],["Fin de l'étape",fin]]);

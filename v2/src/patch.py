@@ -9,3 +9,9 @@ s=s.replace('.card{animation:cin .4s ease}','.card{animation:cin .4s ease .28s b
 s=s.replace("'.card:not([data-out]),.act,.opt,button'","'.card:not([data-out]),.act,.opt,button,.lst,.who2'")
 s=s.replace("w.appendChild(nx);await new Promise(r=>nx.onclick=r)","w.appendChild(nx);try{nx.scrollIntoView({block:'nearest',behavior:'smooth'})}catch(e){}await new Promise(r=>nx.onclick=r)")
 open(p,'w',encoding='utf-8').write(s)
+
+# main bleue (navy, contour jaune), posée le 18/11/2026
+s=open(p,encoding='utf-8').read()
+if 'main-bleue' not in s and 'id="hand"' in s:
+    s=s.replace('</head>','<style id="main-bleue">#hand path{fill:var(--marine,#263c52);stroke:#FFC400;stroke-width:2.6}</style></head>',1)
+    open(p,'w',encoding='utf-8').write(s)

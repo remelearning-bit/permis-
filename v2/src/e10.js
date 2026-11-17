@@ -63,7 +63,7 @@ async function facteurs(){step();await goPh('c10',{mode:'contain'},500);head(H10
   const b=await new Promise(r=>left.forEach(x=>x.onclick=()=>r(x)));hand(null);left.forEach(x=>x.onclick=null);b.classList.add('on');await sayS(C[bs.indexOf(b)][0])}
  await sayS('s13');jlog('8 h 00','Les facteurs humains : addiction, fatigue, stress, burn-out');await contV();return null}
 const synthese=S(null,'Facteurs humains : la synthèse',['s14'],[['s14',.03,'Reconnaître les symptômes','Endormissement, lenteur à communiquer : faites une pause.'],['s14',.22,'Respecter les procédures','Attention aux aménagements non formels, aux raccourcis et aux détournements.'],['s14',.42,'Ne créez pas de pression excessive','Demandez de l\'assistance.'],
- ['s14',.58,'Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['s14',.75,'Ne travaillez pas seul','Communiquez avec vos collègues.'],['s14',.88,'Remédiez aux doutes','Posez des questions, vérifiez.']],'Les facteurs humains',{tm:'8 h 01',ic:'user2'});
+ ['s14',.58,'Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['s14',.75,'Ne travaillez pas seul','Communiquez avec vos collègues.'],['s14',.88,'Remédiez aux doutes','Posez des questions, vérifiez.']],'Les facteurs humains',{tm:'8 h 01',ic:'user2',more:[['La conscience de la situation',"Déjà vue en faible visibilité, à l'étape « Les risques et les bonnes attitudes ». Elle fait partie des facteurs humains."]]});
 
 /* 4. les notifications (diapos 259 à 267) */
 async function film(src,title,credit,tm){step();head(H10+' · '+HH(tm),title);
