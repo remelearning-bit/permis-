@@ -216,3 +216,26 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
  .frt{display:block}.frt p{padding:0!important;margin:0 0 10px;border-left:6px solid #C9CEDA;padding-left:10px!important}.frt p:nth-child(2){border-color:#56618a}.frt p:nth-child(3){border-color:var(--marine)}.frt small{font-size:14px}
  .zt2{min-height:0;padding:10px 8px}.zt2 b{font-size:26px}.zt2 span{font-size:13px}
 }
+
+/* ---- étape 1, planches validées (suite) : couverture sur le plan, référentiels, légende sur photo, consignes ---- */
+.cov1{position:fixed;left:0;right:0;top:0;bottom:calc(46px + env(safe-area-inset-bottom));background:#fff;overflow:hidden}
+.cov1 img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.cov1 .ct{position:absolute;left:clamp(12px,2vw,28px);top:clamp(12px,2.4vh,24px);margin:0;max-width:min(560px,80vw);background:#fff;border-radius:22px;padding:14px 22px;font-weight:700;font-size:clamp(20px,2.3vw,32px);line-height:1.15;box-shadow:0 4px 0 var(--jaune),0 8px 22px rgba(15,30,70,.18);text-align:left}
+.cov1 .ct small{display:block;font-size:.6em;color:var(--pierre);margin-bottom:4px}
+.cov1 .cl{position:absolute;left:0;right:0;bottom:0;margin:0;background:var(--marine);color:#fff;font-weight:700;padding:12px clamp(16px,2.4vw,34px);text-align:left;font-size:var(--B)}
+#vz .stage:has(.cov1)~* {}
+body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
+.ref.rf3{border-color:var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);align-items:center;text-align:center}
+.ref.rf3 .no{width:52px;height:52px;border-radius:50%;background:var(--jaune);display:flex;align-items:center;justify-content:center;font-size:26px;line-height:1}
+.ref.rf3>svg{width:54px;height:54px;stroke:var(--marine)}
+.ref.rf3 .lb{font-weight:700}.ref.rf3.open{text-align:left;align-items:flex-start}
+.lab.capb{width:min(1000px,72vw)!important;background:linear-gradient(180deg,rgba(15,30,70,.78),rgba(15,30,70,.96));border:0;box-shadow:0 14px 30px rgba(15,30,70,.3);color:#fff}
+.lab.capb .h{color:#fff;font-size:clamp(20px,2vw,28px);font-weight:700;margin-bottom:4px}.lab.capb .t{font-size:var(--B);color:var(--jaune)}.lab.capb .s{color:#fff;margin-top:2px}
+.lab.capb .act{background:#fff;color:var(--marine);margin-top:10px}
+@media (min-width:700px) and (orientation:landscape){
+ .chain.rnd .nd{border:0!important;box-shadow:none;background:none;align-items:center;text-align:center;min-height:0}
+ .chain.rnd .nd>svg{display:block;width:clamp(84px,9.5vw,128px);height:clamp(84px,9.5vw,128px);padding:22px;border:3px solid var(--marine);border-radius:50%;background:#fff;box-shadow:0 4px 0 rgba(15,30,70,.25);stroke:var(--marine)}
+ .chain.rnd .ar svg{stroke:var(--jaune);stroke-width:4}
+ .chain.rnd .lb{font-size:clamp(18px,1.9vw,26px)}
+}
+.cov1 img{filter:contrast(2.2) brightness(.82) grayscale(1);transform:scale(1.14);transform-origin:45% 55%}
