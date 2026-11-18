@@ -23,18 +23,19 @@ C="function view(o={}){"
 D="function label(anchor,opts={}){"
 E="else{x=Math.max(24,Math.round(W*.035));y=Math.max(24,Math.min(bot-24-h,Math.round(H*.14)))}"
 G="if(CUR)Object.assign(V,view({x:V.x,z:V.z}))"
-if all(x in s for x in (A,B,C,D,E,G)) and 'S3set' not in s:
+VU='function vue(html){'
+if 'function S3set' not in s and all(x in s for x in (A,B,C,D,E,G)):
     s=s.replace(A,"else{const m=window.S3M;if(m==='L')cam.setViewOffset(W,H,Math.round(W*.24),Math.round(H*.0175),W,H);else if(m==='R')cam.setViewOffset(W,H,-Math.round(W*.23),0,W,H);else cam.setViewOffset(W,H,-Math.round(W*.13),0,W,H)}cam.updateProjectionMatrix()}\n"
       "window.S3M=null;const S3on=()=>innerWidth>=700&&innerWidth>innerHeight;\n"
       "function S3set(m){if(!S3on())m=null;if(window.S3M===m)return;window.S3M=m;document.body.dataset.s3=m||'';setFov()}\n"
       "function S3R(){const P=CUR;const tv=Math.tan(cam.fov*Math.PI/360);return {x:0,z:0,d:Math.min(P.w/(2*tv*cam.aspect*.48),P.h/(2*tv*.56))*.93}}",1)
     s=s.replace(B,"const s3=window.S3M==='L';const fw=PORT()?1:s3?.445:.96,fh=PORT()?.8:s3?.615:.96;",1)
-    s=s.replace(C,C+"if(!o._k)S3set(o.mode==='contain'?'L':null);",1)
-    s=s.replace(D,D+"if(opts.big&&CUR&&S3on()){S3set('R');Object.assign(V,S3R());mv=null}",1)
-    s=s.replace(E,"else if(window.S3M==='L'){x=Math.round(W*.515);y=Math.max(24,Math.min(bot-12-h,Math.round(H*.165)))}else if(window.S3M==='R'&&T.el.classList.contains('big')){x=Math.round(W*.05);y=Math.max(24,Math.round((bot-h)/2))}"+E,1)
     s=s.replace(G,"if(CUR){if(!S3on())S3set(null);Object.assign(V,window.S3M==='R'?S3R():view({x:V.x,z:V.z,_k:1,mode:window.S3M==='L'?'contain':undefined}))}",1)
-    VU='function vue(html){'
-    if VU in s:s=s.replace(VU,VU+"S3set(/hero nph/.test(html)?'L':null);",1)
-    print('moteur OK')
-else:print('moteur : inchangé',[x in s for x in (A,B,C,D,E,G)],'S3set' in s)
+if 'function S3set' in s:
+    for anc,add in [(C,"if(!o._k)S3set(o.mode==='contain'?'L':null);"),(D,"if(opts.big&&CUR&&S3on()){S3set('R');Object.assign(V,S3R());mv=null}"),(VU,"S3set(/hero nph/.test(html)?'L':null);")]:
+        if anc in s and anc+add not in s:s=s.replace(anc,anc+add,1)
+    E2="else if(window.S3M==='L'){x=Math.round(W*.515);y=Math.max(24,Math.min(bot-12-h,Math.round(H*.165)))}else if(window.S3M==='R'&&T.el.classList.contains('big')){x=Math.round(W*.05);y=Math.max(24,Math.round((bot-h)/2))}"
+    if E in s and E2+E not in s:s=s.replace(E,E2+E,1)
+    print('moteur OK',[x in s for x in ("S3set(o.mode","S3set('R')","S3set(/hero","window.S3M==='L'){x=")])
+else:print('moteur : inchangé')
 open(p,'w',encoding='utf-8').write(s)

@@ -7,15 +7,35 @@ const HH=t=>t.replace(/ /g,' ');
 Object.assign(IC,{check2:'<svg class="ic" viewBox="0 0 48 48"><rect x="8" y="8" width="32" height="32" rx="6"/><path d="M16 24l6 6 11-12"/></svg>'});
 var CAPS={c10:'Image du parcours REM Formation'};
 
-async function infoS(d){step();if(d.head)head(H10+(d.tm?' · '+HH(d.tm):''),d.head);
+/* Écran d'information, mis en page comme les maquettes validées : image (ou bloc marine) à gauche,
+   pastilles numérotées et carte à droite. La voix fait avancer les pastilles ; les cartes sans voix se cliquent. */
+async function infoS(d){step();
  if(d.ph){await goPh(d.ph,{mode:'contain'})}
- else{await vzOff();vue(`<div class="hero nph"><p class="cap">${nb(d.cap)}</p></div>`)}
- const L=label([0,0,0],{lead:false}).title(d.cap);
- for(const id of d.lines){const hk=d.swap&&d.swap[0]===id?[at(id,d.swap[1],()=>photo(d.swap[2],FAST?10:700))]:[];
-  if(LINES[id].w==='X'){await sayS(id,[...hk,at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
-  await sayS(id,[...hk,...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null})))])}
- for(const m of d.more||[]){await cont(L);L.card(m[0],m[1])}
+ else{await vzOff();const g=d.big;vue(`<div class="hero nph">${g?`<p class="bigy">${nb(g[0])}</p><p class="sub">${nb(g[1])}</p>`:`<p class="cap">${nb(d.cap)}</p>`}</div>`)}
+ if(typeof S3on==='function'&&S3on())head(H10+(d.tm?' · '+HH(d.tm):''),d.cap);
+ const items=[...(d.cards||[]).map(c=>[c[2],c[3]||'']),...(d.more||[])];const nv=(d.cards||[]).length,N=items.length;
+ const L=label([0,0,0],{lead:false}).title(d.cap);const id='stp'+Math.random().toString(36).slice(2,6);
+ L.html(`<div class="stp" id="${id}"><div class="pls">${items.map((x,i)=>`<button class="opt pl off" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn"></p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
+ const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
+ const paint=i=>{seen.add(i);pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});R.querySelector('.cd .t').innerHTML=nb(items[i][0]);R.querySelector('.cd .s').innerHTML=nb(items[i][1]);R.querySelector('.nv').textContent=seen.size+' sur '+N+' vus'};
+ const quote=t=>{R.querySelector('.cd .t').innerHTML=nb(`« ${t} »`);R.querySelector('.cd .s').textContent='Xavier'};
+ const idx=(d.cards||[]).map((c,i)=>[c,i]);
+ for(const lid of d.lines){const hk=d.swap&&d.swap[0]===lid?[at(lid,d.swap[1],()=>photo(d.swap[2],FAST?10:700))]:[];
+  if(LINES[lid].w==='X'){await sayS(lid,[...hk,at(lid,.02,()=>quote(LINES[lid].t))]);continue}
+  await sayS(lid,[...hk,...idx.filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>paint(x[1])))])}
+ for(let i=0;i<nv;i++)if(!seen.has(i))paint(i);
+ pl.forEach((b,i)=>{b.onclick=()=>paint(i)});
+ if(N>nv){R.querySelector('.hn').textContent='Cliquez sur chaque numéro';
+  while(seen.size<N){pl.forEach((b,i)=>b.classList.toggle('off',seen.has(i)));await new Promise(r=>pl.forEach((b,i)=>b.onclick=()=>{paint(i);r()}))}}
+ pl.forEach((b,i)=>{b.classList.add('off');b.onclick=()=>paint(i)});R.querySelector('.hn').textContent='';
  await cont(L);L.kill();return null}
+/* La synthèse : conseils numérotés, qui s'affichent avec la voix (maquette validée) */
+async function grille(d){step();await vzOff();head(H10+' · '+HH(d.tm),d.cap);
+ const items=[...d.cards.map(c=>[c[2],c[3]]),...(d.more||[])];
+ vue(`<div class="g6">${items.map((c,i)=>`<div class="gi" id="gi${i}"><b>${i+1}</b><div><p class="t">${nb(c[0])}</p><p class="s">${nb(c[1])}</p></div></div>`).join('')}</div>`);
+ const on=i=>{const e=document.getElementById('gi'+i);if(e)e.classList.add('on')};
+ for(const lid of d.lines)await sayS(lid,d.cards.map((c,i)=>[c,i]).filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>on(x[1]))));
+ items.forEach((c,i)=>on(i));await contV();return null}
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* 1. la couverture */
@@ -28,7 +48,7 @@ async function cover(){step();{const _p=photo('c10',FAST?10:900);setCam({zoom:1.
  await cont(L,'Dernière étape');L.kill();return null}
 
 /* 2. le système de gestion de la sécurité (diapos 250 à 255) */
-const sgs=S(null,'Le système de gestion de la sécurité',['s04'],[['s04',.05,'Une obligation pour être certifié','Compagnies, assistants en escale, aéroport : tous mettent en place un système de gestion de la sécurité.'],['s04',.6,'Un objectif commun','Limiter à tout prix les sources d\'incidents, avec les aéronefs, les passagers, ou les personnels de la plateforme.']],'Le système de gestion de la sécurité',{tm:'7 h 56',ic:'shield'});
+const sgs=S('sgs','Le système de gestion de la sécurité',['s04'],[['s04',.05,'Une obligation pour être certifié','Compagnies, assistants en escale, aéroport : tous mettent en place un système de gestion de la sécurité.'],['s04',.6,'Un objectif commun','Limiter à tout prix les sources d\'incidents, avec les aéronefs, les passagers, ou les personnels de la plateforme.']],'Le système de gestion de la sécurité',{tm:'7 h 56',ic:'shield'});
 /* Situations des diapos 251 (à risque) et 253 (ce qui est attendu). Retours tirés des mêmes diapos. */
 const RISK1=[{t:"Un conteneur mal fixé sur le chariot.",b:"r",ok:"C'est une situation à risque."},
  {t:"Un chariot à bagages dont le frein n'a pas été enclenché.",b:"r",ok:"C'est une situation à risque."},
@@ -56,14 +76,16 @@ async function facteurs(){step();await goPh('c10',{mode:'contain'},500);head(H10
   ['s10','La fatigue','Plus d\'erreurs, plus d\'omissions, une perception dégradée, de l\'irritabilité. Le cerveau n\'est pas le même à 15 h qu\'à 3 h du matin.'],
   ['s11','Le stress','Le déséquilibre entre ce qu\'on vous demande et vos ressources. Le premier sens perdu : l\'ouïe.'],
   ['s12','Le burn-out','L\'épuisement professionnel : physique, émotionnel et mental.']];
- vue(`<div class="flw">${C.map((c,i)=>`<button class="fl" id="fl${i}"><span class="n">${nb(c[1])}</span><span class="b"><b>${nb(c[1])}</b><span>${nb(c[2])}</span></span></button>`).join('')}</div>`);
+ vue(`<div class="fh"><div class="flw">${C.map((c,i)=>`<button class="fl" id="fl${i}"><i>${i+1}</i><span class="n">${nb(c[1])}</span></button>`).join('')}</div><div class="fd"><div class="cd"><p class="t"></p><p class="s">Cliquez sur chaque carte.</p></div><p class="nv">0 sur 4 vus</p></div></div>`);
  await sayS('s08');
- const bs=[...VZ.querySelectorAll('.fl')];
+ const bs=[...VZ.querySelectorAll('.fl')],cd=VZ.querySelector('.fd .cd'),nvx=VZ.querySelector('.fd .nv');let nseen=0;
+ const show=i=>{bs.forEach((b,k)=>b.classList.toggle('cur',k===i));cd.querySelector('.t').innerHTML=nb(C[i][1]);cd.querySelector('.s').innerHTML=nb(C[i][2])};
  for(;;){const left=bs.filter(b=>!b.classList.contains('on'));if(!left.length)break;hand(left[0]);
-  const b=await new Promise(r=>left.forEach(x=>x.onclick=()=>r(x)));hand(null);left.forEach(x=>x.onclick=null);b.classList.add('on');await sayS(C[bs.indexOf(b)][0])}
+  const b=await new Promise(r=>left.forEach(x=>x.onclick=()=>r(x)));hand(null);bs.forEach(x=>x.onclick=null);b.classList.add('on');nseen++;show(bs.indexOf(b));nvx.textContent=nseen+' sur 4 vus';await sayS(C[bs.indexOf(b)][0])}
+ bs.forEach((b,i)=>b.onclick=()=>show(i));
  await sayS('s13');jlog('8 h 00','Les facteurs humains : addiction, fatigue, stress, burn-out');await contV();return null}
-const synthese=S(null,'Facteurs humains : la synthèse',['s14'],[['s14',.03,'Reconnaître les symptômes','Endormissement, lenteur à communiquer : faites une pause.'],['s14',.22,'Respecter les procédures','Attention aux aménagements non formels, aux raccourcis et aux détournements.'],['s14',.42,'Ne créez pas de pression excessive','Demandez de l\'assistance.'],
- ['s14',.58,'Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['s14',.75,'Ne travaillez pas seul','Communiquez avec vos collègues.'],['s14',.88,'Remédiez aux doutes','Posez des questions, vérifiez.']],'Les facteurs humains',{tm:'8 h 01',ic:'user2',more:[['La conscience de la situation',"Déjà vue en faible visibilité, à l'étape « Les risques et les bonnes attitudes ». Elle fait partie des facteurs humains."]]});
+const synthese=()=>grille({cap:'Facteurs humains : la synthèse',lines:['s14'],cards:[['s14',.03,'Reconnaître les symptômes','Endormissement, lenteur à communiquer : faites une pause.'],['s14',.22,'Respecter les procédures','Attention aux aménagements non formels, aux raccourcis et aux détournements.'],['s14',.42,'Ne créez pas de pression excessive','Demandez de l\'assistance.'],
+ ['s14',.58,'Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['s14',.75,'Ne travaillez pas seul','Communiquez avec vos collègues.'],['s14',.88,'Remédiez aux doutes','Posez des questions, vérifiez.']],tm:'8 h 01',more:[['La conscience de la situation',"Déjà vue en faible visibilité, à l'étape « Les risques et les bonnes attitudes ». Elle fait partie des facteurs humains."]]});
 
 /* 4. les notifications (diapos 259 à 267) */
 async function film(src,title,credit,tm){step();head(H10+' · '+HH(tm),title);
@@ -73,9 +95,9 @@ async function film(src,title,credit,tm){step();head(H10+' · '+HH(tm),title);
  jlog(tm,'Film : '+title);await contV();return null}
 const filmNotif=()=>film('film-notification','Le film : la notification des événements','Film du support de formation','8 h 02');
 const protection=S(null,'Notifier : un régime de protection',['s15'],[['s15',.03,'Le règlement européen 376/2014 et le code des transports','Ils protègent ceux qui notifient, face à leur employeur comme à l\'État.'],['s15',.35,'Pas de mesure sur la seule notification','Aucune mesure ne peut être prise sur des informations connues uniquement par une notification.'],
- ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],'Les notifications',{tm:'8 h 03',ic:'shield',more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
+ ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],'Les notifications',{tm:'8 h 03',ic:'shield',big:['Notifier protège',"Face à votre employeur comme à l'État."],more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
 const obligation=S(null,'L\'obligation de rendre compte',['s16','s17'],[['s16',.03,'Sans délai','Le code de l\'aviation civile oblige toute personne à rendre compte de tout incident ou accident dont elle a connaissance.'],['s16','En tort','Dans les 72 heures','En tort ou sans tort : aucune sanction.'],['s16','Ne pas rendre','Ne pas rendre compte','Un an d\'emprisonnement et 15 000 € d\'amende.'],
- ['s17','Une fuite','À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],'Les notifications',{tm:'8 h 04',ic:'warn'});
+ ['s17','Une fuite','À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],'Les notifications',{tm:'8 h 04',ic:'warn',big:['72 heures','En tort ou sans tort : aucune sanction.']});
 const comment=S('fiche','Comment notifier',['s18'],[['s18',.03,'La fiche de notification d\'événement','La notification d\'accident ou d\'incident, en quatre volets.'],['s18',.4,'Ou le Safety Portal','safety-portal.fr/CDG, ouvert à tous les partenaires sur demande d\'ouverture de compte.'],['s18',.75,'L\'extranet opérationnel du Groupe ADP','Les références réglementaires de l\'aéroport, accessible à tout titulaire d\'un badge rouge.']],'Les notifications',{tm:'8 h 05',more:[['72 heures','Le délai pour notifier au service de gestion de la sécurité, à compter de la connaissance de l\'événement.'],['Le signalement volontaire','On peut notifier tout événement, même s\'il n\'est pas dans la liste réglementaire.'],['Si l\'outil est en panne','Le formulaire CRESEA, à transmettre par mail : airsidesafety.CDG@adp.fr.']]});
 
 /* 5. les questions d'entraînement */
@@ -97,8 +119,8 @@ async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
 /* 6. pour obtenir le permis, et la fin du parcours */
 const permis=S('permis10','Pour obtenir le permis',['s21'],[['s21',.05,'Au Bureau Local de Sûreté','Les attestations de formation permis T, théorique et pratique, pour obtenir le titre définitif.'],['s21',.6,'L\'Annexe 8','La demande d\'autorisation de conduite.'],['s21',.82,'L\'Annexe 7','La grille de la formation pratique.']],'Pour obtenir le permis',{tm:'8 h 08'});
 async function fin(){step();head('Étape 10 terminée · 8 h 10','Dixième case cochée');
- vue(`<div class="hero nph"><p class="cap">Votre permis est complet</p>
-  <div class="jcard" style="margin-top:clamp(6px,1.6vh,14px)"><p class="lb">Votre journal de la matinée</p><ul class="jl">${jhtml(true)}</ul></div></div>`);
+ vue(`<div class="fin2"><div class="pc"><div class="ph1"><span class="T">T</span><p>Votre permis<br>est complet</p></div><div class="cs">${[1,2,3,4,5,6,7,8,9,10].map(n=>`<b>${n}</b>`).join('')}</div></div>
+  <div class="jcard"><p class="lb">Votre journal de la matinée</p><ul class="jl">${jhtml(true)}</ul></div></div>`);
  cur().classList.add('vb');
  await sayS('s22');await sayS('s23');await sayS('s24');
  VB.innerHTML=`<a class="act" style="text-decoration:none;pointer-events:auto" href="${NEXT}">Revoir le parcours depuis le début</a>`}
@@ -114,6 +136,29 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .fl.on{cursor:default}.fl.on .n{display:none}.fl.on .b{display:flex}
 @media (max-width:700px){.flw{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.fl{min-height:130px;padding:10px}.fl .n{font-size:18px}.fl .b b{font-size:16px}.fl .b span{font-size:14px;line-height:1.3}}
 .hero.nph .ic{width:clamp(70px,9vw,120px);height:auto;opacity:.9}
+.hero.nph .bigy{font-weight:800;font-size:clamp(40px,6vw,92px);line-height:1;color:#FFC400;margin:0}
+.g6{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1.4vh,16px) clamp(10px,1.4vw,18px);width:100%;max-width:1240px;align-self:flex-start}
+.gi{display:flex;align-items:center;gap:16px;background:#fff;border:3px solid var(--marine);border-radius:20px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:clamp(6px,1.1vh,12px) 18px;opacity:.18;transition:opacity .5s;text-align:left}
+.gi.on{opacity:1}.gi b{flex:none;width:44px;height:44px;border-radius:50%;background:#FFC400;border:3px solid var(--marine);display:flex;align-items:center;justify-content:center;font-size:20px}
+.gi .t{margin:0;font-weight:700;font-size:clamp(16px,1.45vw,22px);line-height:1.15}.gi .s{margin:2px 0 0;font-size:clamp(14px,1.1vw,17px);line-height:1.3;color:#33405f}
+.fh{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px);width:100%;max-width:1240px;align-self:stretch;min-height:100%}
+.fh .flw{grid-template-columns:1fr 1fr;gap:clamp(8px,1vw,14px)}
+.fh .fl{min-height:0;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;padding:18px 22px;text-align:left}
+.fh .fl i{font-style:normal;font-weight:800;font-size:clamp(28px,3vw,44px);line-height:1;color:#b9bfcc}
+.fh .fl.cur{background:var(--marine);box-shadow:0 0 0 4px #FFC400}.fh .fl.cur .n{color:#fff}.fh .fl.cur i{color:#FFC400}
+.fh .fl.on .n{display:block}
+.fh .fd{display:flex;flex-direction:column}.fh .fd .cd{flex:1;background:#fff;border:4px solid #FFC400;border-radius:20px;padding:24px 28px;display:flex;flex-direction:column;justify-content:center;text-align:left}
+.fh .cd .t{margin:0;font-weight:700;font-size:clamp(22px,2.3vw,34px);line-height:1.15}.fh .cd .t:empty{display:none}.fh .cd .s{margin:10px 0 0;font-size:clamp(16px,1.45vw,21px);line-height:1.4}
+.fh .nv{margin:10px 4px 0;text-align:right;font-weight:700;color:var(--pierre)}
+.fin2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px);width:100%;max-width:1240px;align-items:stretch}
+.fin2 .pc{background:#fff;border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:26px 30px;text-align:left}
+.fin2 .ph1{display:flex;align-items:center;gap:18px}.fin2 .T{width:78px;height:78px;border-radius:16px;border:6px solid var(--marine);display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:800}
+.fin2 .ph1 p{margin:0;font-weight:700;font-size:clamp(22px,2.4vw,34px);line-height:1.1}
+.fin2 .cs{display:grid;grid-template-columns:repeat(5,minmax(0,78px));gap:12px;margin-top:26px}
+.fin2 .cs b{aspect-ratio:1;border-radius:14px;background:var(--marine);color:#FFC400;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,2.2vw,30px)}
+.fin2 .jcard{margin:0;width:auto}
+@media (max-width:700px){.g6,.fh,.fin2{grid-template-columns:1fr}.fh .fl{padding:10px 12px}.gi{padding:8px 12px;gap:10px}.gi b{width:34px;height:34px;font-size:16px}.fin2 .cs{grid-template-columns:repeat(5,1fr);gap:8px}.fin2 .T{width:54px;height:54px;font-size:36px}.hero.nph .bigy{font-size:40px;color:var(--marine)}}
+
 </style>`);
 runSeq([['Couverture',cover],['Le système de gestion de la sécurité',sgs],['Situation à risque ? À vous',risque],['Un outil de culture juste',culture],
  ['Les facteurs humains',facteurs],['Facteurs humains : la synthèse',synthese],['Le film : la notification',filmNotif],['Notifier : un régime de protection',protection],
