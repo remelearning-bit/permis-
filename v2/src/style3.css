@@ -1,0 +1,60 @@
+
+:root{--marine:#0F1E46;--pierre:#5A6585;--ciel:#EEF0F4;--jaune:#FFC400}
+html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fixed}
+#vz{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%)}
+/* le titre : marine, souligné d'un trait jaune */
+#hd .k{font-weight:700;color:var(--pierre)}
+#hd .t::after{content:"";display:block;width:74px;height:8px;border-radius:5px;background:var(--jaune);margin-top:7px}
+/* le bouton : marine, posé sur un trait jaune */
+.act{background:var(--marine);box-shadow:0 4px 0 var(--jaune)}
+#vbtn .act.alt,.lab .btn2{background:#fff;color:var(--marine);border:0;box-shadow:inset 0 0 0 3px var(--marine)}
+/* les cartes : blanches, contour marine */
+.lab{border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25)}
+.card2,.qc,.jcard,.permis,.qz{border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25)}
+.lab .ans,.qc .ans,.qpic .op{border:3px solid var(--marine);border-radius:16px}
+.bk,.ref{border-color:var(--marine)}
+.pz.live button:not(.ko):not(.ok){border-color:var(--marine)}
+.opt::before{border-color:var(--marine)}
+.permis li.now b{background:var(--jaune);border-color:var(--marine);color:var(--marine)}
+.permis li.pk{border-color:var(--marine)!important}
+#navl li.cur a{color:var(--marine);text-decoration-color:var(--jaune)}
+#vz button.fl,#vz .tile,#vz .lic,#vz .mapc{border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25)}
+/* la barre du bas : marine */
+#bar{background:var(--marine);border-top:0}
+#bar .st,#bar button{color:#fff}
+#prog{background:var(--jaune)}
+/* le pas à pas : pastilles, carte au contour jaune */
+.stp .pl{border:3px solid var(--marine);width:46px;height:46px;box-shadow:0 3px 0 rgba(15,30,70,.25)}
+.stp .pl.cur{background:var(--jaune);border-color:var(--marine);color:var(--marine)}
+.stp .cd{background:#fff;border:4px solid var(--jaune);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;justify-content:center}
+.stp .cd .t,.stp .cd .s{margin-left:0}
+.lab:has(.stp){background:none;border:0;box-shadow:none}
+/* le cadre de la photo */
+#s3f{position:fixed;display:none;background:#f6f7f9;border-radius:22px;box-shadow:0 14px 30px rgba(15,30,70,.3);pointer-events:none}
+@media (min-width:700px) and (orientation:landscape){
+ body[data-s3=L] #s3f{display:block;left:3.5vw;top:16.5vh;width:45vw;height:63.5vh}
+ body[data-s3=L] #c{clip-path:inset(16.5vh 51.5vw 20vh 3.5vw round 22px)}
+ body[data-s3=R] #s3f{display:block;left:49vw;top:22vh;width:48vw;height:56vh}
+ body[data-s3=R] #c{clip-path:inset(22vh 3vw 22vh 49vw round 22px)}
+ body[data-s3=L] #cap{right:auto;left:3.5vw;bottom:auto;top:calc(80vh + 10px)}
+ /* le contenu, à droite, sur la même hauteur que la photo */
+ body[data-s3=L] .lab:not(.dock){--A:clamp(24px,2.45vw,36px);--B:clamp(17px,1.5vw,22px);width:45vw;min-height:63.5vh;padding:24px 28px;display:flex;flex-direction:column;justify-content:center}
+ body[data-s3=L] .lab:not(.dock)>.act,body[data-s3=L] .lab:not(.dock)>.btn2{align-self:flex-end}
+ body[data-s3=L] .lab:not(.dock):has(.stp){padding:0;justify-content:flex-start}
+ body[data-s3=L] .lab:not(.dock)>.h{margin-bottom:12px}
+ body[data-s3=L] .lab:has(.stp)>.h{display:none}
+ body[data-s3=L] .stp{flex:1;display:flex;flex-direction:column}
+ body[data-s3=L] .stp .cd{flex:1;padding:24px 28px}
+ body[data-s3=L] .stp .pls{gap:12px;margin:0 0 4px}
+ body[data-s3=L] .stp .nv{text-align:right;margin:10px 4px 0}
+ body[data-s3=L] .lab:has(.stp)>.act{margin-top:8px}
+ /* écran sans photo : le sujet dans un bloc marine à gauche */
+ body[data-s3=L]:has(#ui .lab.on) #vz .stage:has(.hero.nph){position:fixed;left:3.5vw;top:16.5vh;width:45vw;height:63.5vh;right:auto;bottom:auto;background:var(--marine);border-radius:22px;box-shadow:0 14px 30px rgba(15,30,70,.3);padding:34px 38px;align-items:center;justify-content:flex-start;overflow:hidden}
+ body[data-s3=L]:has(#ui .lab.on) #vz .hero.nph .cap{color:#fff;font-size:clamp(28px,3.3vw,48px);max-width:none}
+ body[data-s3=L]:has(#ui .lab.on) #vz .hero.nph .sub{color:#fff}
+ /* la couverture : le titre à gauche, sans cadre ; la photo à droite */
+ body[data-s3=R] .lab.big{width:40vw;background:none;border:0;box-shadow:none;padding:0}
+ body[data-s3=R] .lab.big .t{font-size:clamp(30px,3.6vw,52px);line-height:1.08}
+ body[data-s3=R] .lab.big .t::after{content:"";display:block;width:84px;height:9px;border-radius:5px;background:var(--jaune);margin-top:16px}
+ body[data-s3=R] .lab.big .s{font-size:clamp(17px,1.5vw,22px);margin-top:16px;font-weight:600}
+}
