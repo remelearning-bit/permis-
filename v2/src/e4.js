@@ -26,11 +26,12 @@ async function cover(){step();{const _p=photo('voiture',FAST?10:900);setCam(PORT
 /*__TOUR__*/
 
 /* 3. on récapitule */
-const SEPT=[['tire','Les pneumatiques','pneumatiques'],['bulb','L\'éclairage','éclairage'],['brake','Le freinage','freinage'],['fuel','Le carburant ou la charge des batteries','carburant'],['stop','L\'arrêt d\'urgence, s\'il y en a un','arrêt'],['tag','Le balisage et le marquage','balisage'],['ext','Les équipements de sécurité','équipements']];
+IC.hatch='<svg class="ic" viewBox="0 0 48 48"><rect x="9" y="12" width="30" height="24" rx="3"/><path d="M9 20h30M20 28h8"/></svg>';
+const SEPT=[['tire','Les pneumatiques','pneumatiques'],['bulb','L\'éclairage','éclairage'],['brake','Le freinage','freinage'],['fuel','Le carburant ou la charge des batteries','carburant'],['stop','L\'arrêt d\'urgence, s\'il y en a un','arrêt'],['tag','Le balisage et le marquage','balisage'],['ext','Les équipements de sécurité','équipements'],['hatch','Les trappes','trappes']];
 async function recap(){step();head(H4,'On récapitule');
  vue(`<div style="width:100%;display:flex;flex-direction:column;align-items:center;gap:clamp(12px,2.4vh,24px)"><p class="cap it" id="rc0" style="margin:0">Un véhicule en bon état général, contrôlé régulièrement</p>
-  <div class="tiles" style="grid-template-columns:repeat(4,1fr);max-width:1100px">${SEPT.map((f,i)=>`<div class="tile" id="rt${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}</p></div>`).join('')}<div class="tile" id="rt7">${IC.doc}<p class="lb">${nb("L'entretien de la flotte, justifiable à tout moment")}</p></div></div></div>`);
- await sayS('v14',[at('v14',.02,()=>show('#rc0')),...SEPT.map((f,i)=>W('v14',f[2],()=>on('#rt'+i),.005)),W('v14',"Et l'entretien",()=>on('#rt7'))]);
+  <div class="tiles" style="grid-template-columns:repeat(5,1fr);max-width:1180px">${SEPT.map((f,i)=>`<div class="tile" id="rt${i}">${IC[f[0]]}<p class="lb">${nb(f[1])}</p></div>`).join('')}<div class="tile" id="rt8">${IC.doc}<p class="lb">${nb("L'entretien de la flotte, justifiable à tout moment")}</p></div></div></div>`);
+ await sayS('v14',[at('v14',.02,()=>show('#rc0')),...SEPT.map((f,i)=>W('v14',f[2],()=>on('#rt'+i),.005)),W('v14',"Et l'entretien",()=>on('#rt8'))]);
  await contV();return null}
 
 /* 4. la consigne n°12 : la vérification quotidienne, au minimum */
