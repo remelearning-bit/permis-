@@ -51,7 +51,7 @@ const incendie=S('incendie','En cas d\'incendie',['u08','u09'],[['u08',.1,'Prot�
 /* 5. les objets intrus (diapos 239 à 244) */
 const fod=S('fodpiste','Les objets intrus',['u10'],[['u10',.05,'Un objet intrus, un FOD','Un objet inanimé sur l\'aire de mouvement, sans fonction opérationnelle ou aéronautique, qui peut constituer un danger pour l\'exploitation des aéronefs.'],
  ['u10',.45,'Aéronautiques','Écrous, boulons, bouchons de réservoir, fragments de train ou de pneu, jauge à huile, feuille de métal.'],['u10',.72,'Non aéronautiques','Outils, fournitures de restauration, badges, stylos, étiquettes bagages, plastique, bois, béton, caoutchouc des joints.']],'Les objets intrus',{tm:'7 h 45'});
-const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46',more:[['Détecter : contrôlez la zone',"Contrôlez la zone d'évolution contrôlée avant l'arrivée et après le départ de l'avion."],['Pièce d\'avion, ou objet hors de portée',"Contactez le centre opérationnel côté piste pour les objets intrus aéronautiques, pièces d'avion par exemple, et pour ceux qui sont hors de portée, en secteur interdit."]]});
+const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46',more:[['5 · Contrôler la zone',"Contrôlez la zone d'évolution contrôlée avant l'arrivée et après le départ de l'avion."],['6 · Signaler',"Une pièce d'avion, ou un objet hors de portée en secteur interdit : contactez le centre opérationnel côté piste."]]});
 const concorde=S('concorde','Ce que coûte un objet intrus',['u12'],[['u12',.1,'Gonesse, 25 juillet 2000','Au décollage, le Concorde roule sur une lamelle métallique perdue par un DC-10 de Continental Airlines. Il s\'écrase une minute vingt plus tard.'],['u12',.7,'113 morts','109 à bord, 4 au sol.']],'Les objets intrus',{tm:'7 h 46'});
 async function film(src,title,credit,tm){step();head(H9+' · '+HH(tm),title);
  vue(`<div class="filmw"><video id="fv" src="../video/${src}.mp4" poster="../video/${src}.jpg" controls playsinline preload="auto"></video><p class="cr">${nb(credit)}</p></div>`);
@@ -69,10 +69,10 @@ const drones=S('drone','Les drones',['u16','u17'],[['u16',.05,'Un appareil sans 
 
 /* 6 bis. intrusion ou comportement suspect (ajout validé, planche A) : écran sans voix pour l'instant */
 const intrusion=()=>stepper({head:H9+' · '+HH('7 h 51'),ph:'intrusion',cap:'Intrusion ou comportement suspect',items:[
- [null,'Suspendre le trafic','Contactez le centre opérationnel côté piste, 01 48 16 47 55, choix 7, pour suspendre le trafic.'],
- [null,'Alerter la gendarmerie','Alertez le Centre Opérationnel et de Renseignement de la gendarmerie des transports aériens : 01 48 62 17 00.'],
- [null,'Rester en sécurité',"Ne vous mettez pas en danger et ne circulez pas sur les voies avions, sous peine d'être aspiré ou soufflé."],
- [null,'Garder le contact visuel',"Maintenez si possible le contact visuel avec l'individu, pour renseigner et faciliter l'intervention des services compétents de l'État."]],
+ [null,'Suspendre le trafic','Contactez le centre opérationnel côté piste au 01 48 16 47 55, choix 7, pour faire suspendre le trafic.'],
+ [null,'Alerter la gendarmerie',"Alertez le centre opérationnel et de renseignement de la gendarmerie des transports aériens : 01 48 62 17 00."],
+ [null,'Rester en sécurité',"Ne vous mettez pas en danger. Ne circulez pas sur les voies avion : vous risqueriez d'être aspiré ou soufflé."],
+ [null,"Garder l'individu à vue","Si vous le pouvez, gardez l'individu à vue : vous renseignerez les services de l'État et faciliterez leur intervention."]],
  log:['7 h 51','Intrusion ou comportement suspect : suspendre le trafic, alerter la gendarmerie, rester en sécurité']});
 
 /* 7. conducteur perdu, et les numéros (diapos 246, 247) */

@@ -3,13 +3,13 @@ async function stepper(d){step();if(d.head)head(d.head,d.sub||'');
  if(d.ph){await goPh(d.ph,{mode:'contain'},500)}else{await vzOff();vue(`<div class="hero nph"><p class="cap">${nb(d.cap)}</p></div>`)}
  const L=label([0,0,0],{lead:false}).title(d.cap);const id='stp'+Math.random().toString(36).slice(2,6),N=d.items.length;
  L.html(`<div class="stp" id="${id}"><div class="pls">${d.items.map((x,i)=>`<button class="opt pl" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn">Cliquez sur chaque numéro</p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
- const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
- const paint=i=>{pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});const it=d.items[i];R.querySelector('.cd .t').innerHTML=nb(it[1]);R.querySelector('.cd .s').innerHTML=nb(it[2]);R.querySelector(".nv").textContent=seen.size+' sur '+N+' vus'};
+ let cur=d.ph;const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
+ const paint=i=>{pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});const it=d.items[i];if(it[3]&&it[3]!==cur){cur=it[3];goPh(cur,{mode:'contain'},300)}R.querySelector('.cd .t').innerHTML=nb(it[1]);R.querySelector('.cd .s').innerHTML=nb(it[2]);R.querySelector(".nv").textContent=seen.size+' sur '+N+' vus'};
  const done=()=>{pl.forEach(b=>b.classList.add('off'))};
  while(seen.size<N){const left=pl.filter((b,k)=>!seen.has(k));
   const b=await new Promise(r=>pl.forEach(x=>x.onclick=()=>r(x)));const i=+b.dataset.i;const first=!seen.has(i);seen.add(i);b.classList.add('off');paint(i);
   if(first&&d.items[i][0])await sayS(d.items[i][0])}
- pl.forEach(b=>{b.classList.add('off');b.onclick=()=>paint(+b.dataset.i)});R.querySelector('.hn').style.display='none';
+ pl.forEach(b=>{b.classList.add('off');b.onclick=()=>paint(+b.dataset.i)});R.querySelector('.hn').textContent='Vous avez tout vu. Cliquez sur Continuer.';
  if(d.log)jlog(d.log[0],d.log[1]);
  await cont(L);L.kill();return null}
 document.head.insertAdjacentHTML('beforeend',`<style>
@@ -19,6 +19,6 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .stp .pl.cur{background:#FFC400;border-color:#FFC400;color:var(--marine)}
 .stp .pl.vu{background:var(--marine);color:#fff}
 .stp .hn{margin:0 0 10px;font-weight:700;font-size:var(--B);color:var(--pierre)}
-.stp .cd{min-height:6.2em}.stp .cd .t:empty,.stp .cd .s:empty{display:none}
+.stp .cd{min-height:5em}.stp .cd .t:empty,.stp .cd .s:empty{display:none}
 .stp .nv{margin:12px 0 0;font-weight:700;font-size:var(--B);color:var(--pierre)}
 </style>`);

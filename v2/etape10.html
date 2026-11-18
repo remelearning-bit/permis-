@@ -258,7 +258,7 @@ async function goPh(k,o,D=500){const p=photo(k,FAST?10:D);if(VZ.classList.contai
 #zv .zs{flex:1;overflow:auto;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y pinch-zoom;display:flex}#zv .zs img{display:block;margin:auto;max-width:none;height:auto;flex:none}`;
 document.head.insertAdjacentHTML('beforeend','<style>'+css+'</style>');
 const b=document.createElement('button');b.id='zbtn';b.type='button';b.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="10.5" cy="10.5" r="6.5"/><path d="M15.5 15.5L21 21M10.5 7.5v6M7.5 10.5h6"/></svg>Agrandir';document.body.appendChild(b);
-const v=document.createElement('div');v.id='zv';v.innerHTML='<div class="zh"><span>Faites glisser la photo, touchez-la pour zoomer. Tournez le téléphone pour la voir en entier.</span><button type="button">Fermer</button></div><div class="zs"><img alt=""></div>';document.body.appendChild(v);
+const v=document.createElement('div');v.id='zv';v.innerHTML='<div class="zh"><span>Faites glisser la photo, cliquez dessus pour zoomer. Tournez le téléphone pour la voir en entier.</span><button type="button">Fermer</button></div><div class="zs"><img alt=""></div>';document.body.appendChild(v);
 const im=v.querySelector('img'),sc=v.querySelector('.zs');let wasPlaying=false;
 function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientWidth,H=sc.clientHeight;let w=a>=1?Math.min(W*1.7,H*a):Math.min(W,H*a);if(v.classList.contains('big'))w*=2.2;im.style.width=Math.round(w)+'px'}
  function center(){size();sc.scrollLeft=(sc.scrollWidth-sc.clientWidth)/2;sc.scrollTop=(sc.scrollHeight-sc.clientHeight)/2}

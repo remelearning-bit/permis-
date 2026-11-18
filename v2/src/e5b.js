@@ -70,18 +70,17 @@ async function info2(){step();head(H5,"L'information des conducteurs");
  await contV();return null}
 /* ajout validé (planche C) : matériel soufflé, écran sans voix pour l'instant */
 const souffle=()=>stepper({head:H5,ph:'soufflet',cap:'Matériel soufflé : la conduite à tenir',items:[
- [null,'Le périmètre de sécurité',"Trois fois la longueur de l'avion, au démarrage, au roulage ou en virage. Attention aux projectiles et à la mise en route des avions."],
- [null,'Protégez-vous','En cas de matériel soufflé, protégez-vous d\'abord.'],
- [null,'Prévenez','Contactez le contrôleur de la zone, ou le centre opérationnel côté piste si vous n\'avez pas de radio : 01 48 16 47 55. Choix 1 sur le secteur TRA, choix 2 sur le secteur MAN.'],
- [null,'Arrimez','Arrimez votre matériel et ne le laissez pas au sol.']]});
-/* ajout validé (planche I, annexe 5) : les hélicoptères, écran sans voix pour l'instant */
-const helico=()=>stepper({head:H5,ph:'heli',cap:'Les hélicoptères',items:[
- [null,'Le souffle',"Le déplacement d'air produit par les hélicoptères soulève et déplace ce qui peut se trouver au sol. Le souffle peut projeter des graviers et cailloux sur plus de 40 mètres."],
- [null,"Avant l'arrivée","Vérifier que sur l'aire de poser et sur ses abords, aucun objet ne pourra s'envoler en présence du souffle."],
- [null,"Avant d'approcher","Attendre l'extinction des feux anticollisions et l'arrêt complet des 2 rotors avant tout accès à son aire de stationnement."],
- [null,'Les postes concernés','Certains postes avions sont prévus pour accueillir des hélicoptères.'],
- [null,'La règle','Respecter les distances de sécurité.']]});
-const degivrage=S('degivrage','Dégivrage et chargement',['k37'],[['k37',.4,'Les baies de dégivrage','Connaître les règles de circulation sur les baies de dégivrage, et leurs voies d\'accès.'],['k37',.8,'Le chargement',"Adapter votre conduite en fonction de votre chargement : marchandises dangereuses, arrimage. Arrimage : voir l'étape 9."]]);
+ [null,'Le périmètre',"Restez à plus de trois fois la longueur de l'avion quand il démarre, roule ou tourne : le souffle projette ce qui traîne."],
+ [null,'Protégez-vous',"Si du matériel est soufflé, vous vous protégez d'abord."],
+ [null,'Prévenez',"Prévenez le contrôleur de la zone. Sans radio, appelez le centre opérationnel côté piste au 01 48 16 47 55 : choix 1 pour le secteur TRA, choix 2 pour le secteur MAN."],
+ [null,'Arrimez',"Arrimez votre matériel et ne le laissez jamais au sol."]]});
+const helico=()=>stepper({head:H5,ph:'heli1',cap:'Les hélicoptères',items:[
+ [null,'Le souffle',"Le souffle d'un hélicoptère soulève et déplace ce qui traîne au sol. Il peut projeter des graviers et des cailloux sur plus de 40 mètres.",'heli1'],
+ [null,"Avant l'arrivée","Avant l'arrivée, vérifiez que rien ne peut s'envoler sur l'aire de poser et sur ses abords.",'heli2'],
+ [null,"Avant d'approcher","N'approchez de l'aire de stationnement qu'après l'extinction des feux anticollision et l'arrêt complet des deux rotors.",'heli3'],
+ [null,'Les postes concernés',"Certains postes avion accueillent des hélicoptères : aires Sierra S06, S11, S14, S16, S18, S21, S23, S25, S29 et S31 ; aires Roméo R01, R03, R06, R09, R12 et R14.",'heli4'],
+ [null,'La règle',"Respectez les distances de sécurité en présence d'un hélicoptère.",'heli1']]});
+const degivrage=S('degivrage','Dégivrage et chargement',['k37'],[['k37',.4,'Les baies de dégivrage','Connaître les règles de circulation sur les baies de dégivrage, et leurs voies d\'accès.'],['k37',.8,'Le chargement',"Adaptez votre conduite à votre chargement : marchandises dangereuses, arrimage. L'arrimage est détaillé à l'étape 9."]]);
 
 /* 7. la question du chapitre (diapo 186) */
 async function question(){step();head(H5+' · 6 h 46',"Une question d'entraînement");ALT.q5b=1;const two=(TRY.q5b||0)%2;
