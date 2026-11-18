@@ -813,7 +813,7 @@ const HH=t=>t.replace(/ /g,'\u00a0');
 /* Écran d'information mis en page comme les maquettes validées : photo encadrée à gauche, pastilles numérotées et carte à droite.
    La voix fait avancer les pastilles ; les cartes sans voix se cliquent ; à la fin, tout reste consultable. */
 async function infoPills(d,kick){step();await goPh(d.ph,{mode:'contain'},500);
- if(typeof S3on==='function'&&S3on())head(kick+(d.tm?' · '+HH(d.tm):''),d.cap);else if(d.head)head(kick+(d.tm?' · '+HH(d.tm):''),d.head);
+ if(typeof S3on==='function'&&S3on())head(kick+(d.tm?' · '+HH(d.tm):''),d.cap);
  const items=[...(d.cards||[]).map(c=>[c[2],c[3]||'']),...(d.more||[])];const nv=(d.cards||[]).length,N=items.length;
  const L=label([0,0,0],{lead:false}).title(d.cap);const id='stp'+Math.random().toString(36).slice(2,6);
  L.html(`<div class="stp" id="${id}"><div class="pls">${items.map((x,i)=>`<button class="opt pl off" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn"></p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
