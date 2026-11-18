@@ -346,3 +346,6 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .pmini.t25 i.now{background:var(--marine);color:var(--jaune)}.pmini.t25 i:nth-of-type(2){background:var(--jaune)}
 @media (max-width:700px){.q24,.f25{grid-template-columns:1fr}.q24 .ph{max-height:30vh}.pmini.t25{flex-wrap:wrap}}
 .q24 .qc .q{font-size:clamp(18px,2.1vw,30px);margin:4px 0 8px}.q24 .qc .ans{padding:8px 16px!important;font-size:clamp(14px,1.5vw,20px)!important;margin:5px 0!important;min-height:0!important}
+.pmini.t25.e2 i:nth-of-type(2){background:var(--marine)}.pmini.t25.e2 i:nth-of-type(3){background:var(--jaune)}
+.f25.e2 .v{font-size:clamp(22px,2.6vw,38px);line-height:1.12}.f25.e2 .v2{font-size:clamp(18px,2vw,28px)}.f25.e2{gap:clamp(12px,2vw,28px)}
+.c4.c3{grid-template-columns:repeat(3,1fr)}.c4.c3 small{font-size:clamp(13px,1.4vw,19px);font-weight:700}
