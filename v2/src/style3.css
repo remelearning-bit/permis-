@@ -122,3 +122,16 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 .chk li b{width:40px;height:40px;border-color:var(--marine)}
 .chk li.on b{background:var(--jaune);border-color:var(--marine)}.chk li.on b svg{stroke:var(--marine)}
 @media (min-width:700px) and (orientation:landscape){.chk.plain{display:grid;grid-template-columns:1fr 1fr;max-width:1100px;width:100%}}
+/* photos à plat avec repères (maquettes validées) */
+.platc{flex:1;position:relative;border-radius:22px;overflow:hidden;box-shadow:0 14px 30px rgba(15,30,70,.3);min-height:220px;background:#E8EBF1}
+.platc svg,.platw svg{position:absolute;inset:0;width:100%;height:100%}
+.platw{position:relative;height:100%;aspect-ratio:20/9;max-width:100%;align-self:stretch;margin:0 auto;border-radius:22px;overflow:hidden;box-shadow:0 14px 30px rgba(15,30,70,.3);background:#E8EBF1;text-align:left}
+.platw .stp{position:absolute;left:16px;top:14px;z-index:2}.platw .stp .pls{gap:12px;margin:0}
+.platw .pcd{position:absolute;left:16px;bottom:16px;z-index:2;width:min(420px,60%);background:#fff;border:4px solid var(--jaune);border-radius:20px;padding:16px 22px}
+.platw .pcd .t{margin:0;font-weight:700;font-size:clamp(20px,2.1vw,30px);line-height:1.15}.platw .pcd .s{margin:6px 0 0;font-size:clamp(16px,1.4vw,21px)}.platw .pcd .s:empty{display:none}
+.platw .nv{position:absolute;right:16px;top:18px;z-index:2;margin:0;background:#fff;padding:5px 12px;border-radius:999px;font-weight:700;color:var(--pierre)}
+.platw .da{stroke:#fff}.platw [class^=tg] rect{fill:#fff}.platw .tgdn,.platw .tgds{display:none}
+.platw[data-k="0"] .da,.platw[data-k="1"] .pln .da,.platw[data-k="2"] .pls .da{stroke:var(--jaune)}
+.platw[data-k="0"] .tgn rect,.platw[data-k="0"] .tgs rect,.platw[data-k="1"] .tgn rect,.platw[data-k="2"] .tgs rect{fill:var(--jaune)}
+.platw[data-k="1"] .tgdn,.platw[data-k="2"] .tgds{display:block}.platw .tgdn rect,.platw .tgds rect{fill:var(--jaune)}
+@media (max-width:700px){.platw{height:auto;aspect-ratio:auto;width:100%;display:flex;flex-direction:column;overflow:visible;box-shadow:none;background:none;gap:8px}.platw svg{position:static;height:auto;aspect-ratio:20/9;border-radius:14px}.platw .stp,.platw .pcd,.platw .nv{position:static;width:auto}.platw .nv{align-self:flex-end}.platc{min-height:170px;flex:none}}
