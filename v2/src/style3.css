@@ -135,3 +135,48 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 .platw[data-k="0"] .tgn rect,.platw[data-k="0"] .tgs rect,.platw[data-k="1"] .tgn rect,.platw[data-k="2"] .tgs rect{fill:var(--jaune)}
 .platw[data-k="1"] .tgdn,.platw[data-k="2"] .tgds{display:block}.platw .tgdn rect,.platw .tgds rect{fill:var(--jaune)}
 @media (max-width:700px){.platw{height:auto;aspect-ratio:auto;width:100%;display:flex;flex-direction:column;overflow:visible;box-shadow:none;background:none;gap:8px}.platw svg{position:static;height:auto;aspect-ratio:20/9;border-radius:14px}.platw .stp,.platw .pcd,.platw .nv{position:static;width:auto}.platw .nv{align-self:flex-end}.platc{min-height:170px;flex:none}}
+/* ---- mise en conformité avec les planches : bouton à droite, réponse puis « Valider », frises en cartes, plan en deux moitiés ---- */
+.vld{pointer-events:none;border:0;border-radius:999px;padding:13px 24px;background:#B9BFCC;color:#fff;font:700 var(--B)/1 Barlow,system-ui,sans-serif}
+.ans.sel{box-shadow:0 0 0 4px var(--jaune)!important}
+.qans>div{display:flex;flex-direction:column;gap:12px;flex:1}
+.qans .ans,.vfw .qc .ans{pointer-events:auto;flex:1;display:flex;align-items:center;text-align:left;background:#fff;border:3px solid var(--marine);border-radius:20px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:14px 24px;margin:0;color:var(--marine);font:700 clamp(18px,1.9vw,26px)/1.2 Barlow,system-ui,sans-serif;cursor:pointer;width:auto}
+.qans .ans.ok,.vfw .qc .ans.ok{background:var(--vert);border-color:var(--vert);color:#fff}.qans .ans.ko,.vfw .qc .ans.ko{background:var(--orangeV);border-color:var(--orangeV);color:#fff}
+.qans .ans.off,.vfw .qc .ans.off{cursor:default}.qans .ans.off:not(.ok):not(.ko),.vfw .qc .ans.off:not(.ok):not(.ko){opacity:.5}
+.qans .fb{margin:0}
+.cdy .k,.cdy .n{margin:0 0 8px;font-weight:700;color:var(--pierre);font-size:var(--B)}.cdy .q{margin:0;font-weight:700;font-size:clamp(20px,2.1vw,30px);line-height:1.15}
+#xb1{background:var(--jaune)!important}
+.pcp{flex:1;background:#fff;border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:26px 30px;text-align:left}
+.pcp .ph1{display:flex;align-items:center;gap:18px}.pcp .T{width:78px;height:78px;border-radius:16px;border:6px solid var(--marine);display:flex;align-items:center;justify-content:center;font-size:52px;font-weight:800;transition:background .4s}.pcp .T.lit{background:var(--jaune)}
+.pcp .ph1 p{margin:0;font-weight:700;font-size:clamp(22px,2.4vw,34px);line-height:1.1}
+.pcp .cs{display:grid;grid-template-columns:repeat(5,minmax(0,78px));gap:12px;margin-top:22px}
+.pcp .cs i{aspect-ratio:1;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:clamp(20px,2.2vw,30px);font-style:normal;font-weight:800;background:#fff;border:3px solid var(--marine);transition:background .4s}.pcp .cs i.now{background:var(--jaune)}
+.pcp .demo2,.pcp .qfb{text-align:left}
+.permis.lst2{display:block;background:none;border:0;box-shadow:none;padding:0;width:auto;height:100%}
+.permis.lst2 ol{display:flex;flex-direction:column;gap:6px;height:100%}
+.permis.lst2 li{flex:1;background:#fff;border:3px solid var(--marine);border-radius:12px;padding:2px 14px;color:var(--marine);font-weight:700}
+.permis.lst2 li b{border:0;width:auto;min-width:22px;color:var(--pierre)}
+@media (min-width:700px) and (orientation:landscape){
+ #vbtn{justify-content:flex-end;padding-right:max(24px,4vw)}
+ .axes:not(.vfw .axes){flex-direction:row;gap:clamp(12px,1.6vw,22px);max-width:1240px;align-items:stretch}
+ .axes:not(.vfw .axes) .ax{flex:1;background:#fff;border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:22px 26px}
+ .vfw{grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px);align-items:stretch;max-width:1240px;align-self:stretch;min-height:100%}
+ .vfw>div:first-child{background:#fff;border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:22px 26px;display:flex;flex-direction:column;justify-content:center}
+ .vfw .qc{background:none;border:0;box-shadow:none;padding:0;display:flex;flex-direction:column;gap:12px}
+ .vfw .qc .cdy{flex:0 0 auto;min-height:36%}
+ .vfw .qc>div:last-child{flex:1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+ .vfw .qc .ans{justify-content:center;font-size:clamp(22px,2.4vw,34px)}.vfw .qc .fb{grid-column:1/-1;margin:0}
+}
+/* frises : libellés dans les segments (planche validée) */
+.ax .sl{display:none}
+@media (min-width:700px) and (orientation:landscape){
+ .ax .fl{display:none}
+ .ax .sl{display:flex;position:absolute;top:0;height:100%;align-items:center;justify-content:center;text-align:center;font-weight:700;font-size:clamp(12px,1.05vw,15px);line-height:1.1;padding:0 6px;color:var(--marine)}
+ .ax .sg .sl{position:static;width:100%}.ax .sl.w{color:#fff}
+ .ax .sg{display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;font-size:clamp(12px,1.05vw,15px);text-align:center;line-height:1.1;overflow:hidden}
+ .ax .tr{height:48px}
+ .ax .tl{margin-bottom:22px;color:var(--marine);font-size:clamp(17px,1.6vw,23px)}
+ .ax .nt{margin-top:46px}
+ .vfw.qa #xb,.vfw.qb #xa{display:none}
+ .permis.lst2 ol{gap:4px}.permis.lst2 li{padding:0 14px;font-size:clamp(14px,1.3vw,18px);min-height:0}
+}
+@media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal}.ax .sg{padding:0 4px;font-size:clamp(11px,.95vw,14px)}.ax .tr{height:52px}}
