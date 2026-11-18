@@ -211,11 +211,11 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   W('e10','en dehors',()=>show('#a3')),
   W('e10','Pour simplifier',()=>{show('#zall');const t=$c('#a3');if(t)t.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers (PARIF).")})]);
  vue(`<div class="hero nph"><p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
- const ABS=`<div class="frz"><div class="frl"><span class="it" id="xbt1" style="left:25%">3 mois</span><span class="it" id="xbt2" style="left:72%">12 mois</span></div>
-  <div class="frb"><i class="a"></i><i class="b it" id="xb1"></i><i class="c it" id="xb2"></i></div>
-  <div class="frt"><p><b>On ne circule pas sur l'aire de mouvement</b><small>Cessation d'activité</small></p><p class="it" id="xbf1"><b>Une remise à niveau</b><small>Tracée sur la grille de formation pratique, annexe 7</small></p><p class="it" id="xbf2"><b>Une nouvelle formation initiale</b></p></div></div>`;
+ const ABS=`<div class="frz"><div class="frl"><span class="it" id="fxbt1" style="left:25%">3 mois</span><span class="it" id="fxbt2" style="left:72%">12 mois</span></div>
+  <div class="frb"><i class="a"></i><i class="b it" id="fxb1"></i><i class="c it" id="fxb2"></i></div>
+  <div class="frt"><p><b>On ne circule pas sur l'aire de mouvement</b><small>Cessation d'activité</small></p><p class="it" id="fxbf1"><b>Une remise à niveau</b><small>Tracée sur la grille de formation pratique, annexe 7</small></p><p class="it" id="fxbf2"><b>Une nouvelle formation initiale</b></p></div></div>`;
  await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}<p class="sub" style="text-align:center;margin-top:clamp(12px,3vh,28px)">${nb("Une règle précisée par la consigne d'exploitation n°3.")}</p></div>`)}),
-  W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Au-delà de douze',()=>{on('#xb2');on('#xbf2')})]);
+  W('e11','De trois',()=>{on('#fxbt1');on('#fxbt2');on('#fxb1');on('#fxbf1')}),W('e11','Au-delà de douze',()=>{on('#fxb2');on('#fxbf2')})]);['#fxbt1','#fxbt2','#fxb1','#fxbf1','#fxb2','#fxbf2'].forEach(k=>on(k));
  await pause(2200);return null}
 
 /* 4. les mesures particulières d'application */

@@ -843,11 +843,11 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   W('e10','en dehors',()=>show('#a3')),
   W('e10','Pour simplifier',()=>{show('#zall');const t=$c('#a3');if(t)t.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers (PARIF).")})]);
  vue(`<div class="hero nph"><p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
- const ABS=`<div class="frz"><div class="frl"><span class="it" id="xbt1" style="left:25%">3 mois</span><span class="it" id="xbt2" style="left:72%">12 mois</span></div>
-  <div class="frb"><i class="a"></i><i class="b it" id="xb1"></i><i class="c it" id="xb2"></i></div>
-  <div class="frt"><p><b>On ne circule pas sur l'aire de mouvement</b><small>Cessation d'activité</small></p><p class="it" id="xbf1"><b>Une remise à niveau</b><small>Tracée sur la grille de formation pratique, annexe 7</small></p><p class="it" id="xbf2"><b>Une nouvelle formation initiale</b></p></div></div>`;
+ const ABS=`<div class="frz"><div class="frl"><span class="it" id="fxbt1" style="left:25%">3 mois</span><span class="it" id="fxbt2" style="left:72%">12 mois</span></div>
+  <div class="frb"><i class="a"></i><i class="b it" id="fxb1"></i><i class="c it" id="fxb2"></i></div>
+  <div class="frt"><p><b>On ne circule pas sur l'aire de mouvement</b><small>Cessation d'activité</small></p><p class="it" id="fxbf1"><b>Une remise à niveau</b><small>Tracée sur la grille de formation pratique, annexe 7</small></p><p class="it" id="fxbf2"><b>Une nouvelle formation initiale</b></p></div></div>`;
  await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}<p class="sub" style="text-align:center;margin-top:clamp(12px,3vh,28px)">${nb("Une règle précisée par la consigne d'exploitation n°3.")}</p></div>`)}),
-  W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Au-delà de douze',()=>{on('#xb2');on('#xbf2')})]);
+  W('e11','De trois',()=>{on('#fxbt1');on('#fxbt2');on('#fxb1');on('#fxbf1')}),W('e11','Au-delà de douze',()=>{on('#fxb2');on('#fxbf2')})]);['#fxbt1','#fxbt2','#fxb1','#fxbf1','#fxb2','#fxbf2'].forEach(k=>on(k));
  await pause(2200);return null}
 
 /* 4. les mesures particulières d'application */
@@ -1359,4 +1359,9 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 .frl span{font-size:clamp(18px,2.2vw,30px)}.frl{height:44px}.frt b{font-size:clamp(17px,2vw,28px)}.frt small{font-size:clamp(13px,1.3vw,18px)}.frb{height:clamp(34px,7vh,56px)}
 .zt2{min-height:clamp(96px,22vh,190px)}.zt2 b{font-size:clamp(28px,4.4vw,62px)}.zt2 span{font-size:clamp(13px,1.5vw,21px)}
 .plan{gap:clamp(8px,1.4vh,14px)}.plan li{font-size:clamp(20px,2.6vw,36px)}.plan li .no{width:clamp(48px,5.6vw,76px);height:clamp(48px,5.6vw,76px);font-size:clamp(26px,3.4vw,46px)}
+@media (max-width:700px){
+ .plan{margin-left:0}.plan li{font-size:18px;gap:12px}.plan li .no{width:40px;height:40px;font-size:22px;border-radius:10px}.plan li span:last-child{min-width:0}
+ .frt{display:block}.frt p{padding:0!important;margin:0 0 10px;border-left:6px solid #C9CEDA;padding-left:10px!important}.frt p:nth-child(2){border-color:#56618a}.frt p:nth-child(3){border-color:var(--marine)}.frt small{font-size:14px}
+ .zt2{min-height:0;padding:10px 8px}.zt2 b{font-size:26px}.zt2 span{font-size:13px}
+}
 </style></body></html>

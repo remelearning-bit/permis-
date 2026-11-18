@@ -211,3 +211,8 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 .frl span{font-size:clamp(18px,2.2vw,30px)}.frl{height:44px}.frt b{font-size:clamp(17px,2vw,28px)}.frt small{font-size:clamp(13px,1.3vw,18px)}.frb{height:clamp(34px,7vh,56px)}
 .zt2{min-height:clamp(96px,22vh,190px)}.zt2 b{font-size:clamp(28px,4.4vw,62px)}.zt2 span{font-size:clamp(13px,1.5vw,21px)}
 .plan{gap:clamp(8px,1.4vh,14px)}.plan li{font-size:clamp(20px,2.6vw,36px)}.plan li .no{width:clamp(48px,5.6vw,76px);height:clamp(48px,5.6vw,76px);font-size:clamp(26px,3.4vw,46px)}
+@media (max-width:700px){
+ .plan{margin-left:0}.plan li{font-size:18px;gap:12px}.plan li .no{width:40px;height:40px;font-size:22px;border-radius:10px}.plan li span:last-child{min-width:0}
+ .frt{display:block}.frt p{padding:0!important;margin:0 0 10px;border-left:6px solid #C9CEDA;padding-left:10px!important}.frt p:nth-child(2){border-color:#56618a}.frt p:nth-child(3){border-color:var(--marine)}.frt small{font-size:14px}
+ .zt2{min-height:0;padding:10px 8px}.zt2 b{font-size:26px}.zt2 span{font-size:13px}
+}
