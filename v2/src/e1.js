@@ -183,7 +183,7 @@ async function quatre(){step();head(H1,'Prise de service');
  await sayS('e01',[W('e01','Quatre parties',()=>{head(H1,'Le programme de l\'étape 1');vue(pv)}),W('e01','Le contexte',()=>show('#pp0',true)),W('e01','Les sanctions',()=>show('#pp1',true)),W('e01','Les acteurs',()=>show('#pp2',true)),W('e01','Et comment',()=>show('#pp3',true))]);undim();
  vue(`<div class="hero">${pv.replace(/class="pt it"/g,'class="pt it in"')}<p class="sub it" id="xs" style="font-weight:700;color:var(--marine);margin-top:clamp(12px,3vh,26px)">Les règles du terrain viennent de ces textes, et les sanctions aussi.</p><div class="xb it" id="xq">${bub('Xavier','Dense. Et si je m\'en passe ? Au volant, ce qui compte, c\'est le terrain.')}</div></div>`);
  await sayS('e02',[at('e02',.02,()=>show('#xq'))]);
- await sayS('e03',[at('e03',.02,()=>{$c('#xq').style.display='none';show('#xs');show('#pp1',true)})]);undim();
+ await sayS('e03',[at('e03',.02,()=>{$c('#xq').style.display='none';show('#xs');show('#pp1',true)})]);undim();show('#pp0,#pp1,#pp2,#pp3');
  await contV('Commencer');return null}
 
 /* 2. les trois référentiels : l'apprenant ouvre chaque carte */
@@ -211,10 +211,9 @@ async function arrete(){step();head('1 · Le contexte réglementaire',"L'arrêt�
   W('e10','en dehors',()=>show('#a3')),
   W('e10','Pour simplifier',()=>{show('#zall');const t=$c('#a3');if(t)t.innerHTML=nb("Pour simplifier, et faciliter le contrôle aux postes d'accès routiers (PARIF).")})]);
  vue(`<div class="hero nph"><p class="cap">Le Groupe ADP est désigné</p><p class="sub">Pour définir le dispositif de délivrance de l'autorisation de conduite.</p><p class="sub it" id="a4">Et les conditions de sa suspension et de son retrait, si les règles de circulation ne sont pas respectées.</p></div>`);
- const ABS=`<div class="axes" style="max-width:1040px"><div class="ax" id="xb"><p class="tl">Cessation d'activité : sans circuler sur l'aire de mouvement</p><div class="tr">
-  <div class="sg" id="xb1" style="left:16.7%;width:50%;background:var(--pierre)"></div><div class="sg" id="xb2" style="left:66.7%;width:33.3%;background:var(--marine)"></div>
-  <span class="fl c" id="xbf1" style="left:41.7%"><span class="lg">Une remise à niveau, tracée sur la grille de formation pratique (annexe 7)</span><span class="sh">Remise à niveau (annexe 7)</span></span><span class="fl c" id="xbf2" style="left:83.3%">Une nouvelle formation initiale</span>
-  <span class="tk" id="xbt1" style="left:16.7%">3 mois</span><span class="tk" id="xbt2" style="left:66.7%">12 mois</span></div></div></div>`;
+ const ABS=`<div class="frz"><div class="frl"><span class="it" id="xbt1" style="left:25%">3 mois</span><span class="it" id="xbt2" style="left:72%">12 mois</span></div>
+  <div class="frb"><i class="a"></i><i class="b it" id="xb1"></i><i class="c it" id="xb2"></i></div>
+  <div class="frt"><p><b>On ne circule pas sur l'aire de mouvement</b><small>Cessation d'activité</small></p><p class="it" id="xbf1"><b>Une remise à niveau</b><small>Tracée sur la grille de formation pratique, annexe 7</small></p><p class="it" id="xbf2"><b>Une nouvelle formation initiale</b></p></div></div>`;
  await sayS('e11',[W('e11','Il prévoit',()=>show('#a4')),W('e11','On retrouve',()=>{head('1 · Le contexte réglementaire','La règle des absences');vue(`<div style="width:100%">${ABS}<p class="sub" style="text-align:center;margin-top:clamp(12px,3vh,28px)">${nb("Une règle précisée par la consigne d'exploitation n°3.")}</p></div>`)}),
   W('e11','De trois',()=>{on('#xbt1');on('#xbt2');on('#xb1');on('#xbf1')}),W('e11','Au-delà de douze',()=>{on('#xb2');on('#xbf2')})]);
  await pause(2200);return null}
@@ -224,8 +223,9 @@ const ZON=["La zone d'évolution contrôlée (ZEC)","Le périmètre de sécurit�
 async function mpa(){step();head('1 · Le contexte réglementaire',"Les mesures particulières d'application");
  vue(`<div class="duo2"><div class="card2 it" id="m1">${IC.user}<p class="lb">Qui les prend ?</p><p class="big2" style="font-size:clamp(30px,3.4vw,52px)">Le directeur d'aéroport</p><p class="tx" style="max-width:none;margin:0">Il complète l'arrêté, quand c'est nécessaire. Ces mesures collent au terrain.</p></div>
   <div class="card2 it" id="m2">${IC.car}<p class="lb">Sur quoi ?</p><p class="tx" style="max-width:none;margin:0;font-size:clamp(18px,1.6vw,25px);font-weight:600;color:var(--marine)">Les règles de sécurité de circulation et de stationnement sur l'aire de mouvement.</p></div></div>`);
- const ZL=`<div class="hero"><p class="cap" style="margin-bottom:clamp(8px,2vh,20px)">Elles portent aussi sur :</p><ul class="chk plain">${ZON.map((z,i)=>`<li id="zz${i}"><b>${CHECK}</b>${nb(z)}</li>`).join('')}</ul></div>`;
- await sayS('e12',[W('e12','le directeur',()=>show('#m1',true)),W('e12','Elles portent',()=>show('#m2',true)),W('e12','La zone',()=>vue(ZL)),
+ const ZT=[['ZEC',"Zone d'évolution contrôlée"],['PSC','Périmètre de sécurité collision'],['PSI','Périmètre de sécurité incendie'],['ZPD','Zone particulièrement dangereuse'],['ZEP',"Zone d'évolution de passerelle télescopique"],['↔',"Couloirs hors gabarit d'aire de trafic"]];
+ const ZL=`<div class="ztl">${ZT.map((z,i)=>`<div class="zt2" id="zz${i}"><b>${z[0]}</b><span>${nb(z[1])}</span></div>`).join('')}</div>`;
+ await sayS('e12',[W('e12','le directeur',()=>show('#m1',true)),W('e12','Elles portent',()=>show('#m2',true)),W('e12','La zone',()=>{head('1 · Le contexte réglementaire','Les mesures portent aussi sur…');vue(ZL)}),
   ...['La zone','Le périmètre de sécurité collision','Le périmètre de sécurité incendie','La zone particulièrement','La zone d\'évolution de passerelle','Et les couloirs'].map((w,i)=>W('e12',w,()=>on('#zz'+i,'on'),.005))]);
  await contV();return null}
 
