@@ -780,10 +780,10 @@ const img=(k,cap='')=>`<figure class="fig"><img src="${IMG[k]}" alt="">${cap?`<f
 // ranger des éléments dans des colonnes : une seule réponse par élément ; la bonne colonne reçoit l'élément, et chaque réponse est expliquée
 async function sortV(items,buckets,o={}){const lbl=o.label||'Élément';if(o.id)items=mix(o.id,items);
  vue(`<div class="sortw"><div class="qc" id="sq"><p class="n"></p><p class="q"></p><p class="qfb2" id="sfb"></p></div>
-  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}"><p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div></div>`);
+  <div class="bks" id="bks" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t,ic])=>`<button class="bk" data-k="${k}"><p class="lb">${nb(t)}</p><span class="cnt2"></span><ul></ul></button>`).join('')}</div><p class="sbn">${o.hint||'Cliquez sur celui qui est concerné'}</p></div>`);
  const st=cur(),bks=[...st.querySelectorAll('.bk')],fb=st.querySelector('#sfb'),bw=st.querySelector('#bks');let E=0;
  const drop=(g,it)=>{g.classList.add('ok');g.querySelector('ul').insertAdjacentHTML('beforeend',`<li>${nb(it.s||it.t)}</li>`);const n=g.querySelectorAll('li').length;g.querySelector('.cnt2').textContent=`${n} rangé${n>1?'s':''}`};
- for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=nb(it.t);fb.className='qfb2';fb.innerHTML='';
+ for(let i=0;i<items.length;i++){const it=items[i];st.querySelector('.n').textContent=`${lbl} ${i+1} sur ${items.length}`;st.querySelector('.q').innerHTML=(o.icon&&i===0?IX[o.icon]:'')+nb(it.t);fb.className='qfb2';fb.innerHTML='';
   bw.classList.remove('lock');bks.forEach(b=>b.classList.remove('ko','ok'));
   const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>x.onclick=null);bw.classList.add('lock');
   const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);drop(g,it);
@@ -910,6 +910,7 @@ async function consignes(){step();head('1 · Le contexte réglementaire',"Les co
  await contV();return null}
 const ARR=id=>`<div class="ar it" id="${id}"><svg viewBox="0 0 60 28"><path d="M4 14h48M40 4l12 10-12 10"/></svg></div>`;
 
+const IX={radio:'<svg viewBox="0 0 48 48"><path d="M10 16h28a3 3 0 013 3v17a3 3 0 01-3 3H10a3 3 0 01-3-3V19a3 3 0 013-3zM12 16L34 7"/><circle cx="19" cy="27.5" r="6"/><path d="M30 24h7M30 28h7M30 32h7"/></svg>',decision:'<svg viewBox="0 0 48 48"><path d="M10 5h22a2 2 0 012 2v18M10 5a2 2 0 00-2 2v32a2 2 0 002 2h14M15 13h14M15 19h14M15 25h10"/><circle cx="35" cy="35" r="9" fill="#FFC400"/><path d="M30.5 35l3.2 3.2 5.3-6"/></svg>',cal:'<svg viewBox="0 0 48 48"><rect x="6" y="9" width="36" height="32" rx="4"/><path d="M6 19h36M15 4v9M33 4v9"/><rect x="13" y="25" width="9" height="7" fill="#FFC400"/></svg>',box:'<svg viewBox="0 0 48 48"><rect x="5" y="7" width="38" height="9" rx="1"/><path d="M8 16v24a1 1 0 001 1h30a1 1 0 001-1V16M19 26h10"/></svg>',arr:'<svg viewBox="0 0 48 24"><path d="M4 12h38M32 4l10 8-10 8"/></svg>',badge:'<svg viewBox="0 0 200 300"><path d="M62 6L100 70L138 6" fill="none" stroke="#FFC400" stroke-width="26" stroke-linejoin="miter"/><rect x="28" y="58" width="144" height="224" rx="22" fill="#fff" stroke="#0F1E46" stroke-width="9"/><rect x="76" y="76" width="48" height="12" rx="6" fill="#0F1E46"/><circle cx="100" cy="150" r="28" fill="#C9D1E0"/><path d="M58 236a42 36 0 0184 0z" fill="#C9D1E0"/></svg>'};
 /* 7. la consigne n°3 : qui fait quoi */
 async function roles(){step();head('1 · Le contexte réglementaire',"La consigne d'exploitation n°3 : qui fait quoi");
  vue(`<div class="who3"><div class="w it" id="w1"><div class="av">${IC.tie}</div><div>${P('',"L'employeur","Il atteste que l'activité du salarié nécessite l'autorisation de conduite. Il a la responsabilité de sa formation, théorique et pratique, et passe pour cela par un centre de formation. Il désigne un ou plusieurs référents.")}</div></div>
@@ -953,7 +954,7 @@ async function sanctions(){step();head('2 · Les sanctions','Les sanctions possi
  vue(`<ul class="plan infl">${INF.map((f,i)=>`<li class="tile" id="tf${i}"><span>${nb(f[1])}${i===2?'<span class="dl" id="dl"> : c\'est un délit.</span>':''}</span></li>`).join('')}</ul>`);
  let prev=null;const lit=i=>{if(prev!==null)$c('#tf'+prev).classList.remove('now');const t=$c('#tf'+i);t.classList.add('in','now');prev=i};
  await sayS('e22',[...INF.map((f,i)=>W('e22',f[2],()=>lit(i),.005)),W('e22','là, c\'est',()=>on('#dl')),
-  W('e22','Cent cinquante',()=>vue(`<div class="hero nph"><p class="huge" id="m150">0 €</p><p class="cap">Et/ou 6 jours de suspension</p><p class="sub">Pour le badge non apparent en zone de sûreté à accès réglementé.</p></div>`)),
+  W('e22','Cent cinquante',()=>vue(`<div class="s10"><div class="l"><p class="huge" id="m150">0 €</p><p class="cap">et/ou 6 jours de suspension</p><p class="sub">Pour le badge non apparent en zone de sûreté à accès réglementé</p></div><div class="bd">${IX.badge}</div></div>`)),
   W('e22','Cent cinquante',()=>countTo('#m150',150,1400,v=>Math.round(v)+' €'),-.01)]);
  await contV();
  head('2 · Les sanctions','Le rappel affiché sur la plateforme');
@@ -972,7 +973,7 @@ async function retrait(){step();head('2 · Les sanctions',"L'autorisation de con
  vue(`<div class="duo2"><div class="card2 it" id="t1">${IC.cal}<p class="big2" style="font-size:clamp(34px,3.8vw,60px)">Suspendue</p></div><div class="card2 it" id="t2">${IC.key}<p class="big2" style="font-size:clamp(34px,3.8vw,60px)">Retirée</p><p class="tx" style="max-width:none;margin:0">Temporairement ou définitivement.</p></div></div><p class="sub it" id="t3" style="position:absolute;left:0;right:0;bottom:0;text-align:center;max-width:none">${nb("Le Groupe ADP décide, dans le cadre de son système de gestion de la sécurité, selon l'arrêté préfectoral 2026-00286.")}</p>`);
  const CV=`<div class="side" style="grid-template-columns:1fr"><div><p class="cap" style="text-align:left;margin:0 0 clamp(10px,2vh,22px)">Dans quels cas ?</p><ul class="conds">${CAS.map((c,i)=>`<li id="k${i}"><b>${i+1}</b><span>${nb(c[0])}${c[1]?`<small>${nb(c[1])}</small>`:''}</span></li>`).join('')}</ul></div></div>`;
  await sayS('e23',[at('e23',.02,()=>show('#t1')),W('e23','Ou retirée',()=>show('#t2')),W('e23',"C'est le Groupe",()=>show('#t3')),W('e23','Dans quels',()=>vue(CV)),...CAS.map((c,i)=>W('e23',c[2],()=>on('#k'+i),.005))]);
- vue(`<div class="hero nph"><p class="cap">Une décision motivée</p><p class="sub">Avec les délais et les voies de recours. Le Groupe ADP en assure la traçabilité et l'archivage, dans le respect des règles de confidentialité et de protection des données personnelles.</p><div class="xb it" id="xr">${bub('Xavier','Et on me retire le permis du jour au lendemain, sans pouvoir m\'expliquer ?')}</div></div>`);
+ head('2 · Les sanctions',"L'autorisation suspendue ou retirée");vue(`<div class="flx"><div class="fr3"><div class="fc">${IX.decision}<p>Une décision motivée</p></div><span class="fa">${IX.arr}</span><div class="fc">${IX.cal}<p>Les délais et les voies de recours</p></div><span class="fa">${IX.arr}</span><div class="fc">${IX.box}<p>Traçabilité et archivage par le Groupe ADP</p></div></div><div class="xb it" id="xr">${bub('Xavier','Et on me retire le permis du jour au lendemain, sans pouvoir m\'expliquer ?')}</div><p class="sbn">Dans le respect des règles de confidentialité et de protection des données personnelles</p></div>`);
  await contV();await sayS('e24');await sayS('e24c',[at('e24c',.02,()=>show('#xr'))]);
  vue(`<div class="duo2"><div class="card2 it" id="u1"><p class="lb">Sauf urgence</p><p class="big2">15 jours</p><p class="tx" style="max-width:none;margin:0">Vous êtes avisé des mesures envisagées, et vous disposez de quinze jours pour faire part de vos observations, écrites ou orales.</p></div>
   <div class="card2 it" id="u2"><p class="lb">En cas d'urgence</p><p class="big2">1 mois</p><p class="tx" style="max-width:none;margin:0">Suspension immédiate, un mois au maximum, reconductible si les circonstances l'exigent.</p></div></div>`);
@@ -996,7 +997,7 @@ async function infraction(){step();head('2 · Les sanctions','Infraction ou pas 
   {t:"Je passe un stop sans m'arrêter.",b:"i",ok:"Le non-respect d'un stop est une infraction relevée.",h:"Pas tout à fait. Que demande un stop ?"},
   {t:"Mon dépistage de substances illicites est positif.",b:"i",ok:"Plus qu'une infraction : un dépistage positif est un délit au code de la route.",h:"Pas tout à fait. Repensez à la liste des infractions relevées."},
   {t:"Je m'arrête au stop, je regarde, je repars.",b:"n",ok:"C'est ce qu'on attend d'un conducteur.",h:"Pas tout à fait. Relisez : je m'arrête."}],INF2),
-  [['i','Infraction','warn'],['n','Pas une infraction','shield']],{label:'Situation',id:'inf'});
+  [['i','Infraction','warn'],['n','Pas une infraction','shield']],{hint:'Cliquez sur votre réponse',icon:'radio',label:'Situation',id:'inf'});
  jlog('5 h 11',`Infraction ou pas : 6 situations${errTxt(E)}`);return gate('inf',E,6,9,'Infraction ou pas')}
 
 /* 10. les acteurs du contrôle */
@@ -1004,8 +1005,8 @@ async function prefet(){step();head('3 · Les acteurs du contrôle','Qui contrô
  vue(`<div class="hero nph"><p class="cap">Les acteurs sur la piste</p><p class="sub">Ceux de l'État, vous les connaissez par la formation sûreté du badge. Ici, vous découvrez les acteurs sur la piste.</p></div>`);
  const FAM=`<div class="duo2"><div class="card2 it" id="f1">${IC.build}<p class="lb">Les services de l'État</p></div><div class="card2 it" id="f2">${IC.plane}<p class="lb">Le personnel du Groupe ADP</p></div></div>`;
  await sayS('e26',[W('e26','Deux familles',()=>{head('3 · Les acteurs du contrôle',"Qui contrôle sur la plateforme");vue(FAM)}),W('e26','les services',()=>show('#f1')),W('e26','et le personnel',()=>show('#f2')),W('e26',"D'abord l'État",()=>show('#f1',true)),
-  W('e26','Le préfet',()=>vue(`<div class="hero nph"><p class="cap">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><p class="sub">Il a autorité en matière de conduite en zone côté piste.</p><p class="sub it" id="pf">Il en fixe les modalités par arrêté préfectoral : elles sont opposables à tout intervenant. C'est de lui que vient l'arrêté du début.</p></div>`)),
-  W('e26','Il en fixe',()=>show('#pf'))]);
+  W('e26','Le préfet',()=>vue(`<div class="flx"><div class="p13"><p class="pn">Le préfet délégué à la sécurité et à la sûreté des plateformes aéroportuaires</p><span class="fa it pf">${IX.arr}</span><div class="fc it pf">${IX.decision}<p>Arrêté préfectoral</p></div><span class="fa it pf">${IX.arr}</span><p class="ti it pf">Tout intervenant</p></div><ul class="bl13"><li>Il a autorité en matière de conduite en zone côté piste.</li><li class="it pf">Ses règles sont opposables à tous.</li></ul><p class="sbn it pf">C'est de lui que vient l'arrêté du début</p></div>`)),
+  W('e26','Il en fixe',()=>show('.pf'))]);
  await pause();return null}
 const MIS=[['Renseigner',"Prévenir les troubles à l'ordre public, lutter contre le terrorisme."],['Protéger',"Les aéronefs d'État à l'arrivée et au départ : garde, contrôle des personnes, des bagages, du fret et de l'avitaillement."],['Contrôler',"Les personnes et les véhicules admis côté piste, et leurs titres d'accès."],['Sanctionner',"Saisie et retrait des autorisations de circuler, en cas d'infraction au code de la route ou de manquement à l'arrêté préfectoral."]];
 async function gta(){step();head('3 · Les acteurs du contrôle','La Gendarmerie des transports aériens');
@@ -1396,4 +1397,40 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .duoC .lb{margin:0;font-weight:800;font-size:clamp(22px,2.6vw,36px);line-height:1.15;color:var(--marine)}
 .duoC .tx{margin:0;font-weight:600;font-size:clamp(16px,1.7vw,24px);line-height:1.35;color:var(--marine)}
 @media (max-width:700px){.duoC{grid-template-columns:1fr}}
+
+/* étape 1 écran 9 : planche — mission en grand, choix en hautes cartes, consigne en bandeau marine */
+.sortw{max-width:1240px;min-height:100%;gap:clamp(16px,3.5vh,40px)}
+.sortw .qc{width:100%;border:0;box-shadow:none;background:none;padding:0 0 0 8px;margin:0;text-align:left}
+.sortw .qc .n{display:flex;align-items:center;gap:12px;margin:0 0 clamp(8px,1.6vh,16px);font-weight:700;font-size:clamp(16px,1.5vw,22px);color:var(--marine)}
+.sortw .qc .n::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--jaune)}
+.sortw .qc .q{margin:0;font-weight:800;font-size:clamp(26px,3.4vw,50px);line-height:1.15;color:var(--marine)}
+.sortw .bk{border-color:var(--marine);border-radius:24px;box-shadow:0 4px 0 rgba(15,30,70,.25);min-height:clamp(120px,24vh,200px);justify-content:center;padding:14px 16px}
+.sortw .bk .lb{font-size:clamp(20px,2.1vw,30px);font-weight:800}
+.sortw .sbn{margin:auto 0 0;background:var(--marine);color:#fff;font-weight:700;font-size:clamp(18px,1.8vw,26px);padding:16px 28px;border-radius:0}
+@media (max-width:700px){.sortw .bk{min-height:90px}.sortw .qc .q{font-size:24px}}
+.sortw .bks{margin-top:auto}.sortw .sbn{margin-top:0}
+
+/* étape 1 écrans 10–13 : planches */
+.flx{display:flex;flex-direction:column;width:100%;min-height:100%;gap:clamp(14px,3vh,34px);text-align:left}
+.flx .sbn{margin:auto 0 0;background:var(--marine);color:#fff;font-weight:700;font-size:clamp(18px,1.8vw,26px);padding:16px 28px}
+.flx svg{fill:none;stroke:var(--marine);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.fr3{display:flex;align-items:flex-start;justify-content:space-around;gap:clamp(8px,2vw,28px);padding-top:clamp(10px,3vh,40px)}
+.fc{display:flex;flex-direction:column;align-items:center;text-align:center;gap:12px;max-width:260px}
+.fc svg{width:clamp(80px,10vw,130px);height:auto}.fc p{margin:0;font-weight:800;font-size:clamp(17px,1.9vw,26px);line-height:1.35;color:var(--marine)}
+.fa svg{width:clamp(40px,4.5vw,64px);height:auto;margin-top:clamp(30px,5vw,70px)}
+.p13{display:flex;align-items:flex-start;gap:clamp(8px,2vw,28px)}
+.p13 .pn{flex:0 1 46%;margin:0;font-weight:800;font-size:clamp(24px,3vw,44px);line-height:1.15;color:var(--marine)}
+.p13 .fc svg{width:clamp(70px,8vw,110px)}.p13 .fc p{font-size:clamp(15px,1.6vw,22px)}
+.p13 .ti{flex:1;margin:0;text-align:center;font-weight:800;font-size:clamp(18px,2vw,28px);color:var(--marine);padding-top:clamp(10px,2vw,30px)}
+.p13 .fa svg{margin-top:clamp(20px,3vw,44px)}
+.bl13{list-style:none;margin:0;padding:0 0 0 8px;display:flex;flex-direction:column;gap:10px;font-weight:700;font-size:clamp(18px,2vw,28px);color:var(--marine)}
+.bl13 li{display:flex;align-items:center;gap:14px}.bl13 li::before{content:"";flex:none;width:14px;height:14px;border-radius:50%;background:var(--jaune)}
+.s10{display:grid;grid-template-columns:1.6fr 1fr;align-items:center;gap:clamp(12px,3vw,40px);width:100%;text-align:left;padding-left:clamp(10px,3vw,50px)}
+.s10 .huge{margin:0;font-size:clamp(90px,15vw,220px);line-height:1}.s10 .cap{margin:clamp(14px,4vh,40px) 0 0;text-align:left}.s10 .sub{text-align:left;font-weight:700;color:var(--marine);max-width:none}
+.s10 .bd svg{width:min(100%,260px);height:auto;transform:rotate(7deg);filter:drop-shadow(0 16px 20px rgba(15,30,70,.25))}
+.sortw .qc .q svg{display:inline-block;vertical-align:middle;width:clamp(48px,6vw,90px);height:auto;margin-right:clamp(12px,2vw,28px);fill:none;stroke:var(--marine);stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+@media (max-width:700px){.fr3{flex-direction:column;align-items:center}.fa{display:none}.p13{flex-wrap:wrap}.p13 .pn{flex:1 0 100%}.s10{grid-template-columns:1fr;padding-left:0}.s10 .bd{display:none}}
+.s10 .cap{font-size:clamp(26px,3.4vw,50px);font-weight:800;color:var(--marine)}.s10 .sub{font-size:clamp(18px,2vw,28px)}
+.s10 .bd svg{overflow:visible;padding-top:20px}
+.flx .xb.it:not(.in){display:none}.flx .xb{margin:0}
 </style></body></html>
