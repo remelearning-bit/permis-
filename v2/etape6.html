@@ -213,7 +213,7 @@ let CUR=null;let ord=1;
 let FTX=null;function FEATHER(){if(FTX)return FTX;const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#000';g.fillRect(0,0,256,256);g.filter='blur(5px)';g.fillStyle='#fff';g.fillRect(9,9,238,238);FTX=new THREE.CanvasTexture(c);return FTX}
 /* une photo remplace l'autre en fondu enchaîné */
 function photo(k,D=900){const P=plane(k);if(CUR===P)return Promise.resolve();const old=CUR;CUR=P;P.m.visible=true;P.m.renderOrder=++ord;P.m.position.y=ord*.001;
- const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);
+ const caption=(typeof CAPS!=='undefined'&&CAPS[k])||'';const cp=$('#cap');cp.textContent=caption;cp.classList.toggle('on',!!caption);const _rd=document.getElementById('rd');if(_rd)_rd.classList.toggle('on',(window.REDO||[]).includes(k));
  return anim(D,t=>{P.m.material.opacity=t;if(old&&t>=1){old.m.visible=false;old.m.material.opacity=0}})}
 /* un point de la photo affichée, en fractions de sa largeur et de sa hauteur */
 const pt=(fx,fy,k)=>{const P=k?plane(k):CUR;return [(fx-.5)*P.w,0,(fy-.5)*P.h]};
@@ -252,7 +252,7 @@ function size(){const a=(im.naturalWidth||16)/(im.naturalHeight||9),W=sc.clientW
 b.onclick=()=>{if(!CUR||!IMG[CUR.k])return;im.src=IMG[CUR.k];v.classList.remove('big');v.classList.add('on');wasPlaying=!!(curAudio&&!curAudio.paused);if(wasPlaying)curAudio.pause();(im.complete?center():im.onload=center)};
 v.querySelector('.zh button').onclick=()=>{v.classList.remove('on');if(wasPlaying&&curAudio)curAudio.play().catch(()=>{})};
 im.onclick=e=>{const r=im.getBoundingClientRect(),fx=(e.clientX-r.left)/r.width,fy=(e.clientY-r.top)/r.height;v.classList.toggle('big');size();requestAnimationFrame(()=>{sc.scrollLeft=fx*sc.scrollWidth-sc.clientWidth/2;sc.scrollTop=fy*sc.scrollHeight-sc.clientHeight/2})};
-setInterval(()=>{const show=PORT()&&CUR&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
+setInterval(()=>{const show=PORT()&&CUR&&!(window.NOZOOM||[]).includes(CUR.k)&&CUR.m.visible&&!VZ.classList.contains('on')&&!document.getElementById('trav')&&!document.querySelector('#vid.on')&&!document.getElementById('pf')&&!document.querySelector('#jrn.on')&&!v.classList.contains('on');b.classList.toggle('on',!!show)},300)})();
 
 /* plans nets et zoomables : le plan ADP d'origine occupe toute la page, on peut le zoomer et le déplacer pendant que la voix continue */
 (function(){const MAP={planpoint:['circulation',''],planrestreint:['circulation','T'],zone30:['vitesses',''],hot1:['hot-t1',''],hot2:['hot-ac',''],hot3:['hot-cargo',''],hot4:['hot-bd2e','']};
@@ -792,6 +792,12 @@ function p4Mount(){const f=document.querySelector('iframe[data-p4]:not([data-m])
 window.addEventListener('message',e=>{const d=e.data;if(d&&d.pick){const b=document.querySelector('#pz button[data-k="'+d.pick+'"]');if(b)b.click()}});
 function p3dHTML(css){return `<iframe class="p3d" data-p3d title="Le permis T en 3D, à retourner en le faisant glisser" style="border:0;background:transparent;pointer-events:auto;${css}"></iframe>`}
 function p3dMount(root){(root||document).querySelectorAll('iframe[data-p3d]:not([data-m])').forEach(f=>{f.dataset.m=1;if(PT3D)f.src=URL.createObjectURL(new Blob([PT3D],{type:'text/html'}))})}
+/* tampon « photo à refaire » : posé sur les images listées dans REDO */
+(function(){const st=document.createElement('style');st.textContent='.rdw{position:relative;display:inline-block;max-width:100%}.rdw>img{display:block}.rds,#rd{position:absolute;left:10px;top:10px;z-index:7;pointer-events:none;background:#D6231F;color:#fff;font:800 13px/1.1 Barlow,system-ui,sans-serif;letter-spacing:.06em;text-transform:uppercase;padding:6px 10px;border-radius:6px;border:2px solid #fff;transform:rotate(-4deg);box-shadow:0 2px 8px rgba(0,0,0,.3)}#rd{position:fixed;left:16px;top:16px;opacity:0;transition:opacity .3s}#rd.on{opacity:1}';document.head.appendChild(st);
+const rd=document.createElement('div');rd.id='rd';rd.textContent='Photo à refaire';document.body.appendChild(rd);
+const src=()=>{const s=new Set();(window.REDO||[]).forEach(k=>{[typeof IMG!=='undefined'&&IMG[k],typeof PHO!=='undefined'&&PHO[k]].forEach(v=>v&&s.add(v))});return s};
+function scan(){const S=src();if(!S.size)return;document.querySelectorAll('img').forEach(im=>{if(im.dataset.rd||!S.has(im.getAttribute('src')))return;im.dataset.rd=1;const p=im.parentElement;if(!p)return;if(getComputedStyle(p).position==='static')p.style.position='relative';const t=document.createElement('span');t.className='rds';t.textContent='Photo à refaire';p.appendChild(t)})}
+new MutationObserver(scan).observe(document.body,{childList:true,subtree:true});setTimeout(scan,500)})();
 /* ---------------- Étape 6 · Les règles générales de sécurité sur l'aire de mouvement (diapos 187 à 196) ----------------
    Voix g01 à g18 existantes. Photos du support (diapos 191 à 195), illustrations au trait pour les équipements et la cabine.
    Questions : seuil de 50 %, seconde série après un échec. */
@@ -806,6 +812,7 @@ async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.hea
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   const sw=(d.swaps||(d.swap?[d.swap]:[])).filter(x=>x[0]===id);
   await sayS(id,[...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null}))),...sw.map(x=>at(id,x[1],()=>photo(x[2],FAST?10:900)))])}
+ for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
  if(d.end)d.end(L);await cont(L);L.kill();return null}
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
@@ -907,7 +914,7 @@ const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'L
 /* 8. les cheminements piétons (diapo 195) */
 const pietons=S('piet1','Les cheminements piétons',['g14','g15'],[['g14',.05,'Traverser une voie avion à pied','Dans le cheminement piéton : bande blanche continue de part et d\'autre, avec hologramme, ou zébras blancs.'],
  ['g14',.43,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
- ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swaps:[['g14',.42,'piet2'],['g14',.68,'piet1']],tm:'7 h 01'});
+ ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swaps:[['g14',.42,'piet2'],['g14',.68,'piet1']],tm:'7 h 01',more:[["À pied, sur une traversée", "Si le cheminement piéton traverse une voie de circulation avion, laissez toujours la priorité aux avions et aux véhicules qui circulent sur cette voie."]]});
 
 /* 9. les questions d'entraînement (diapo 196) */
 async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;

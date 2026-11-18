@@ -1,10 +1,11 @@
 /* un écran sur photo : chaque carte arrive quand la voix en parle ; Xavier est cité */
-async function infoS(d){step();if(d.head)head(H5,d.head);await photo(d.ph,FAST?10:500);setCam({mode:'contain'});await vzOff();
+async function infoS(d){step();if(d.head)head(H5,d.head);await goPh(d.ph,{mode:'contain'},500);
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
+ for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
  await cont(L);L.kill();return null}
-const S=(ph,cap,lines,cards,head)=>()=>infoS({ph,cap,lines,cards,head});
+const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 80 %, retour ciblé */
 async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();

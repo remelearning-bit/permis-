@@ -832,8 +832,9 @@ async function infoS(d){step();if(d.head)head(H5,d.head);await goPh(d.ph,{mode:'
  const L=label([0,0,0],{lead:false}).title(d.cap);
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
+ for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
  await cont(L);L.kill();return null}
-const S=(ph,cap,lines,cards,head)=>()=>infoS({ph,cap,lines,cards,head});
+const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 80 %, retour ciblé */
 async function quiz(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
@@ -906,7 +907,7 @@ const moteurs=()=>(async()=>{step();
 const helices=S('helices','Les hélices',['k25','k26'],[['k25',.3,'4 mètres minimum','Devant les hélices.'],['k25',.6,"Attendre l'arrêt complet",'Avant de pénétrer sur le poste.'],['k25',.9,'Silencieuses, mais elles tournent encore',"Silencieuses surtout après l'arrêt des moteurs, elles tournent encore. Une hélice qui tourne ne se voit pas."],['k26',.6,'Les hélicoptères','Même vigilance.']]);
 
 /* 6. les bonnes pratiques (diapos 173 à 185) */
-const pratiques=S('brume','Les bonnes pratiques',['k28','k29'],[['k28',.15,'Stationnement','Freins serrés, moteur éteint.'],['k28',.3,'Feux','Feux de position ou de croisement.'],['k28',.4,'Gyrophares','Interdits.'],['k28',.5,'Météo','Adapter : nuit, neige, verglas.'],['k28',.6,'Convois','Respecter la longueur.'],['k28',.7,'Faible visibilité','Conscience de la situation.'],['k28',.8,'Recul','Les règles de la marche arrière.'],['k28',.9,'Chargement','Une conduite adaptée au chargement.'],['k29',.6,'Et toujours','Téléphoner ou conduire, il faut choisir. Ceinture attachée. Limitations respectées.']]);
+const pratiques=S('brume','Les bonnes pratiques',['k28','k29'],[['k28',.15,'Stationnement','Freins serrés, moteur éteint.'],['k28',.3,'Feux','Feux de position ou de croisement.'],['k28',.4,'Gyrophares','Interdits.'],['k28',.5,'Météo','Adapter : nuit, neige, verglas.'],['k28',.6,'Convois','Respecter la longueur.'],['k28',.7,'Faible visibilité','Conscience de la situation.'],['k28',.8,'Recul','Les règles de la marche arrière.'],['k28',.9,'Chargement','Une conduite adaptée au chargement.'],['k29',.6,'Et toujours','Téléphoner ou conduire, il faut choisir. Ceinture attachée. Limitations respectées.']],undefined,{more:[["Écouteurs interdits", "Les écouteurs sont interdits."]]});
 const visib=S('vc4','En faible visibilité',['k30'],[['k30',.4,'Différer ses déplacements',"Ne circuler qu'en cas d'extrême nécessité."],['k30',.7,'Adapter sa conduite','Au risque météorologique : visibilité, nuit.'],['k30',.95,'30 km/h, au pas sur les postes','Les feux de route sont interdits en toute circonstance.']]);
 const recul=S('recul','La marche arrière',['k31'],[['k31',.4,'Toujours guidée','Par une caméra véhicule ou un personnel qualifié.'],['k31',.8,'Sans visibilité, une vigie','Obligatoire pour guider la marche arrière.']]);
 const accidents=S('accidents','Les accidents sur Roissy',['k32','k33'],[['k32',.3,'Août 2010, croisement voie Uniform','Respectez la priorité et la zone 30.'],['k32',.55,'Sortie de la caserne des pompiers de CDG2','Un stop face au C5 protège la sortie des véhicules d\'intervention.'],['k32',.8,'Avril 2009, croisement voie Alpha',"Respectez les véhicules d'intervention prioritaires en sortie de traversée."],['k33',.3,'Traversée de la voie E','Un tunnel a été créé.'],['k33',.8,'Collision bus et réacteur',"Sept blessés légers, 600 000 euros de dégâts. Quelques secondes d'inattention."]]);

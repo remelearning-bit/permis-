@@ -12,6 +12,7 @@ async function infoS(d){step();if(d.head)head(H6+(d.tm?' · '+HH(d.tm):''),d.hea
  for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
   const sw=(d.swaps||(d.swap?[d.swap]:[])).filter(x=>x[0]===id);
   await sayS(id,[...(d.cards||[]).filter(c=>c[0]===id).map(c=>at(id,c[1],()=>L.card(c[2],c[3]||'',{a:null}))),...sw.map(x=>at(id,x[1],()=>photo(x[2],FAST?10:900)))])}
+ for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
  if(d.end)d.end(L);await cont(L);L.kill();return null}
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
@@ -113,7 +114,7 @@ const passagers=S('pass1','Le déplacement des passagers',['g13'],[['g13',.03,'L
 /* 8. les cheminements piétons (diapo 195) */
 const pietons=S('piet1','Les cheminements piétons',['g14','g15'],[['g14',.05,'Traverser une voie avion à pied','Dans le cheminement piéton : bande blanche continue de part et d\'autre, avec hologramme, ou zébras blancs.'],
  ['g14',.43,'Traverser un cheminement véhicule','Sur les passages piétons.'],['g14',.55,'Toujours','Le gilet haute visibilité et les équipements de protection.'],['g14',.72,'Sur une touchée','Loin d\'un avion moteurs en fonctionnement : le régime peut augmenter d\'un coup.'],
- ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swaps:[['g14',.42,'piet2'],['g14',.68,'piet1']],tm:'7 h 01'});
+ ['g15',.03,'Traverser ou circuler','Traverser une voie avion par un cheminement piéton : sans accompagnement.'],['g15',.35,'Circuler à pied sur une voie avion : interdit','Sauf sous la surveillance et l\'accompagnement d\'un véhicule autorisé, à l\'arrivée ou au départ de l\'avion.']],'Les piétons',{swaps:[['g14',.42,'piet2'],['g14',.68,'piet1']],tm:'7 h 01',more:[["À pied, sur une traversée", "Si le cheminement piéton traverse une voie de circulation avion, laissez toujours la priorité aux avions et aux véhicules qui circulent sur cette voie."]]});
 
 /* 9. les questions d'entraînement (diapo 196) */
 async function questions(){step();head(H6+' · '+HH('7 h 02'),"Questions d'entraînement");ALT.q6=1;const two=(TRY.q6||0)%2;

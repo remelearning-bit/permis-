@@ -51,7 +51,7 @@ const incendie=S('incendie','En cas d\'incendie',['u08','u09'],[['u08',.1,'Prot�
 /* 5. les objets intrus (diapos 239 à 244) */
 const fod=S('fodpiste','Les objets intrus',['u10'],[['u10',.05,'Un objet intrus, un FOD','Un objet inanimé sur l\'aire de mouvement, sans fonction opérationnelle ou aéronautique, qui peut constituer un danger pour l\'exploitation des aéronefs.'],
  ['u10',.45,'Aéronautiques','Écrous, boulons, bouchons de réservoir, fragments de train ou de pneu, jauge à huile, feuille de métal.'],['u10',.72,'Non aéronautiques','Outils, fournitures de restauration, badges, stylos, étiquettes bagages, plastique, bois, béton, caoutchouc des joints.']],'Les objets intrus',{tm:'7 h 45'});
-const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46',more:[['5 · Contrôler la zone',"Contrôlez la zone d'évolution contrôlée avant l'arrivée et après le départ de l'avion."],['6 · Signaler',"Une pièce d'avion, ou un objet hors de portée en secteur interdit : contactez le centre opérationnel côté piste."]]});
+const responsable=S('uld','Le responsable d\'un objet intrus',['u11'],[['u11',.03,'Celui qui le génère, et celui qui ne le ramasse pas',''],['u11',.38,'1 · Vérifier','L\'absence de débris sur son véhicule.'],['u11',.55,'2 · Ramasser','Tous les objets et déchets rencontrés.'],['u11',.7,'3 · Jeter','Dans les poubelles dédiées.'],['u11',.85,'4 · Arrimer','Ne jamais laisser de conteneur non arrimé au sol.']],'Les objets intrus',{tm:'7 h 46',more:[['5 · Sécuriser les chargements','Sécurisez les chargements de bagages, pour éviter les pertes lors de vos déplacements.'],['6 · Ne rien jeter au sol','Ne jetez rien au sol.'],['7 · Contrôler la zone',"Contrôlez la zone d'évolution contrôlée avant l'arrivée et après le départ de l'avion."],['8 · Signaler',"Une pièce d'avion, ou un objet hors de portée en secteur interdit : contactez le centre opérationnel côté piste."]]});
 const concorde=S('concorde','Ce que coûte un objet intrus',['u12'],[['u12',.1,'Gonesse, 25 juillet 2000','Au décollage, le Concorde roule sur une lamelle métallique perdue par un DC-10 de Continental Airlines. Il s\'écrase une minute vingt plus tard.'],['u12',.7,'113 morts','109 à bord, 4 au sol.']],'Les objets intrus',{tm:'7 h 46'});
 async function film(src,title,credit,tm){step();head(H9+' · '+HH(tm),title);
  vue(`<div class="filmw"><video id="fv" src="../video/${src}.mp4" poster="../video/${src}.jpg" controls playsinline preload="auto"></video><p class="cr">${nb(credit)}</p></div>`);
@@ -87,19 +87,21 @@ const QA1=[{t:"Un départ de feu sur un poste avion.",b:"p",ok:"Le 18, en donnan
  {t:"Un collègue est blessé.",b:"s",ok:"Les urgences médicales, 15 ou 112."},
  {t:"Une bâche s'est envolée sur une voie avion, impossible à ramasser.",b:"a|p",ok:"Position exacte et type d'objet, pour organiser le nettoyage."},
  {t:"Je vois un drone au-dessus de la plateforme.",b:"a",ok:"Signalement immédiat, puis notification sur le Safety Portal."},
- {t:"Je ne sais plus où je suis.",b:"r|a",ok:"Ma régulation ou mon agent de maîtrise, avec les indices autour de moi. Ou le centre opérationnel côté piste, au 01 48 16 47 55."}];
+ {t:"Je ne sais plus où je suis.",b:"r|a",ok:"Ma régulation ou mon agent de maîtrise, avec les indices autour de moi. Ou le centre opérationnel côté piste, au 01 48 16 47 55."},
+ {t:"Un individu suspect côté piste.",b:"a",ok:"Le centre opérationnel côté piste : il fait suspendre le trafic."}];
 const QA2=[{t:"De la fumée sort d'un engin garé près de l'avion.",b:"p",ok:"Un feu : les pompiers au 18."},
  {t:"Un collègue est blessé sur le poste avion.",b:"s",ok:"Les urgences médicales, 15 ou 112."},
  {t:"J'ai heurté l'aile d'un avion en manœuvrant.",b:"a",ok:"Collision avec un avion : le centre opérationnel côté piste."},
  {t:"Mon véhicule ne redémarre plus, dans la bande d'une voie avion.",b:"a",ok:"Panne dans la bande : il fait stopper les avions."},
  {t:"Je ne reconnais plus les bâtiments autour de moi.",b:"r|a",ok:"Perdu : ma régulation ou mon agent de maîtrise, ou le centre opérationnel côté piste."},
  {t:"Un drone survole les postes avion.",b:"a",ok:"Signalement immédiat au centre opérationnel côté piste."},
- {t:"Un épandage d'huile sur le cheminement, impossible à ramasser.",b:"a|p",ok:"Position exacte et type d'objet, pour qu'un nettoyage soit organisé."}];
+ {t:"Un épandage d'huile sur le cheminement, impossible à ramasser.",b:"a|p",ok:"Position exacte et type d'objet, pour qu'un nettoyage soit organisé."},
+ {t:"Un individu suspect côté piste.",b:"a",ok:"Le centre opérationnel côté piste : il fait suspendre le trafic."}];
 async function qui(){step();head(H9+' · '+HH('7 h 52'),'Qui j\'appelle d\'abord ? Cliquez sur la bonne colonne');
  vue(`<div class="hero">${bigIc('phone')}<p class="cap">${nb("Dans cette situation, j'appelle d'abord :")}</p><p class="sub">Cliquez sur la bonne colonne.</p></div>`);
  await sayS('u20');
  const E=await sortV(alt('qui',QA1,QA2),QUI,{label:'Situation',id:'qui'});
- jlog('7 h 52',`Qui j'appelle : 7 situations${errTxt(E)}`);return gate('qui',E,7,[1,2,3,8,10,11],"Qui j'appelle",12)}
+ jlog('7 h 52',`Qui j'appelle : 8 situations${errTxt(E)}`);return gate('qui',E,8,[1,2,3,8,10,11],"Qui j'appelle",12)}
 
 /* 9. les questions d'entraînement (diapo 248) */
 async function questions(){step();head(H9+' · '+HH('7 h 53'),"Questions d'entraînement");ALT.q9=1;const two=(TRY.q9||0)%2;
