@@ -868,9 +868,9 @@ const at2=(id,frac,fn)=>[frac,fn];
 /* 1. l'ouverture, à douze kilomètres, et la plongée */
 async function ouverture(){step();await mapReady;mapOn();
  // vue inclinée, à douze kilomètres : le centre de l'aéroport est loin devant
- Object.assign(mc,{Z:Z0,c:A.slice(),tilt:T0,sx:MW/2,sy:CH*.62-CH+MH});dirty=true;
+ Object.assign(mc,{Z:Z0,c:A.slice(),tilt:0,sx:MW/2,sy:CH*.08});dirty=true;
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 2 · 5 h 20').card('3 250 hectares : où passe la limite entre côté ville et côté piste ?',"À cheval sur trois départements : le Val-d'Oise, la Seine-et-Marne et la Seine-Saint-Denis.");
- try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
+ L.el.classList.add('cv2');try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
  await cont(L,"C'est parti");
  await sayS('r1');
  await cont(L,'Plonger sur la plateforme');L.kill();
@@ -1337,4 +1337,6 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .pmini.t25.e2 i:nth-of-type(2){background:var(--marine)}.pmini.t25.e2 i:nth-of-type(3){background:var(--jaune)}
 .f25.e2 .v{font-size:clamp(22px,2.6vw,38px);line-height:1.12}.f25.e2 .v2{font-size:clamp(18px,2vw,28px)}.f25.e2{gap:clamp(12px,2vw,28px)}
 .c4.c3{grid-template-columns:repeat(3,1fr)}.c4.c3 small{font-size:clamp(13px,1.4vw,19px);font-weight:700}
+.lab.cv2{position:fixed!important;left:4%!important;right:auto!important;top:auto!important;bottom:calc(46px + 9%)!important;width:min(74%,940px)!important;transform:none!important;border:0!important;border-left:12px solid var(--jaune)!important;border-radius:22px!important}
+.lab.cv2 .ttl,.lab.cv2 h2{font-size:clamp(24px,3vw,42px)}
 </style></body></html>
