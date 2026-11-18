@@ -786,10 +786,12 @@ async function objectifs(){step();head('Préambule','Les objectifs de la formati
 const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
 const SAY=['La réglementation','Le zonage',"L'accès","L'inspection",'La circulation des',"Les règles",'La circulation autour',"L'aire de manœuvre","Les procédures","Et l'amélioration"];
 const PERMIS=(demo=true)=>`<div style="width:100%;display:flex;flex-direction:column;align-items:center"><div class="permis" id="pm"><div class="T">T</div><ol>${ET.map((e,i)=>`<li><b>${i+1}</b>${nb(e)}</li>`).join('')}</ol></div>${demo?`<p class="demo2" id="dm">${nb("Exemple : l'étape 1 terminée, sa case est cochée.")}</p>`:''}</div>`;
-async function plan(){step();head('Préambule','Le plan de la matinée');vue(PERMIS());
+async function plan(){step();head('Préambule','Le plan de la matinée');
+ vue(`<div class="duoS"><div class="dl"><div class="pc pcp"><div class="ph1"><span class="T">T</span><p>Votre permis</p></div><div class="cs" id="pcs">${ET.map((e,i)=>`<i>${i+1}</i>`).join('')}</div><p class="demo2" id="dm">${nb("Exemple : l'étape 1 terminée, sa case est cochée.")}</p></div></div>
+  <div class="dr"><div class="permis lst2" id="pm"><ol>${ET.map((e,i)=>`<li><b>${i+1}</b>${nb(e)}</li>`).join('')}</ol></div></div></div>`);
  const li=i=>cur().querySelectorAll('.permis li')[i];
  await sayS('p16',[...SAY.map((w,i)=>W('p16',w,()=>li(i).classList.add('on'),.01)),
-  W('p16','À chaque étape',()=>{li(0).classList.add('tick');on('#dm')}),W('p16','À la fin',()=>{li(0).classList.remove('tick');$c('#dm').classList.remove('in');$c('.permis .T').classList.add('lit')})]);
+  W('p16','À chaque étape',()=>{li(0).classList.add('tick');$c('#pcs i').classList.add('now');on('#dm')}),W('p16','À la fin',()=>{li(0).classList.remove('tick');$c('#pcs i').classList.remove('now');$c('#dm').classList.remove('in');$c('.pcp .T').classList.add('lit')})]);
  // à vous : par où commence la matinée ?
  const dm=$c('#dm');dm.textContent="À vous : cliquez sur l'étape par laquelle la matinée commence.";dm.style.color='var(--marine)';dm.classList.add('in');
  const fb=document.createElement('p');fb.className='qfb';dm.after(fb);const lis=[...cur().querySelectorAll('.permis li')];lis.forEach(x=>x.classList.add('pk','ans'));
@@ -1130,4 +1132,11 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal!important;overflow:visible}.ax .sg .sl:not(.w){color:var(--marine)}.ax .sg .lg,.ax .sg .sl{display:block;text-align:center}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg{flex-direction:column}.ax .sg .lg,.ax .sg .sl{display:inline;height:auto}.ax .sg{font-size:clamp(10px,.88vw,13px)}}
 @media (max-width:700px){.vfw .qc .cdy{border:0;padding:0;background:none}.vfw .qc .ans{width:100%;margin-top:8px;flex:none;font-size:17px;padding:12px 16px}.qans .ans{flex:none;font-size:17px;padding:12px 16px}}
+/* écran « plan de la matinée » : tient aussi avec les sous-titres, et sur téléphone la liste reste à portée */
+.pcp{padding:18px 24px}.pcp .T{width:60px;height:60px;font-size:40px;border-width:5px}.pcp .cs{grid-template-columns:repeat(5,minmax(0,60px));gap:10px;margin-top:14px}.pcp .cs i{border-radius:12px;font-size:clamp(18px,1.8vw,24px)}
+.pcp .demo2{margin-top:10px}.pcp .qfb{margin-top:6px;min-height:0;font-size:clamp(14px,1.15vw,17px)}
+.duoS:has(.pcp){min-height:0;align-self:flex-start}
+.permis.lst2 li{min-height:0;line-height:1.15;padding-top:3px;padding-bottom:3px}
+@media (max-width:700px){.pcp{border:0;box-shadow:none;background:none;padding:0}.pcp .ph1,.pcp .cs{display:none}.pcp .demo2{margin:0 0 6px}}
+@media (min-width:700px) and (orientation:landscape){.permis.lst2 ol{height:auto;gap:4px}.permis.lst2 li{flex:none;padding:2px 14px;font-size:15px;border-width:2px}.permis.lst2 li b{height:20px;width:22px;min-width:0;font-size:12px}}
 </style></body></html>

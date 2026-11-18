@@ -183,3 +183,10 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal!important;overflow:visible}.ax .sg .sl:not(.w){color:var(--marine)}.ax .sg .lg,.ax .sg .sl{display:block;text-align:center}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg{flex-direction:column}.ax .sg .lg,.ax .sg .sl{display:inline;height:auto}.ax .sg{font-size:clamp(10px,.88vw,13px)}}
 @media (max-width:700px){.vfw .qc .cdy{border:0;padding:0;background:none}.vfw .qc .ans{width:100%;margin-top:8px;flex:none;font-size:17px;padding:12px 16px}.qans .ans{flex:none;font-size:17px;padding:12px 16px}}
+/* écran « plan de la matinée » : tient aussi avec les sous-titres, et sur téléphone la liste reste à portée */
+.pcp{padding:18px 24px}.pcp .T{width:60px;height:60px;font-size:40px;border-width:5px}.pcp .cs{grid-template-columns:repeat(5,minmax(0,60px));gap:10px;margin-top:14px}.pcp .cs i{border-radius:12px;font-size:clamp(18px,1.8vw,24px)}
+.pcp .demo2{margin-top:10px}.pcp .qfb{margin-top:6px;min-height:0;font-size:clamp(14px,1.15vw,17px)}
+.duoS:has(.pcp){min-height:0;align-self:flex-start}
+.permis.lst2 li{min-height:0;line-height:1.15;padding-top:3px;padding-bottom:3px}
+@media (max-width:700px){.pcp{border:0;box-shadow:none;background:none;padding:0}.pcp .ph1,.pcp .cs{display:none}.pcp .demo2{margin:0 0 6px}}
+@media (min-width:700px) and (orientation:landscape){.permis.lst2 ol{height:auto;gap:4px}.permis.lst2 li{flex:none;padding:2px 14px;font-size:15px;border-width:2px}.permis.lst2 li b{height:20px;width:22px;min-width:0;font-size:12px}}
