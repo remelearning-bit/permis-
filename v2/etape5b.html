@@ -831,12 +831,27 @@ window.REDO=[];
 const H5="Étape 5, suite · Les risques et les bonnes attitudes";
 var CAPS={};
 /* un écran sur photo : chaque carte arrive quand la voix en parle ; Xavier est cité */
-async function infoS(d){step();if(d.head)head(H5,d.head);await goPh(d.ph,{mode:'contain'},500);
- const L=label([0,0,0],{lead:false}).title(d.cap);
- for(const id of d.lines){if(LINES[id].w==='X'){await sayS(id,[at(id,.02,()=>L.card(`« ${LINES[id].t} »`,'Xavier',{a:null}))]);continue}
-  await info(L,id,(d.cards||[]).filter(c=>c[0]===id).map(c=>[c[1],c[2],c[3]||'',{a:null}]))}
- for(const m of d.more||[]){await cont(L);L.card(m[0],m[1],{a:null})}
- await cont(L);L.kill();return null}
+/* Écran d'information mis en page comme les maquettes validées : photo encadrée à gauche, pastilles numérotées et carte à droite.
+   La voix fait avancer les pastilles ; les cartes sans voix se cliquent ; à la fin, tout reste consultable. */
+async function infoPills(d,kick){step();await goPh(d.ph,{mode:'contain'},500);
+ if(typeof S3on==='function'&&S3on())head(kick+(d.tm?' · '+HH(d.tm):''),d.cap);else if(d.head)head(kick+(d.tm?' · '+HH(d.tm):''),d.head);
+ const items=[...(d.cards||[]).map(c=>[c[2],c[3]||'']),...(d.more||[])];const nv=(d.cards||[]).length,N=items.length;
+ const L=label([0,0,0],{lead:false}).title(d.cap);const id='stp'+Math.random().toString(36).slice(2,6);
+ L.html(`<div class="stp" id="${id}"><div class="pls">${items.map((x,i)=>`<button class="opt pl off" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn"></p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
+ const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
+ const paint=i=>{seen.add(i);pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});R.querySelector('.cd .t').innerHTML=nb(items[i][0]);R.querySelector('.cd .s').innerHTML=nb(items[i][1]);R.querySelector('.nv').textContent=N>1?seen.size+' sur '+N+' vus':''};
+ const quote=t=>{R.querySelector('.cd .t').innerHTML=nb(`« ${t} »`);R.querySelector('.cd .s').textContent='Xavier'};
+ const idx=(d.cards||[]).map((c,i)=>[c,i]);const SW=d.swaps||(d.swap?[d.swap]:[]);
+ for(const lid of d.lines){const hk=SW.filter(x=>x[0]===lid).map(x=>at(lid,x[1],()=>photo(x[2],FAST?10:900)));
+  if(LINES[lid].w==='X'){await sayS(lid,[...hk,at(lid,.02,()=>quote(LINES[lid].t))]);continue}
+  await sayS(lid,[...hk,...idx.filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>paint(x[1])))])}
+ for(let i=0;i<nv;i++)if(!seen.has(i))paint(i);
+ pl.forEach((b,i)=>{b.onclick=()=>paint(i)});
+ if(N>nv){R.querySelector('.hn').textContent='Cliquez sur chaque numéro';
+  while(seen.size<N){pl.forEach((b,i)=>b.classList.toggle('off',seen.has(i)));await new Promise(r=>pl.forEach((b,i)=>b.onclick=()=>{paint(i);r()}))}}
+ pl.forEach((b,i)=>{b.classList.add('off');b.onclick=()=>paint(i)});R.querySelector('.hn').textContent='';
+ if(d.end)d.end(L);await cont(L);L.kill();return null}
+const infoS=d=>infoPills(d,H5);
 const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o});
 
 /* une série de questions à choix : une réponse, chaque réponse expliquée ; sous 80 %, retour ciblé */
@@ -983,6 +998,16 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 #bar{background:var(--marine);border-top:0}
 #bar .st,#bar button{color:#fff}
 #prog{background:var(--jaune)}
+
+/* le pas à pas : base (présente sur toutes les pages) */
+.stp .pl.opt::before,.stp .pl.opt::after{content:none;display:none}
+.stp .pls{display:flex;gap:8px;flex-wrap:wrap;margin:2px 0 6px}
+.stp .pls:has(.pl:only-child){display:none}
+.stp .pl{pointer-events:auto;display:inline-flex;align-items:center;justify-content:center;padding:0;position:relative;border-radius:50%;background:#fff;color:var(--marine);font:800 20px/1 Barlow,system-ui,sans-serif;cursor:pointer}
+.stp .pl.vu{background:var(--marine);color:#fff}
+.stp .hn{margin:0 0 10px;font-weight:700;font-size:var(--B);color:var(--pierre)}.stp .hn:empty{display:none}
+.stp .cd{min-height:5em}.stp .cd .t{font-weight:700;font-size:var(--A);line-height:1.15;margin:0}.stp .cd .s{font-size:var(--B);line-height:1.42;margin:8px 0 0}.stp .cd .t:empty,.stp .cd .s:empty{display:none}
+.stp .nv{margin:12px 0 0;font-weight:700;font-size:var(--B);color:var(--pierre)}.stp .nv:empty{display:none}
 /* le pas à pas : pastilles, carte au contour jaune */
 .stp .pl{border:3px solid var(--marine);width:46px;height:46px;box-shadow:0 3px 0 rgba(15,30,70,.25)}
 .stp .pl.cur{background:var(--jaune);border-color:var(--marine);color:var(--marine)}
