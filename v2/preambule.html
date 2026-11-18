@@ -786,12 +786,10 @@ async function objectifs(){step();head('Préambule','Les objectifs de la formati
 const ET=['La réglementation','Le zonage et la cartographie',"L'accès au côté piste","L'inspection du véhicule",'La circulation des véhicules',"Les règles de sécurité sur l'aire de mouvement","La circulation autour de l'avion","L'aire de manœuvre","Les procédures d'urgence","L'amélioration continue de la sécurité"];
 const SAY=['La réglementation','Le zonage',"L'accès","L'inspection",'La circulation des',"Les règles",'La circulation autour',"L'aire de manœuvre","Les procédures","Et l'amélioration"];
 const PERMIS=(demo=true)=>`<div style="width:100%;display:flex;flex-direction:column;align-items:center"><div class="permis" id="pm"><div class="T">T</div><ol>${ET.map((e,i)=>`<li><b>${i+1}</b>${nb(e)}</li>`).join('')}</ol></div>${demo?`<p class="demo2" id="dm">${nb("Exemple : l'étape 1 terminée, sa case est cochée.")}</p>`:''}</div>`;
-async function plan(){step();head('Préambule','Le plan de la matinée');
- vue(`<div class="duoS"><div class="dl"><div class="pc pcp"><div class="ph1"><span class="T">T</span><p>Votre permis</p></div><div class="cs" id="pcs">${ET.map((e,i)=>`<i>${i+1}</i>`).join('')}</div><p class="demo2" id="dm">${nb("Exemple : l'étape 1 terminée, sa case est cochée.")}</p></div></div>
-  <div class="dr"><div class="permis lst2" id="pm"><ol>${ET.map((e,i)=>`<li><b>${i+1}</b>${nb(e)}</li>`).join('')}</ol></div></div></div>`);
+async function plan(){step();head('Préambule','Le plan de la matinée');vue(PERMIS());
  const li=i=>cur().querySelectorAll('.permis li')[i];
  await sayS('p16',[...SAY.map((w,i)=>W('p16',w,()=>li(i).classList.add('on'),.01)),
-  W('p16','À chaque étape',()=>{li(0).classList.add('tick');$c('#pcs i').classList.add('now');on('#dm')}),W('p16','À la fin',()=>{li(0).classList.remove('tick');$c('#pcs i').classList.remove('now');$c('#dm').classList.remove('in');$c('.pcp .T').classList.add('lit')})]);
+  W('p16','À chaque étape',()=>{li(0).classList.add('tick');on('#dm')}),W('p16','À la fin',()=>{li(0).classList.remove('tick');$c('#dm').classList.remove('in');$c('.permis .T').classList.add('lit')})]);
  // à vous : par où commence la matinée ?
  const dm=$c('#dm');dm.textContent="À vous : cliquez sur l'étape par laquelle la matinée commence.";dm.style.color='var(--marine)';dm.classList.add('in');
  const fb=document.createElement('p');fb.className='qfb';dm.after(fb);const lis=[...cur().querySelectorAll('.permis li')];lis.forEach(x=>x.classList.add('pk','ans'));
@@ -1131,4 +1129,5 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal}.ax .sg{padding:0 4px;font-size:clamp(11px,.95vw,14px)}.ax .tr{height:52px}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal!important;overflow:visible}.ax .sg .sl:not(.w){color:var(--marine)}.ax .sg .lg,.ax .sg .sl{display:block;text-align:center}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg{flex-direction:column}.ax .sg .lg,.ax .sg .sl{display:inline;height:auto}.ax .sg{font-size:clamp(10px,.88vw,13px)}}
+@media (max-width:700px){.vfw .qc .cdy{border:0;padding:0;background:none}.vfw .qc .ans{width:100%;margin-top:8px;flex:none;font-size:17px;padding:12px 16px}.qans .ans{flex:none;font-size:17px;padding:12px 16px}}
 </style></body></html>

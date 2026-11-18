@@ -182,3 +182,4 @@ html,body{background:radial-gradient(ellipse at 30% 55%,#fff 0%,#EEF0F4 100%) fi
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal}.ax .sg{padding:0 4px;font-size:clamp(11px,.95vw,14px)}.ax .tr{height:52px}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg,.ax .sg *{white-space:normal!important;overflow:visible}.ax .sg .sl:not(.w){color:var(--marine)}.ax .sg .lg,.ax .sg .sl{display:block;text-align:center}}
 @media (min-width:700px) and (orientation:landscape){.ax .sg{flex-direction:column}.ax .sg .lg,.ax .sg .sl{display:inline;height:auto}.ax .sg{font-size:clamp(10px,.88vw,13px)}}
+@media (max-width:700px){.vfw .qc .cdy{border:0;padding:0;background:none}.vfw .qc .ans{width:100%;margin-top:8px;flex:none;font-size:17px;padding:12px 16px}.qans .ans{flex:none;font-size:17px;padding:12px 16px}}
