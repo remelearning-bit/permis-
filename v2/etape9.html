@@ -818,9 +818,11 @@ async function stepper(d){step();if(d.head)head(d.head,d.sub||'');
  L.html(`<div class="stp" id="${id}"><div class="pls">${d.items.map((x,i)=>`<button class="opt pl" data-i="${i}">${i+1}</button>`).join('')}</div><p class="hn">Cliquez sur chaque numéro</p><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
  const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
  const paint=i=>{pl.forEach((b,k)=>{b.classList.toggle('cur',k===i);b.classList.toggle('vu',seen.has(k)&&k!==i)});const it=d.items[i];R.querySelector('.cd .t').innerHTML=nb(it[1]);R.querySelector('.cd .s').innerHTML=nb(it[2]);R.querySelector(".nv").textContent=seen.size+' sur '+N+' vus'};
+ const done=()=>{pl.forEach(b=>b.classList.add('off'))};
  while(seen.size<N){const left=pl.filter((b,k)=>!seen.has(k));
-  const b=await new Promise(r=>pl.forEach(x=>x.onclick=()=>r(x)));const i=+b.dataset.i;const first=!seen.has(i);seen.add(i);paint(i);
+  const b=await new Promise(r=>pl.forEach(x=>x.onclick=()=>r(x)));const i=+b.dataset.i;const first=!seen.has(i);seen.add(i);b.classList.add('off');paint(i);
   if(first&&d.items[i][0])await sayS(d.items[i][0])}
+ pl.forEach(b=>{b.classList.add('off');b.onclick=()=>paint(+b.dataset.i)});R.querySelector('.hn').style.display='none';
  if(d.log)jlog(d.log[0],d.log[1]);
  await cont(L);L.kill();return null}
 document.head.insertAdjacentHTML('beforeend',`<style>
