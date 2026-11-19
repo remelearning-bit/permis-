@@ -1361,7 +1361,18 @@ async function questions(){step();ALT.q8=1;const two=(TRY.q8||0)%2;
    {bk:[1,4],fixed:1,q:"La ligne de sécurité sépare :",o:[["Deux postes de stationnement avion.",0,"Non : elle sépare l'aire de trafic de l'aire de manœuvre."],["L'aire de trafic de l'aire de manœuvre.",1,"Une ligne blanche continue, derrière les postes. Avec un permis T, on ne la franchit pas."],["Le cheminement véhicule du cheminement piéton.",0,"Non : elle sépare l'aire de trafic de l'aire de manœuvre."]]}]
   :[{line:'m14',bk:[1,5],fixed:1,ph:'q8a380',q:"Le véhicule jaune arrêté sur le cheminement véhicule constitue-t-il un obstacle pour cet A380 ?",o:[["Non.",0,"Si : il est dans la bande dégagée d'obstacles de la voie. Pour l'avion, c'est un obstacle."],["Oui.",1,"Arrêté après le stop, dans la bande dégagée d'obstacles : c'est un obstacle pour l'avion."]]},
    {line:'m15',bk:[5],fixed:1,q:"À quoi servent les bandes aéronautiques, ou bandes de voie de circulation avion ?",o:[["Elles sont destinées à assurer la protection d'un aéronef contre les obstacles.",1,"La bande dégagée d'obstacles protège l'aéronef qui roule."],["Elles permettent de mesurer la distance entre un point de stationnement avion et une piste.",0,"Non : elles ne mesurent rien, elles protègent l'avion des obstacles."],["Elles permettent d'assurer la livraison du catering à bord des avions.",0,"Rien à voir : les bandes aéronautiques protègent l'aéronef contre les obstacles."]]}];
+ if(two){headOff();head(H8+' · '+HH('7 h 38'),"Questions d'entraînement");return quizOld('q8',Q,'7 h 38',"Questions d'entraînement",[1],7,true)}
  return quizP('q8',Q,'7 h 38',"Questions d'entraînement",[1],7)}
+async function quizOld(id,Q,h,what,bk,ret,x){let E=0;const MISS=new Set();
+ for(let i=0;i<Q.length;i++){const z=Q[i];
+  vue(z.ph?`<div class="qimg"><figure class="fig"><img src="${IMG[z.ph]}" alt=""></figure><div class="qc" id="qq"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div></div>`:`<div class="qc" id="qq" style="width:min(760px,100%)"><p class="n">Question ${i+1} sur ${Q.length}</p><p class="q">${nb(z.q)}</p></div>`);
+  if(z.line)await sayS(z.line);else await wait(FAST?0:400);
+  const qc=$c('#qq');let o=z.o.map((y,k)=>[String(k),y[0]]);if(!z.fixed)for(let a=o.length-1;a>0;a--){const b=Math.floor(Math.random()*(a+1));[o[a],o[b]]=[o[b],o[a]]}
+  const gk=String(z.o.findIndex(y=>y[1]));const kot={};z.o.forEach((y,k)=>{if(!y[1]&&y[2])kot[k]=y[2]});
+  const e=await pick(null,o,gk,z.o[+gk][2],kot,i<Q.length-1?'Question suivante':'Terminer',{once:true,x:!!x,host:qc});E+=e;if(e)[].concat(z.bk||bk).forEach(k=>MISS.add(k))}
+ jlog(h,`${what} : ${Q.length} question${Q.length>1?"s":""}${errTxt(E)}`);return gate(id,E,Q.length,[...MISS].sort((a,b)=>a-b),what,ret)}
+
+
 /* 8. fin de l'étape */
 async function fin(){step();headOff();head('','Huitième case cochée');
  vue(`<div class="flx"><div class="f25 e2"><div class="cv">${p3dHTML('width:100%;height:100%')}<span class="ck">✓</span></div><div class="tx25"><p class="k">Étape 8 validée</p><p class="v">L'aire de manœuvre</p><span class="ul"></span><p class="k">Prochaine étape :</p><p class="v2">Les procédures d'urgence</p></div></div><div class="pmini t25" id="pmn">${Array.from({length:10},(e,i)=>`<i class="${i<8?'dn':i===8?'cu':''}">${i<8?'✓':i+1}</i>`).join('')}</div><p class="sbn">Étape 8 sur 10 terminée</p></div>`);setTimeout(()=>p3dMount(),0);
@@ -1874,7 +1885,7 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 /* ---- étape 9 : écrans repris des planches ---- */
 .skc.g4{grid-template-columns:1fr 1fr;gap:clamp(8px,1.4vw,18px)}.skc.g4 .sc{padding:clamp(8px,1.6vh,18px) 14px}
 .skc .sc .bn{display:block;font-weight:800;color:var(--marine);font-size:clamp(26px,3.4vw,48px);line-height:1.05}
-.skf.th{flex:0 1 26%;max-width:26%;flex-direction:column;gap:8px;padding:8px;align-self:flex-start}.skf.th img{width:100%;max-height:none}
+.skf.th{flex:0 1 34%;max-width:34%;flex-direction:column;gap:8px;padding:8px;align-self:flex-start}.skf.th img{width:100%;max-height:none}
 .skf.th .zm{pointer-events:auto;cursor:pointer;font-size:clamp(12px,1vw,14px);padding:6px 12px}
 .zov9{position:fixed;inset:0;z-index:30;background:rgba(15,30,70,.8);display:flex;align-items:center;justify-content:center;cursor:zoom-out}.zov9 img{max-width:94vw;max-height:90vh;border-radius:12px;background:#fff}
 .pn{display:flex;flex-direction:column;gap:clamp(8px,1.6vh,16px);justify-content:center}.pls9{display:flex;gap:10px}

@@ -490,7 +490,7 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 /* ---- étape 9 : écrans repris des planches ---- */
 .skc.g4{grid-template-columns:1fr 1fr;gap:clamp(8px,1.4vw,18px)}.skc.g4 .sc{padding:clamp(8px,1.6vh,18px) 14px}
 .skc .sc .bn{display:block;font-weight:800;color:var(--marine);font-size:clamp(26px,3.4vw,48px);line-height:1.05}
-.skf.th{flex:0 1 26%;max-width:26%;flex-direction:column;gap:8px;padding:8px;align-self:flex-start}.skf.th img{width:100%;max-height:none}
+.skf.th{flex:0 1 34%;max-width:34%;flex-direction:column;gap:8px;padding:8px;align-self:flex-start}.skf.th img{width:100%;max-height:none}
 .skf.th .zm{pointer-events:auto;cursor:pointer;font-size:clamp(12px,1vw,14px);padding:6px 12px}
 .zov9{position:fixed;inset:0;z-index:30;background:rgba(15,30,70,.8);display:flex;align-items:center;justify-content:center;cursor:zoom-out}.zov9 img{max-width:94vw;max-height:90vh;border-radius:12px;background:#fff}
 .pn{display:flex;flex-direction:column;gap:clamp(8px,1.6vh,16px);justify-content:center}.pls9{display:flex;gap:10px}
