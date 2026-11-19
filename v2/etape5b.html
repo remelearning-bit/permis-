@@ -391,7 +391,7 @@ const dur=id=>Math.max(5000,LINES[id].t.length*62);
 async function sayS(id,hooks=[],o=null){if(o)slow(o,dur(id));else if(!mv&&CUR){const D=FAST?60:dur(id);drift={t0:performance.now(),D,a:{...V},b:{x:V.x,z:V.z,d:V.d/1.05}}}await say(id,hooks);drift=null}
 // le bouton qui fait avancer : la voix s'est tue, c'est à l'apprenant
 async function cont(L,txt='Continuer'){const id='c'+Math.random().toString(36).slice(2,7);L.html(`<button class="act" id="${id}">${txt}</button>`);const b=$('#'+id);hand(b);await new Promise(r=>b.onclick=r);hand(null);b.remove()}
-let prog=0;const NSTEP=24;function step(){prog++;$('#prog').style.width=(prog/NSTEP*100)+'%'}
+let prog=0;const NSTEP=25;function step(){prog++;$('#prog').style.width=(prog/NSTEP*100)+'%'}
 /* ---------------- les visuels ---------------- */
 const VZ=$('#vz'),HD=$('#hd'),VB=$('#vbtn');
 function head(k,t){HD.innerHTML=`<p class="k">${nb(k)}</p><p class="t">${nb(t)}</p>`;HD.classList.add('on')}
@@ -960,6 +960,7 @@ const souffle=()=>stepper({head:H5,ph:'soufflet',cap:'Matériel soufflé : la co
  [null,'Arrimez',"Arrimez votre matériel et ne le laissez jamais au sol."]]});
 const helico=()=>stepper({head:H5,ph:'heli1',cap:'Les hélicoptères',items:[
  [null,'Le souffle',"Le souffle d'un hélicoptère soulève et déplace ce qui traîne au sol. Il peut projeter des graviers et des cailloux sur plus de 40 mètres.",'heli1'],
+ [null,'Les enveloppes de souffle',"Le guide de la DSAC retient deux enveloppes de souffle : 56 km/h et 80 km/h, avec une marge de 30 %.",'heli1'],
  [null,"Avant l'arrivée","Avant l'arrivée, vérifiez que rien ne peut s'envoler sur l'aire de poser et sur ses abords.",'heli2'],
  [null,"Avant d'approcher","N'approchez de l'aire de stationnement qu'après l'extinction des feux anticollision et l'arrêt complet des deux rotors.",'heli3'],
  [null,'Les postes concernés',"Certains postes avion accueillent des hélicoptères : aires Sierra S06, S11, S14, S16, S18, S21, S23, S25, S29 et S31 ; aires Roméo R01, R03, R06, R09, R12 et R14.",'heli4'],
@@ -971,6 +972,15 @@ async function question(){step();ALT.q5b=1;const two=(TRY.q5b||0)%2;
  const Q=two?[{bk:[11],q:"Quelle est la distance de sécurité à respecter en passant en voiture derrière un avion en mouvement ?",o:[["100 mètres.",0,"La distance se compte en longueurs d'appareil : trois, derrière un avion en mouvement."],["Trois fois la longueur de l'avion.",1,"Le souffle des réacteurs au roulage : trois longueurs d'appareil derrière l'avion."],["Aucune.",0,"Derrière un avion en mouvement, on garde toujours trois longueurs d'appareil."]]}]
   :[{ph:'feuxrouges',line:'k38',bk:[5],fixed:1,q:"Que dois-je faire lorsque j'aperçois ce type de feu sur un cheminement véhicule en traversant une voie de circulation avion ?",o:[["Je marque le stop, puis je traverse avec vigilance.",0,"Feux rouges allumés : la traversée est interdite. On attend l'orange clignotant."],["Je traverse avec vigilance.",0,"Non : au rouge, on s'arrête avant la ligne d'effet."],["Je marque le stop et j'attends que le feu passe à l'orange clignotant pour traverser avec vigilance.",1,"Rouge : arrêt. Orange clignotant : on traverse avec prudence, en cédant le passage."]]}];
  return quizP('q5b',Q,'6 h 46',"Question d'entraînement",[5],20,{t:"Question d'entraînement",k:()=>'Avant la fin'})}
+
+
+/* activité : hélicoptère au poste, j'entre ou j'attends (scénario, fin de la partie 2) */
+async function heliPoste(){step();
+ const O=(ok,no)=>[["J'entre sur le poste",ok?1:0,ok?"Feux anticollision éteints et deux rotors à l'arrêt complet : vous pouvez approcher de l'aire de stationnement.":"Pas encore : on n'approche qu'après l'extinction des feux anticollision et l'arrêt complet des deux rotors."],["J'attends",ok?0:1,ok?"Les feux sont éteints et les deux rotors sont à l'arrêt complet : l'accès est possible.":no]];
+ const Q=[{ph:'heli3',fixed:1,bk:[14],q:"Un hélicoptère est au poste. Ses feux anticollision sont allumés. J'entre ou j'attends ?",o:O(0,"Feux anticollision allumés : on attend leur extinction.")},
+  {ph:'heli3',fixed:1,bk:[14],q:"Les feux anticollision sont éteints, mais un rotor tourne encore. J'entre ou j'attends ?",o:O(0,"Un rotor tourne encore : on attend l'arrêt complet des deux rotors.")},
+  {ph:'heli3',fixed:1,bk:[14],q:"Les feux anticollision sont éteints et les deux rotors sont à l'arrêt complet. J'entre ou j'attends ?",o:O(1)}];
+ return quizP('heli',Q,'6 h 44',"Hélicoptère au poste : trois situations",[14],14,{t:"Hélicoptère au poste : j'entre ou j'attends ?",k:(i,n)=>`Situation ${i+1} sur ${n}`})}
 
 /* 8. fin */
 async function fin(){step();head('Étape 5 terminée · 6 h 50','Cinquième case cochée');
@@ -985,7 +995,7 @@ const NEXT='etape6.html';
 runSeq([['Couverture',cover],['Cinq règles à respecter',cinq],["Les zones d'attente",attente],['La priorité',priorite],['Feux anticollision allumés',anticol],
  ['Traverser une voie de circulation avion',traverse],['Au volant ? À vous',volant],
  ['Points chauds : terminal 1',hot1],['Points chauds : terminaux A et C',hot2],['Points chauds : cargo sud',hot3],['Points chauds : BD et 2E',hot4],
- ['Les dangers moteurs',moteurs],['Matériel soufflé',souffle],['Les hélices',helices],['Les hélicoptères',helico],['Les bonnes pratiques',pratiques],['En faible visibilité',visib],['La marche arrière',recul],
+ ['Les dangers moteurs',moteurs],['Matériel soufflé',souffle],['Les hélices',helices],['Les hélicoptères',helico],["Hélicoptère au poste : j'entre ou j'attends ?",heliPoste],['Les bonnes pratiques',pratiques],['En faible visibilité',visib],['La marche arrière',recul],
  ['Les accidents sur Roissy',accidents],["Ça n'arrive pas qu'aux autres",a380],["L'information des conducteurs",info2],['Dégivrage et chargement',degivrage],
  ["Question d'entraînement",question],["Fin de l'étape",fin]]);
 
@@ -1446,4 +1456,96 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .sk.nof .sc{opacity:.5}.sk.nof .sc.cur{opacity:1}
 .skc .sc.pz{opacity:.85}
 .qp .sc{opacity:1}.qp .sc.cur{transform:none;background:#FFF6CC}
+
+/* ---- étape 6 : écrans repris des planches ---- */
+.cv6{margin:0;flex:1 1 0;min-height:0;display:flex;align-items:center;justify-content:center;border-radius:16px;overflow:hidden;box-shadow:0 8px 28px rgba(38,60,82,.18);background:#fff}
+.cv6 img{width:100%;height:100%;object-fit:cover;display:block}
+.ikc{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:clamp(10px,1.6vw,22px);flex:0 1 auto;min-height:0;align-items:stretch}
+.ikc .sc{min-height:clamp(200px,40vh,360px);display:flex;flex-direction:column;align-items:center;text-align:center;justify-content:flex-start;padding:clamp(8px,2vh,22px) 12px;position:relative;opacity:.5;transition:opacity .3s,background .3s;box-shadow:none}
+.ikc .sc.cur{opacity:1;background:#FFF6CC;border-color:var(--jaune);border-width:4px;box-shadow:0 6px 18px rgba(15,30,70,.25)}
+.ikc .art{display:block;width:min(100%,clamp(70px,16vh,160px));aspect-ratio:1;margin:clamp(4px,1.5vh,16px) auto clamp(6px,1.6vh,16px)}
+.ikc .art svg{width:100%;height:100%;display:block}
+.ikc .sc b{font-size:clamp(15px,1.7vw,24px)}.ikc .sc.cur b{font-size:clamp(15px,1.7vw,24px)}
+.ikc .sc .tx{font-size:clamp(13px,1.25vw,18px)}
+.cb .scr{fill:#5b6168;transition:fill .4s}.cb.on .scr{fill:#F2C200}
+.ikc.cabc .sc{padding-bottom:30px}
+.ikc.cabc .sc{opacity:1}.ikc.cabc .sc:not(.on){opacity:.45}
+.cb .act{position:absolute;left:50%;bottom:-16px;transform:translateX(-50%);background:var(--jaune);color:var(--marine);border:3px solid var(--marine);border-radius:999px;font-weight:800;font-size:clamp(14px,1.5vw,20px);padding:6px 26px;box-shadow:none;pointer-events:auto;cursor:pointer}
+.cb .act.off{visibility:hidden}.cb .act.pk{animation:pz5 1.4s ease-in-out infinite}
+.cbl{display:flex;justify-content:space-between;align-items:center;gap:18px;margin-top:clamp(18px,4vh,36px)}
+.cbm{margin:0 auto;font-weight:800;color:var(--marine);font-size:clamp(17px,1.9vw,26px);text-align:center;flex:1}
+.t6{display:flex;flex-direction:column;align-items:center;gap:clamp(14px,3vh,28px);padding-top:clamp(8px,3vh,30px);flex:1 1 0}
+.t6q{width:min(780px,100%);background:#fff;border:3px solid var(--marine);border-radius:16px;box-shadow:0 3px 0 rgba(15,30,70,.2);padding:14px 24px;text-align:center}
+.t6q .k{margin:0;font-weight:700;font-size:clamp(12px,1.2vw,16px);color:#5A6585}
+.t6q .t{margin:4px 0 0;font-weight:800;font-size:clamp(20px,2.4vw,32px);color:var(--marine);line-height:1.15}
+.t6b{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,2vw,24px);width:min(780px,100%)}
+.t6b button{pointer-events:auto;background:#fff;border:3px solid var(--marine);border-radius:16px;box-shadow:0 3px 0 rgba(15,30,70,.2);padding:clamp(20px,5vh,44px) 14px;color:var(--marine);font-family:inherit;font-weight:800;font-size:clamp(16px,2vw,26px);cursor:pointer}
+.t6b button.off{pointer-events:none}.t6b button.ok{border-color:var(--vert);background:#e8f6ec;box-shadow:0 0 0 2px var(--vert)}.t6b button.ko{border-color:var(--orangeV);background:#fdeee6;box-shadow:0 0 0 2px var(--orangeV)}
+.t6 .qfb2{width:min(780px,100%);margin:0}
+.qp.q6 .qpq{text-align:center;font-size:clamp(22px,2.8vw,38px);margin:clamp(10px,3vh,36px) 0}
+.q6 .sk{flex:0 0 auto;justify-content:center}
+.q6 .skc{flex:0 1 auto;flex-direction:row;flex-wrap:wrap;justify-content:center;gap:clamp(14px,2.4vw,32px);align-self:center;width:100%}
+.q6 .sc{flex:0 1 min(320px,100%);text-align:center;padding:clamp(18px,4vh,40px) 20px}.q6 .sc b{font-size:clamp(18px,2.2vw,30px)}
+.q6 .qfb2{margin:12px auto 0;max-width:900px}
+@media (max-width:700px){.ikc{grid-template-columns:1fr 1fr;max-height:none;overflow:auto}.ikc.cabc{grid-template-columns:1fr}.ikc .art{width:70px}.t6b{grid-template-columns:1fr}}
+
+/* ---- étape 9 : écrans repris des planches ---- */
+.skc.g4{grid-template-columns:1fr 1fr;gap:clamp(8px,1.4vw,18px)}.skc.g4 .sc{padding:clamp(8px,1.6vh,18px) 14px}
+.skc .sc .bn{display:block;font-weight:800;color:var(--marine);font-size:clamp(26px,3.4vw,48px);line-height:1.05}
+.skf.th{flex:0 1 34%;max-width:34%;flex-direction:column;gap:8px;padding:8px;align-self:flex-start}.skf.th img{width:100%;max-height:none}
+.skf.th .zm{pointer-events:auto;cursor:pointer;font-size:clamp(12px,1vw,14px);padding:6px 12px}
+.zov9{position:fixed;inset:0;z-index:30;background:rgba(15,30,70,.8);display:flex;align-items:center;justify-content:center;cursor:zoom-out}.zov9 img{max-width:94vw;max-height:90vh;border-radius:12px;background:#fff}
+.pn{display:flex;flex-direction:column;gap:clamp(8px,1.6vh,16px);justify-content:center}.pls9{display:flex;gap:10px}
+.p9b{pointer-events:auto;cursor:pointer;width:clamp(34px,3.2vw,44px);height:clamp(34px,3.2vw,44px);border-radius:50%;border:3px solid var(--marine);background:#fff;color:var(--marine);font:800 clamp(14px,1.4vw,19px) Barlow,system-ui,sans-serif}
+.p9b.cur{background:var(--jaune);border-color:var(--jaune)}
+.pn .sc.big{opacity:1;flex:0 1 auto;min-height:clamp(150px,30vh,260px);display:flex;flex-direction:column;justify-content:center;padding:clamp(14px,2.4vh,26px) 22px;pointer-events:none}
+.pn .sc.big b{font-size:clamp(20px,2.4vw,34px)}.pn .sc.big span{font-size:clamp(15px,1.5vw,21px)}
+.hn9{margin:0;font-weight:700;color:#5A6585;font-size:clamp(12px,1.1vw,15px)}
+.rw9 .sc{align-items:flex-start;text-align:left;justify-content:flex-start;min-height:clamp(220px,44vh,380px);padding:clamp(14px,2.4vh,26px) 18px}
+.rw9 .sc.cur{opacity:1}.nb9{display:flex;align-items:center;justify-content:center;width:clamp(30px,2.6vw,38px);height:clamp(30px,2.6vw,38px);border-radius:50%;background:var(--marine);color:var(--jaune);font:800 clamp(15px,1.4vw,19px) Barlow,system-ui,sans-serif;font-style:normal;margin-bottom:clamp(14px,3vh,34px)}
+.fl9{flex:1 1 0;min-height:0;display:flex;flex-direction:column;align-items:center;gap:8px}
+.fp9{position:relative;max-height:calc(100vh - 250px);aspect-ratio:16/9;max-width:100%;border-radius:14px;overflow:hidden;cursor:pointer;pointer-events:auto;box-shadow:0 8px 28px rgba(38,60,82,.18)}
+.fp9 img{width:100%;height:100%;object-fit:cover;display:block}.pl9{position:absolute;left:50%;top:50%;width:90px;height:90px;margin:-45px 0 0 -45px;border:0;background:none;pointer-events:none}
+.fl9 video{max-height:calc(100vh - 250px);max-width:100%;border-radius:14px;background:#1d2329}.cr9{margin:0;font-size:14px;color:#5d6f80;align-self:flex-start}
+.qb9{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(10px,1.6vw,22px);margin-top:clamp(10px,3vh,30px)}.qb9 .sc{opacity:1;min-height:clamp(110px,24vh,200px);display:flex;align-items:center;justify-content:center;text-align:center}.qb9 .sc b{font-size:clamp(14px,1.5vw,20px)}
+.qb9 .sc.cur{transform:none;background:#FFF6CC}.qb9 .sc.okc{border-color:var(--vert);background:#e8f6ec;box-shadow:0 0 0 2px var(--vert)}.qb9 .sc.koc{border-color:var(--orangeV);background:#fdeee6;box-shadow:0 0 0 2px var(--orangeV)}
+.qp .sk:not(:has(.skf)) .skc{max-width:min(900px,100%);margin:clamp(10px,3vh,30px) auto 0;width:100%}
+@media (max-width:700px){.qb9{grid-template-columns:1fr 1fr}.skf.th{max-width:100%;flex-basis:auto}.rw9{grid-template-columns:1fr}}
+.pn .sc.big span{letter-spacing:0;font-weight:500;word-spacing:normal}.pn .sc.big b{letter-spacing:0}
+.cv9{background:#eff0f2!important}
+
+/* ---- étape 10 : écrans repris des planches ---- */
+.cv10{display:flex;align-items:center;gap:clamp(18px,3vw,48px);width:100%;max-width:1240px;margin:auto;padding:0 2%}
+.cv10 .ct{flex:0 1 42%;text-align:left}.cv10 .k{margin:0;font-weight:800;color:#5A6585;font-size:clamp(14px,1.5vw,20px)}
+.cv10 .h{margin:8px 0 0;font-weight:800;color:var(--marine);font-size:clamp(30px,4.2vw,58px);line-height:1.05}
+.cv10 .ul{display:block;width:90px;height:8px;border-radius:4px;background:var(--jaune);margin:16px 0}
+.cv10 .sb{margin:0;font-weight:700;color:var(--marine);font-size:clamp(16px,1.9vw,26px);line-height:1.3}
+.cv10 .act{pointer-events:auto;cursor:pointer;margin-top:clamp(18px,4vh,34px)}
+.cv10 figure{margin:0;flex:1 1 0;border-radius:18px;overflow:hidden;box-shadow:0 8px 28px rgba(38,60,82,.2)}.cv10 figure img{display:block;width:100%;height:auto}
+.pls9 .hn9{margin-left:10px;align-self:center}.pls9{align-items:center}
+.skf.wh{background:#fff}.skf.wh img{max-height:calc(100vh - 262px)}
+.bigp{flex:1 1 56%;min-width:0;max-width:58%;align-self:center;background:var(--marine);border-radius:18px;box-shadow:0 8px 28px rgba(38,60,82,.3);padding:clamp(22px,4vw,56px);display:flex;flex-direction:column;justify-content:center;min-height:clamp(220px,50vh,420px)}
+.bigp .by{margin:0;font-weight:800;color:var(--jaune);font-size:clamp(34px,5vw,74px);line-height:1}.bigp .bs{margin:14px 0 0;font-weight:800;color:#fff;font-size:clamp(17px,1.9vw,27px);line-height:1.2}
+.rk10{display:flex;flex-direction:column;gap:clamp(10px,1.8vh,18px);justify-content:flex-start}
+.rk10 .sc.big{opacity:1;pointer-events:none;text-align:left}.rk10 .sc.big .k{display:block;font-weight:700;color:#5A6585;font-size:clamp(13px,1.2vw,17px)}.rk10 .sc.big b{font-size:clamp(18px,2.1vw,30px)}
+.rk10 .rb{display:flex;gap:clamp(10px,1.6vw,20px)}.rk10 .rb .sc{opacity:1;flex:1 1 0;min-height:clamp(110px,24vh,190px);display:flex;align-items:center;justify-content:center;text-align:center}.rk10 .rb .sc b{font-size:clamp(18px,2vw,28px)}
+.rk10 .rb .sc.cur{transform:none;background:#FFF6CC}.rk10 .rb .sc.okc{border-color:var(--vert);background:#e8f6ec;box-shadow:0 0 0 2px var(--vert)}.rk10 .rb .sc.koc{border-color:var(--orangeV);background:#fdeee6;box-shadow:0 0 0 2px var(--orangeV)}
+.qp .skc.rowb{flex-direction:row;max-width:100%!important;gap:clamp(12px,2vw,26px);align-items:stretch}.qp .skc.rowb .sc{flex:1 1 0;display:flex;align-items:center;justify-content:center;text-align:center;min-height:clamp(140px,30vh,260px)}.qp .skc.rowb .sc b{font-size:clamp(22px,2.8vw,40px)}
+.fh10{display:grid;grid-template-columns:1fr 1fr;gap:clamp(12px,1.6vw,22px);flex:1 1 0;min-height:0}
+.fh10 .flw{display:grid;grid-template-columns:1fr 1fr;gap:clamp(8px,1vw,14px);max-width:none}
+.fh10 .fl{min-height:0;flex-direction:column;align-items:flex-start;justify-content:center;gap:6px;padding:18px 22px;text-align:left;border:3px solid var(--marine);border-radius:16px;background:#fff}
+.fh10 .fl i{font-style:normal;font-weight:800;font-size:clamp(28px,3vw,44px);line-height:1;color:#b9bfcc}.fh10 .fl .n{display:block!important;font-weight:800;font-size:clamp(18px,1.8vw,26px)}
+.fh10 .fl.cur{background:var(--marine);box-shadow:0 0 0 4px var(--jaune);border-color:var(--marine)}.fh10 .fl.cur .n{color:#fff}.fh10 .fl.cur i{color:var(--jaune)}
+.fh10 .cdw{background:#fff;border:4px solid var(--jaune);border-radius:20px;padding:24px 28px;display:flex;flex-direction:column;justify-content:center;text-align:left}
+.fh10 .cdw .t{margin:0;font-weight:800;color:var(--marine);font-size:clamp(22px,2.3vw,34px);line-height:1.15}.fh10 .cdw .t:empty{display:none}.fh10 .cdw .s{margin:10px 0 0;font-size:clamp(15px,1.45vw,21px);line-height:1.4;color:#33405f}
+.g10{display:grid;grid-template-columns:1fr 1fr;grid-template-rows:repeat(3,1fr);grid-auto-flow:column;gap:clamp(8px,1.4vh,16px) clamp(10px,1.4vw,18px);flex:1 1 0;min-height:0}
+.g10 .gi{opacity:.18;transition:opacity .5s}.g10 .gi.on{opacity:1}.g10 .gi .t{font-size:clamp(16px,1.6vw,23px)}.g10 .gi .s{font-size:clamp(13px,1.2vw,18px)}
+@media (max-width:700px){.cv10{flex-direction:column}.fh10{grid-template-columns:1fr}.g10{grid-template-columns:1fr;grid-auto-flow:row;grid-template-rows:none}.rk10 .rb{flex-direction:column}.bigp{max-width:100%}.qp .skc.rowb{flex-direction:column}}
+.pn{justify-content:flex-start!important;align-self:stretch}
+.pn .sc.big{background:#fff!important;border:4px solid var(--jaune)!important;flex:1 1 auto!important;box-shadow:0 6px 18px rgba(15,30,70,.15)!important;transform:none!important}
+.sk:has(.pn) .skf,.sk:has(.pn) .bigp{align-self:stretch}.sk:has(.pn) .skf img{max-height:none;height:100%;width:100%;object-fit:contain}
+.rk10 .sc.big{background:#fff!important;border:4px solid var(--jaune)!important;transform:none!important}
+.rk10 .sc.big *,.pn .sc.big *{letter-spacing:0!important;word-spacing:normal!important}
+.g10{margin-bottom:clamp(44px,8vh,64px)}
+.g10:has(.w7){grid-template-rows:repeat(3,1fr) auto}.g10 .gi.w7{grid-column:1/-1;grid-row:4}
 </style></body></html>
