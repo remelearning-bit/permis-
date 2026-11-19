@@ -128,8 +128,15 @@ const blobM=new THREE.MeshBasicMaterial({map:blobTex,transparent:true,depthWrite
 function blob(w,d,p,x=0,z=0){const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),blobM);m.rotation.x=-Math.PI/2;m.position.set(x,.035,z);m.renderOrder=1;p.add(m);return m}
 /* ---------------- la plateforme ---------------- */
 const BETON=0xc3c6c2,VOIE=0xaeb1ad,BLANC=0xf7f7f4,JAUNE=0xe0b419,ROUGE=0xc9361d,MARINE=0x263C52,GRIS=0xb9bec2,NOIR=0x1d2329,CONE=0xe2572a;
-{const g=new THREE.Mesh(new THREE.PlaneGeometry(900,520),mat(BETON));g.rotation.x=-Math.PI/2;g.position.z=190;scene.add(g);
- const v=new THREE.Mesh(new THREE.PlaneGeometry(900,34),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.set(0,.015,-52);scene.add(v);
+/* sol en dalles de béton, avec joints et taches, d'après les planches validées */
+const solTex=(()=>{const c=document.createElement('canvas');c.width=c.height=1024;const g=c.getContext('2d');g.fillStyle='#c0c2bc';g.fillRect(0,0,1024,1024);
+ let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
+ for(let i=0;i<260;i++){const x=rnd()*1024,y=rnd()*1024,r=30+rnd()*110;const gr=g.createRadialGradient(x,y,2,x,y,r);const d=rnd()<.55;gr.addColorStop(0,d?'rgba(90,92,86,.09)':'rgba(215,217,211,.10)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}
+ g.strokeStyle='rgba(70,72,68,.26)';g.lineWidth=2;for(let k=0;k<=4;k++){const q=k*256;g.beginPath();g.moveTo(q,0);g.lineTo(q,1024);g.stroke();g.beginPath();g.moveTo(0,q);g.lineTo(1024,q);g.stroke()}
+ const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t})();
+const solM=(w,h)=>{const t=solTex.clone();t.needsUpdate=true;t.repeat.set(w/24,h/24);return new THREE.MeshLambertMaterial({map:t})};
+{const g=new THREE.Mesh(new THREE.PlaneGeometry(900,520),solM(900,520));g.rotation.x=-Math.PI/2;g.position.z=190;scene.add(g);
+ const v=new THREE.Mesh(new THREE.PlaneGeometry(900,34),solM(900,34));v.rotation.x=-Math.PI/2;v.position.set(0,.015,-52);scene.add(v);
  const herbe=new THREE.Mesh(new THREE.PlaneGeometry(900,380),mat(0xa9b59a));herbe.rotation.x=-Math.PI/2;herbe.position.set(0,0,-260);scene.add(herbe)}
 strip(-450,-52,450,-52,.5,JAUNE,.03);              // axe de la voie avion
 strip(-450,-34,450,-34,.6,BLANC,.03);              // ligne de sécurité
@@ -163,6 +170,11 @@ dashed(30,-30,30,22,.3,BLANC);dashed(38,-30,38,22,.3,BLANC);for(let z=-24;z<=8;z
 const SPOTS=[];for(let i=0;i<6;i++){const x=32+i*4;strip(x,34.6,x,40.4,.22,BLANC,.03);SPOTS.push(x+2)}strip(56,34.6,56,40.4,.22,BLANC,.03);strip(32,40.4,56,40.4,.22,BLANC,.03);
 // aérogare
 box(240,15,10,0xe9e7e1,0,7.5,46);box(240,4.5,.3,0xa9bac6,0,8.4,40.9);box(240,.8,.5,0xd2cfc8,0,15.2,41);
+// façade vitrée à meneaux, éléments techniques sur le toit, bâtiments au loin (planches validées, sans poteaux)
+for(let x=-120;x<=120;x+=3)box(.14,4.5,.2,0x8c9aa6,x,8.4,40.76);
+box(240,.5,.3,0x7d8b97,0,6.2,40.78);box(240,.5,.3,0x7d8b97,0,10.6,40.78);
+[[-82,12,5],[-40,9,4],[8,14,5],[52,10,4],[96,13,5]].forEach(([x,w,d])=>box(w,2.4,d,0xcdc9c1,x,16.4,46));
+[[60,40,12,-195],[110,26,9,-200],[175,60,14,-195],[-60,30,10,-200],[-150,50,12,-195]].forEach(([x,w,h,z])=>box(w,h,16,0xd6d9d9,x,h/2,z));
 // zébras rouges et cadre blanc de la passerelle
 for(let i=0;i<8;i++)strip(5.5+i*2,23.5,8.5+i*2,39,.7,ROUGE,.028);
 [[10.6,29.6,14.6,29.6],[10.6,33.6,14.6,33.6],[10.6,29.6,10.6,33.6],[14.6,29.6,14.6,33.6]].forEach(s=>strip(...s,.28,BLANC,.033));
