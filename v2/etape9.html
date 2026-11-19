@@ -883,9 +883,10 @@ async function infoRow(d){step();headOff();head('Étape 9 · '+HH(d.tm),d.cap);
  R.querySelector('.gb').style.display='none';await contV('Continuer');return null}
 
 /* 1. la couverture */
+async function goTop(){const b=document.createElement('button');b.className='act';b.id='cvgo';b.textContent="C'est parti";b.style.cssText='position:fixed;top:clamp(12px,2.6vh,26px);right:clamp(16px,3vw,40px);z-index:9;pointer-events:auto;cursor:pointer';document.body.appendChild(b);await new Promise(r=>b.onclick=r);b.remove()}
 async function cover(){step();headOff();head('Étape 9 · 7 h 40',"Les procédures d'urgence");
  vue(`<div class="flx f6 fq"><figure class="cv6 cv9"><img src="${PORT()?IMG.c9m:IMG.c9}" alt="" style="object-fit:contain"></figure></div>`);
- await contV("C'est parti");
+ await goTop();
  {const _p=photo(PORT()?'c9m':'c9',FAST?10:900);setCam({mode:'contain'});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 9 · 7 h 40').card('Les procédures d\'urgence','Ce qu\'on fait, et qui on appelle, en cas d\'urgence.');
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
