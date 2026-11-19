@@ -859,7 +859,7 @@ const NUM=(ph,cap,lines,cards,o={})=>()=>infoNum({ph,cap,lines,cards,...o});
 /* 1. la couverture */
 async function cover(){step();headOff();
  vue(`<div class="cv10"><div class="ct"><p class="k">Étape 10 · 7 h 55</p><p class="h">L'amélioration continue de la sécurité</p><span class="ul"></span><p class="sb">Comment on apprend de ce qui s'est passé.</p><button class="act" id="go10">C'est parti</button></div><figure><img src="${IMG.c10}" alt=""></figure></div>`);
- await new Promise(r=>cur().querySelector('#go10').onclick=r);
+ await new Promise(r=>cur().querySelector('#go10').onclick=r);{VZ.innerHTML='';VZ.classList.remove('on')}
  {const _p=photo('c10',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 10 · 7 h 55').card('L\'amélioration continue de la sécurité','Comment on apprend de ce qui s\'est passé.');
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
@@ -916,9 +916,9 @@ async function facteurs(){step();headOff();head('Étape 10 · 8 h 00 · Cliquez 
  bs.forEach((b,i)=>b.onclick=()=>show(i));
  await sayS('s13');jlog('8 h 00','Les facteurs humains : addiction, fatigue, stress, burn-out');R.querySelector('.gb').style.display='none';await contV();return null}
 async function synthese(){step();headOff();head('Étape 10 · 8 h 01','Facteurs humains : la synthèse');
- const G=[['Reconnaître les symptômes','Endormissement, lenteur à communiquer : faites une pause.'],['Respecter les procédures','Attention aux aménagements non formels, aux raccourcis et aux détournements.'],['Ne créez pas de pression excessive','Demandez de l\'assistance.'],['Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['Ne travaillez pas seul','Communiquez avec vos collègues.'],['Remédiez aux doutes','Posez des questions, vérifiez.']];
- const F=[.03,.22,.42,.58,.75,.88];
- vue(`<div class="flx f6 fq"><div class="g10">${G.map((c,i)=>`<div class="gi" id="gi${i}"><b>${i+1}</b><div><p class="t">${nb(c[0])}</p><p class="s">${nb(c[1])}</p></div></div>`).join('')}</div></div>`);
+ const G=[['Reconnaître les symptômes','Endormissement, lenteur à communiquer : faites une pause.'],['Respecter les procédures','Attention aux aménagements non formels, aux raccourcis et aux détournements.'],['Ne créez pas de pression excessive','Demandez de l\'assistance.'],['Analysez','Parlez-en à quelqu\'un, reposez-vous, faites du sport.'],['Ne travaillez pas seul','Communiquez avec vos collègues.'],['Remédiez aux doutes','Posez des questions, vérifiez.'],['La conscience de la situation',"Déjà vue en faible visibilité, à l'étape « Les risques et les bonnes attitudes ». Elle fait partie des facteurs humains."]];
+ const F=[.03,.22,.42,.58,.75,.88,.97];
+ vue(`<div class="flx f6 fq"><div class="g10">${G.map((c,i)=>`<div class="gi${i===6?' w7':''}" id="gi${i}"><b>${i+1}</b><div><p class="t">${nb(c[0])}</p><p class="s">${nb(c[1])}</p></div></div>`).join('')}</div></div>`);
  const on=i=>{const e=document.getElementById('gi'+i);if(e)e.classList.add('on')};
  await sayS('s14',F.map((f,i)=>at('s14',f,()=>on(i))));G.forEach((c,i)=>on(i));await contV();return null}
 async function film(src,title,credit,tm){step();headOff();head('Étape 10 · '+HH(tm),title);
@@ -932,10 +932,10 @@ async function film(src,title,credit,tm){step();headOff();head('Étape 10 · '+H
  jlog(tm,'Film : '+title);await contV();return null}
 const filmNotif=()=>film('film-notification','Le film : la notification des événements','Film du support de formation','8 h 02');
 const protection=NUM(null,'Notifier : un régime de protection',['s15'],[['s15',.03,'Le règlement européen 376/2014 et le code des transports','Ils protègent ceux qui notifient, face à leur employeur comme à l\'État.'],['s15',.35,'Pas de mesure sur la seule notification','Aucune mesure ne peut être prise sur des informations connues uniquement par une notification.'],
- ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],{tm:'8 h 03',nohint:1,big:['Notifier protège',"Face à votre employeur comme à l'État."],more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
+ ['s15',.62,'Sauf','Manquement délibéré, méconnaissance grave d\'un risque évident, ou manquement très grave à l\'obligation d\'agir.'],['s15',.85,'7 500 €','L\'amende administrative par événement, doublée en cas de récidive.']],{tm:'8 h 03',big:['Notifier protège',"Face à votre employeur comme à l'État."],more:[['Un exemple','Un agent d\'assistance en escale percute un avion avec son engin. Il alerte le coordinateur avion, puis notifie à sa hiérarchie. Son employeur ne peut pas le sanctionner pour ce choc s\'il l\'a appris par la notification.']]});
 const obligation=NUM(null,'L\'obligation de rendre compte',['s16','s17'],[['s16',.03,'Sans délai','Le code de l\'aviation civile oblige toute personne à rendre compte de tout incident ou accident dont elle a connaissance.'],['s16','En tort','Dans les 72 heures','En tort ou sans tort : aucune sanction.'],['s16','Ne pas rendre','Ne pas rendre compte','Un an d\'emprisonnement et 15 000 € d\'amende.'],
  ['s17','Une fuite','À notifier','Fuite importante à l\'avitaillement. Point de stationnement bus ou camion dangereux. Choc contre un avion. Problème de dégivrage. Chargement incorrect. Matériel renversé par le souffle. Franchissement non autorisé de la piste.']],{tm:'8 h 04',big:['72 heures','En tort ou sans tort : aucune sanction.']});
-const comment=NUM('fiche','Comment notifier',['s18'],[['s18',.03,'La fiche de notification d\'événement','La notification d\'accident ou d\'incident, en quatre volets.'],['s18',.4,'Ou le Safety Portal','safety-portal.fr/CDG, ouvert à tous les partenaires sur demande d\'ouverture de compte.'],['s18',.75,'L\'extranet opérationnel du Groupe ADP','Les références réglementaires de l\'aéroport, accessible à tout titulaire d\'un badge rouge.']],{tm:'8 h 05',nohint:1,white:1,more:[['72 heures','Le délai pour notifier au service de gestion de la sécurité, à compter de la connaissance de l\'événement.'],['Le signalement volontaire','On peut notifier tout événement, même s\'il n\'est pas dans la liste réglementaire.'],['Si l\'outil est en panne','Le formulaire CRESEA, à transmettre par mail : airsidesafety.CDG@adp.fr.']]});
+const comment=NUM('fiche','Comment notifier',['s18'],[['s18',.03,'La fiche de notification d\'événement','La notification d\'accident ou d\'incident, en quatre volets.'],['s18',.4,'Ou le Safety Portal','safety-portal.fr/CDG, ouvert à tous les partenaires sur demande d\'ouverture de compte.'],['s18',.75,'L\'extranet opérationnel du Groupe ADP','Les références réglementaires de l\'aéroport, accessible à tout titulaire d\'un badge rouge.']],{tm:'8 h 05',white:1,more:[['72 heures','Le délai pour notifier au service de gestion de la sécurité, à compter de la connaissance de l\'événement.'],['Le signalement volontaire','On peut notifier tout événement, même s\'il n\'est pas dans la liste réglementaire.'],['Si l\'outil est en panne','Le formulaire CRESEA, à transmettre par mail : airsidesafety.CDG@adp.fr.']]});
 
 /* 5. les questions d'entraînement */
 async function questions(){step();ALT.q10=1;const two=(TRY.q10||0)%2;
@@ -1554,4 +1554,5 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .rk10 .sc.big{background:#fff!important;border:4px solid var(--jaune)!important;transform:none!important}
 .rk10 .sc.big *,.pn .sc.big *{letter-spacing:0!important;word-spacing:normal!important}
 .g10{margin-bottom:clamp(44px,8vh,64px)}
+.g10:has(.w7){grid-template-rows:repeat(3,1fr) auto}.g10 .gi.w7{grid-column:1/-1;grid-row:4}
 </style></body></html>

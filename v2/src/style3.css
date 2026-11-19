@@ -545,3 +545,4 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .rk10 .sc.big{background:#fff!important;border:4px solid var(--jaune)!important;transform:none!important}
 .rk10 .sc.big *,.pn .sc.big *{letter-spacing:0!important;word-spacing:normal!important}
 .g10{margin-bottom:clamp(44px,8vh,64px)}
+.g10:has(.w7){grid-template-rows:repeat(3,1fr) auto}.g10 .gi.w7{grid-column:1/-1;grid-row:4}
