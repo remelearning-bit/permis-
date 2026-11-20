@@ -9,3 +9,15 @@ Les pages v2/etape1.html, etape2.html et etape3.html sont construites à partir 
 - run.js / run2.js : robots de test (rapide avec ?fast, ou en temps réel avec captures toutes les 2,5 s).
 
 Les chemins des scripts pointent vers /home/claude/w : copier ce dossier là avant de reconstruire.
+
+## ATTENTION : pages modifiées directement le 19 et le 20 novembre 2026
+
+Les pages de `v2/` ont été retouchées à la main, sans passer par les scripts de ce dossier. Reconstruire une page depuis ces sources efface ces retouches. Avant toute reconstruction, les reporter dans les sources :
+
+- Toutes les pages sauf l'étape 7 : bouton « Écran précédent » pour l'apprenant, reprise à l'écran `?s=N`.
+- Étape 2, écran 5 : les cinq vues des postes sur le plan Groupe ADP (gris, marine, pastilles jaunes).
+- Étape 3 : horaires 13 Papa (4 h à 17 h) et 29 India (5 h à 18 h), voix a11 coupée, « huit choses » dans les indices.
+- Étape 5 : double stop (lignes stop, zone rouge), pelouse retirée, voie avion à gauche de la zone qui déborde.
+- Étape 7 : zone d'attente rouge et blanc, lignes des postes raccordées à la voie avion, passerelle hors du cheminement.
+- Étape 8 : ligne stop. Démonstration de la panne : balise bleue retirée de la route.
+- Étape 10 : photos accentuées. Préambule : page entière de l'annexe 8.

@@ -472,12 +472,16 @@ const NAV=Q.has('nav');let NAVI=0;
 function navUrl(i){const q=new URLSearchParams(location.search);q.set('nav','');q.set('s',i);return location.pathname+'?'+q.toString().replace('nav=&','nav&').replace(/nav=$/,'nav')}
 let SEQ=[];
 async function sonOk(){try{const a=new Audio('data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=');return await Promise.race([a.play().then(()=>true),new Promise(r=>setTimeout(()=>r(false),800))])}catch(e){return false}}
-async function runSeq(seq){let start=0;
- if(NAV){document.body.classList.add('nav');start=Math.max(0,Math.min(seq.length-1,+(Q.get('s')||0)));
+async function runSeq(seq){let start=Math.max(0,Math.min(seq.length-1,+(Q.get('s')||0)));
+ if(!NAV){const bar=document.getElementById('bar');const pv=document.createElement('button');pv.textContent=innerWidth<560?'‹ Précédent':'‹ Écran précédent';bar.insertBefore(pv,bar.querySelector('.sp').nextSibling);
+  pv.onclick=()=>{if(NAVI>0)location.href=location.pathname+'?s='+(NAVI-1);else location.href='etape3.html?s=999'};
+  if(start>0&&!MUET&&!(await sonOk())){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Reprendre</button></div>`;document.body.appendChild(g);
+   await new Promise(r=>g.querySelector('button').onclick=r);g.remove()}}
+ if(NAV){document.body.classList.add('nav');
   const b=document.createElement('button');b.textContent='Écrans';const bar=document.getElementById('bar');bar.insertBefore(b,bar.querySelector('.sp').nextSibling);
   const nl=document.createElement('div');nl.id='navl';document.body.appendChild(nl);
   b.onclick=()=>{nl.innerHTML=`<div class="box"><p class="n" style="font-weight:600;color:var(--pierre);margin:0">Navigation libre</p><p style="font-weight:700;font-size:var(--A);margin:4px 0 0">Les écrans de la page</p><ol>${seq.map((x,i)=>`<li class="${i===NAVI?'cur':''}"><a href="${navUrl(i)}">${nb(x[0])}</a></li>`).join('')}</ol><button class="act" id="navx">Fermer</button></div>`;nl.classList.add('on');document.getElementById('navx').onclick=()=>nl.classList.remove('on')};
-  const nx=document.createElement('button');nx.textContent=innerWidth<560?'Suivant ›':'Écran suivant ›';bar.insertBefore(nx,b.nextSibling);nx.onclick=()=>{if(NAVI<seq.length-1)location.href=navUrl(NAVI+1)};
+  const nx=document.createElement('button');nx.textContent=innerWidth<560?'Suivant ›':'Écran suivant ›';bar.insertBefore(nx,b.nextSibling);nx.onclick=()=>{if(NAVI<seq.length-1)location.href=navUrl(NAVI+1)};const pv=document.createElement('button');pv.textContent=innerWidth<560?'‹ Précédent':'‹ Écran précédent';bar.insertBefore(pv,nx);pv.onclick=()=>{if(NAVI>0)location.href=navUrl(NAVI-1);else location.href='etape3.html'+('?nav&s=999')};
   if(start>0&&!MUET&&!(await sonOk())){const g=document.createElement('div');g.id='navgo';g.innerHTML=`<div class="box"><p style="font-weight:600;color:var(--pierre);margin:0">Écran ${start+1} sur ${seq.length}</p><p style="font-weight:700;font-size:var(--A);margin:6px 0 0">${nb(seq[start][0])}</p><button class="act">Lancer l'écran</button></div>`;document.body.appendChild(g);
    await new Promise(r=>g.querySelector('button').onclick=r);g.remove()}}
  SEQ=seq;let r=null,QP=null,RET=null;

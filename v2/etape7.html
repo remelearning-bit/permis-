@@ -140,7 +140,7 @@ const solM=(w,h)=>{const t=solTex.clone();t.needsUpdate=true;t.repeat.set(w/24,h
  const herbe=new THREE.Mesh(new THREE.PlaneGeometry(900,380),mat(0xa9b59a));herbe.rotation.x=-Math.PI/2;herbe.position.set(0,0,-260);scene.add(herbe)}
 strip(-450,-52,450,-52,.5,JAUNE,.03);              // axe de la voie avion
 strip(-450,-34,450,-34,.6,BLANC,.03);              // ligne de sécurité
-strip(0,-34,0,16,.35,JAUNE,.03);                   // ligne d'entrée du poste
+strip(0,-52,0,16,.35,JAUNE,.03);                   // ligne d'entrée du poste, raccordée à l'axe de la voie avion (carnet du formateur, ligne 13)
 // la zone d'évolution contrôlée, dessinée comme sur les schémas du support (diapos 204, 206) :
 // une limite rouge bordée de blanc qui suit la silhouette de l'avion à 4,50 m, ouverte sur la voie avion (côté ligne de sécurité)
 const ZR=[[21,-34],[21,-2.1],[6.5,7.4],[6.5,21.5],[4.5,25.1]];
@@ -154,7 +154,7 @@ function zecLine(cx,{noLeft=false,noRight=false}={}){const g=new THREE.Group();g
 const ZEC=zecLine(0,{noLeft:true});          // notre poste : sa limite gauche est commune avec le poste voisin (zone composée)
 const ZECL=zecLine(-42,{noRight:true});      // le poste voisin de gauche, avec son avion
 const ZECR=zecLine(64);                      // le poste voisin de droite, libre
-strip(-42,-34,-42,16,.35,JAUNE,.03);strip(64,-34,64,16,.35,JAUNE,.03);
+strip(-42,-52,-42,16,.35,JAUNE,.03);strip(64,-52,64,16,.35,JAUNE,.03);
 let zoneTag=null;
 function setZone(v,tag=false){const on=v>0.01;ZEC.userData.hi.visible=on;
  if(on&&tag&&!zoneTag)zoneTag=small([6.5,.2,15],'Zone active',{dx:16,dy:-30});
@@ -165,7 +165,7 @@ const COTE=new THREE.Group();scene.add(COTE);COTE.visible=false;strip(16.6,-5.5,
 strip(-450,26,450,26,.3,BLANC,.03);strip(-450,33,450,33,.3,BLANC,.03);
 for(let x=-16;x<=-8;x+=2)strip(x,26.5,x,32.5,.9,BLANC,.035);
 // interzec à droite : zone d'attente et emplacements de stockage
-dashed(30,-30,30,22,.3,BLANC);dashed(38,-30,38,22,.3,BLANC);for(let z=-24;z<=8;z+=8)strip(30.5,z,37.5,z,.25,BLANC,.03);
+/* zone d'attente : rouge et blanc en pointillé (carnet du formateur, ligne 13) */ for(const x of [30,38]){strip(x,-30,x,17.5,.3,ROUGE,.019);dashed(x,-30,x,22,.3,BLANC)}for(let z=-24;z<=8;z+=8)strip(30.5,z,37.5,z,.25,BLANC,.03);
 // emplacements réservés au pied de l'aérogare
 const SPOTS=[];for(let i=0;i<6;i++){const x=32+i*4;strip(x,34.6,x,40.4,.22,BLANC,.03);SPOTS.push(x+2)}strip(56,34.6,56,40.4,.22,BLANC,.03);strip(32,40.4,56,40.4,.22,BLANC,.03);
 // aérogare
@@ -176,8 +176,8 @@ box(240,.5,.3,0x7d8b97,0,6.2,40.78);box(240,.5,.3,0x7d8b97,0,10.6,40.78);
 [[-82,12,5],[-40,9,4],[8,14,5],[52,10,4],[96,13,5]].forEach(([x,w,d])=>box(w,2.4,d,0xcdc9c1,x,16.4,46));
 [[60,40,12,-195],[110,26,9,-200],[175,60,14,-195],[-60,30,10,-200],[-150,50,12,-195]].forEach(([x,w,h,z])=>box(w,h,16,0xd6d9d9,x,h/2,z));
 // zébras rouges et cadre blanc de la passerelle
-for(let i=0;i<8;i++)strip(5.5+i*2,23.5,8.5+i*2,39,.7,ROUGE,.028);
-[[10.6,29.6,14.6,29.6],[10.6,33.6,14.6,33.6],[10.6,29.6,10.6,33.6],[14.6,29.6,14.6,33.6]].forEach(s=>strip(...s,.28,BLANC,.033));
+for(let i=0;i<6;i++)strip(7+i*2.1,17.5,9+i*2.1,25.6,.7,ROUGE,.028); // les zébras s'arrêtent au bord du cheminement
+[[13.9,22.8,17.9,22.8],[13.9,25.6,17.9,25.6],[13.9,22.8,13.9,25.6],[17.9,22.8,17.9,25.6]].forEach(s=>strip(...s,.28,BLANC,.033));
 // la tour de contrôle au loin
 cyl(2.2,2.6,38,0xdedcd6,-120,19,-170);cyl(6,4,5,0x7d94a6,-120,40,-170);cyl(6.4,6.4,1,0xdedcd6,-120,43,-170);
 /* ---------------- personnages ---------------- */
@@ -426,9 +426,9 @@ const passBtn=box(.42,.34,.22,0xd8dcdf,8,1.3,39.95);{const r=cyl(.12,.12,.04,0xf
 face(.32,.12,signTex(100,36,'#f2c230',g=>{g.fillStyle='#c9361d';g.font='700 26px Barlow';g.fillText('ARRET',50,19)}),8,1.52,39.83,Math.PI);
 face(1.1,.42,signTex(330,126,'#f2c230',g=>{g.fillStyle='#1d2329';g.font='700 30px Barlow';g.fillText('DANGER',190,24);g.font='700 20px Barlow';g.fillText("Risque d'écrasement",190,58);g.fillText('lors du déplacement',190,82);g.fillText('de la passerelle',190,106);g.beginPath();g.moveTo(16,110);g.lineTo(52,16);g.lineTo(88,110);g.closePath();g.lineWidth=6;g.strokeStyle='#1d2329';g.stroke();g.fillRect(49,46,6,36);g.fillRect(49,90,6,8)}),8,2.15,39.83,Math.PI);
 const gyro=new THREE.Mesh(new THREE.SphereGeometry(.32,12,10),new THREE.MeshBasicMaterial({color:0xf6b81c}));gyro.visible=false;gyro.position.set(0,1.9,0);cab.add(gyro);gyro.scale.setScalar(2.2);
-const PASS={a:-.45,L:15};
-function setPass(a,L){PASS.a=a;PASS.L=L;pass.rotation.y=a;tube.scale.z=L-2.2;tube.position.z=-(L-2.2)/2-2.2;cab.position.z=-L;pied.position.z=-(L*.72)}
-setPass(-.45,15);
+const PASS={a:-.45,L:20.5};
+function setPass(a,L){PASS.a=a;PASS.L=L;pass.rotation.y=a;tube.scale.z=L-2.2;tube.position.z=-(L-2.2)/2-2.2;cab.position.z=-L;pied.position.z=-Math.max(L*.72,18.2)} // le bogie reste côté avion, hors du cheminement (décision de Cat, 20/11)
+setPass(-.45,20.5);
 // les agents
 const placeur=person();placeur.position.set(0,0,24.8);placeur.rotation.y=Math.PI;placeur.visible=false;
 const agentRS=person();agentRS.position.set(9.2,0,7.4);agentRS.rotation.y=.98;agentRS.visible=false;
@@ -801,9 +801,9 @@ async function urgence(prev){await next("Vers l'aérogare",[-18,0,28]);prev.kill
  await say('z34',[[.03,()=>L.card("Ne pas encombrer l'accès","En cas d'urgence : utiliser l'arrêt d'urgence, appeler le dix-huit, et ne jamais encombrer l'accès aux arrêts d'urgence.",{a:[-24.9,.5,38.3]})]]);
  return L}
 async function zep(prev){await next('Vers la passerelle',[25,0,21]);prev.kill();await go('zep');step('zep');
- const L=label([10,.1,31]).title("La zone d'évolution de la passerelle");
+ const L=label([12,.1,21.5]).title("La zone d'évolution de la passerelle");
  let mv;
- await say('z35',[[.03,()=>{L.card('Signaux sonores et lumineux','La passerelle va bouger.',{obj:gyro});PASS.flash=true;mv=anim(9000,t=>{const e=ease(t);setPass(-.45+(.204+.45)*e,15+(28.4-15)*e)})}],[.3,()=>L.card('Zébras rouges',"Son stationnement, marqué au sol par des zébras rouges au S3 et au S4, et son évolution ne doivent jamais être gênés.",{a:[10,.1,31]})],[.55,()=>L.card('Strictement interdit',"Stationner dans son cadre blanc. Circuler ou stocker du matériel sous la passerelle. Tout piéton sur ces emplacements. Utiliser le câble quatre cents hertz ou l'escalier d'une passerelle en mouvement.",{a:[12.6,.1,31.6]})]]);
+ await say('z35',[[.03,()=>{L.card('Signaux sonores et lumineux','La passerelle va bouger.',{obj:gyro});PASS.flash=true;mv=anim(9000,t=>{const e=ease(t);setPass(-.45+(.204+.45)*e,20.5+(28.4-20.5)*e)})}],[.3,()=>L.card('Zébras rouges',"Son stationnement, marqué au sol par des zébras rouges au S3 et au S4, et son évolution ne doivent jamais être gênés.",{a:[12,.1,21.5]})],[.55,()=>L.card('Strictement interdit',"Stationner dans son cadre blanc. Circuler ou stocker du matériel sous la passerelle. Tout piéton sur ces emplacements. Utiliser le câble quatre cents hertz ou l'escalier d'une passerelle en mouvement.",{a:[15.9,.1,24.2]})]]);
  await mv;PASS.flash=false;
  await go('zepB');
  await say('z36',[[.03,()=>L.card("Bouton d'arrêt d'urgence","Chaque zone d'évolution en a un. Danger : risque d'écrasement lors du déplacement. Des sanctions en cas de mauvaise utilisation.",{a:[8,1.3,39.8]})]]);
@@ -820,7 +820,7 @@ async function stat(L){step('stat');L.title('Le stationnement');
  await say('z39',[[.03,()=>L.card('Sur les emplacements réservés','Les engins se garent sur les emplacements réservés.',{a:[44,.1,37.5]})],[.3,()=>L.card('Moteur coupé','Frein de parc ou dispositif d\'arrêt mis, feux coupés. Feux de route interdits.',{a:null})],[.62,()=>L.card('En marche arrière',"Préconisé pour les véhicules légers et les charlattes, sauf quand la mise en charge impose la marche avant.",{a:null})]]);
  van.visible=true;van.position.set(24,0,29.2);van.rotation.y=Math.PI/2;
  L.card('À vous','Où garez-vous ce véhicule ?',{a:null});await go('stat2');const sv=small([24,2.2,29.2],'Votre véhicule',{dx:-14,dy:-24});
- const eP=await choose([[[0,.3,23.6],"Devant l'avion"],[[12.6,.3,31.6],'Dans le cadre blanc'],[[SPOTS[3],.3,37.5],'Emplacement réservé']],2,async i=>{L.card('Stationnement interdit ici',i===0?"Jamais devant l'avion.":"Jamais dans le cadre blanc de la passerelle.",{ko:1})});
+ const eP=await choose([[[0,.3,23.6],"Devant l'avion"],[[15.9,.3,24.2],'Dans le cadre blanc'],[[SPOTS[3],.3,37.5],'Emplacement réservé']],2,async i=>{L.card('Stationnement interdit ici',i===0?"Jamais devant l'avion.":"Jamais dans le cadre blanc de la passerelle.",{ko:1})});
  jlog('7 h 26',"Stationnement : sur l'emplacement réservé"+errTxt(eP));
  sv.kill();L.card('Oui, sur un emplacement réservé','En marche arrière, moteur coupé, frein de parc serré, feux éteints.',{ok:1});
  const x=SPOTS[3];await driveAt(van,[[24,29.2],[34,29.4],[x+7,29.8],[x+9,31.5]],CHEMIN);await driveAt(van,[[x+9,31.5],[x+3,32.8],[x,35.5],[x,37.6]],AU_PAS*1.6,true);
