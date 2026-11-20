@@ -900,18 +900,19 @@ const PASSE2=[{t:"Une route de service en ligne continue sur la carte.",b:"o",ok
 /* écran de tri : une situation en titre, les réponses en grosses pastilles, bandeau en bas (maquette validée) */
 async function sortV5(items,buckets,o){items=mix(o.id,items);let E=0;
  for(let i=0;i<items.length;i++){const it=items[i];
-  head(H5+' · '+o.when+' · '+o.label+' '+(i+1)+' sur '+items.length,it.t);
+  head(H5+' · '+o.when+' · '+o.label+' '+(i+1)+' sur '+items.length,o.ctr?o.band:it.t);
+  if(o.ctr)vue(`<div class="flx f6 fq c5c"><div class="c5w"><p class="c5q">${nb(it.t)}</p><div class="bks5" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t])=>`<button class="b5" data-k="${k}">${nb(t)}</button>`).join('')}</div><p class="c5h">Cliquez sur votre réponse</p><p class="qfb2" id="sfb"></p><div class="nx5"></div></div></div>`);else
   vue(`<div class="flx f6 fq"><div class="bks5" style="grid-template-columns:repeat(${buckets.length},1fr)">${buckets.map(([k,t])=>`<button class="b5" data-k="${k}">${nb(t)}</button>`).join('')}</div><p class="qfb2" id="sfb"></p><div class="nx5"></div><p class="sbn">${nb(o.band)} · cliquez sur votre réponse</p></div>`);
   const st=cur(),bks=[...st.querySelectorAll('.b5')],fb=st.querySelector('#sfb');
   if(i===0&&o.line)sayS(o.line);
-  const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>{x.onclick=null;x.classList.add('off')});
+  const b=await new Promise(r=>bks.forEach(x=>x.onclick=()=>r(x)));bks.forEach(x=>{x.onclick=null;x.classList.add('off')});{const h=st.querySelector('.c5h');if(h)h.remove()}
   const ks=it.b.split('|');const g=ks.includes(b.dataset.k)?b:bks.find(x=>x.dataset.k===ks[0]);g.classList.add('ok');
   if(b===g){fb.className='qfb2 ok';fb.innerHTML=nb(it.ok)}
   else{E++;b.classList.add('ko');fb.className='qfb2 ko';fb.innerHTML=xko(ks.map((k,j)=>{const l=lbOf(buckets,k);return j?l.charAt(0).toLowerCase()+l.slice(1):l}).join(', ou '),it.x||it.ok)}
   const nx=document.createElement('button');nx.className='act';nx.textContent=i<items.length-1?'Suivant':'Continuer';st.querySelector('.nx5').appendChild(nx);await new Promise(r=>nx.onclick=r)}
  return E}
 async function passe(){step();
- const E=await sortV5(alt('pas',PASSE1,PASSE2),[['o','Je passe'],['n','Je ne passe pas']],{label:'Situation',id:'pas',when:'6 h 09',band:'Je passe, ou je ne passe pas ?',line:'c25'});
+ const E=await sortV5(alt('pas',PASSE1,PASSE2),[['o','Je passe'],['n','Je ne passe pas']],{label:'Situation',id:'pas',when:'6 h 09',band:'Je passe, ou je ne passe pas ?',line:'c25',ctr:1});
  jlog('6 h 09',`Je passe ou je ne passe pas : 6 situations${errTxt(E)}`);return gate('pas',E,6,[4,7,9,10],'Je passe ou je ne passe pas',11)}
 
 /* 4. la sécurité : signalisation, vitesse, stationnement (diapos 115 à 125) */
@@ -1936,6 +1937,14 @@ body:has(.cov1) #vbtn{bottom:calc(110px + env(safe-area-inset-bottom))}
 .b5{pointer-events:auto;cursor:pointer;background:#fff;border:3px solid var(--marine);border-radius:22px;box-shadow:0 4px 0 rgba(15,30,70,.25);padding:14px 12px;color:var(--marine);font:800 clamp(16px,1.9vw,26px)/1.15 Barlow,system-ui,sans-serif;min-height:clamp(60px,10vh,96px)}
 .b5.ok{background:var(--vert);border-color:var(--vert);color:#fff}.b5.ko{background:var(--orangeV);border-color:var(--orangeV);color:#fff}.b5.off{cursor:default}.b5.off:not(.ok):not(.ko){opacity:.5}
 .f6 .qfb2{margin:12px 2% 0}.nx5{display:flex;justify-content:flex-end;padding:8px 2% 0}.nx5 .act{pointer-events:auto}
+/* « Je passe, ou je ne passe pas ? » : la situation et les deux réponses au centre de l'écran */
+.flx.c5c{justify-content:center;align-items:center}
+.c5c .c5w{width:min(860px,100%);display:flex;flex-direction:column;gap:clamp(14px,3vh,28px);text-align:center}
+.c5c .c5q{margin:0;font-weight:800;color:var(--marine);font-size:clamp(22px,2.8vw,38px);line-height:1.2}
+.c5c .bks5{margin:0;padding:0}
+.c5c .qfb2{margin:0}
+.c5c .nx5{justify-content:center;padding:0}
+.c5c .c5h{margin:0;font-weight:700;color:#5A6585;font-size:var(--B)}
 .skf img{max-height:calc(100vh - 232px)!important}
 .flx .qw{margin:auto!important}.ch6.w.qw{gap:20px}
 .alpha b{font-size:clamp(28px,3.2vw,46px)!important}.alpha{row-gap:clamp(8px,2vh,22px)}.alpha span{font-size:clamp(13px,1.2vw,18px)!important}
