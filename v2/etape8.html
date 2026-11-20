@@ -169,7 +169,7 @@ body.subs #cap{bottom:auto;top:16px}
 .permis li.on{color:var(--marine);font-weight:600}.permis li.on b{border-color:var(--marine);color:var(--marine)}
 .permis li.now b{background:var(--orangeV);border-color:var(--orangeV);color:#fff}
 @media (max-width:700px){#vz .stage{top:118px;bottom:84px;align-items:flex-start;overflow:hidden}.row{flex-direction:column;gap:14px}.col{flex-direction:row;text-align:left;gap:14px;align-items:center}.col .tx{max-width:none;margin:0}.col .lb{margin:0 0 4px}#vz .big{font-size:64px}.frise{grid-auto-flow:row}.frise:before{left:10px;right:auto;top:0;bottom:0;width:4px;height:auto}.frise .st{text-align:left;padding:0 0 0 40px}.frise .st:before{left:10px;top:4px}.permis{grid-template-columns:1fr}.permis .T{display:none}.permis ol{grid-template-columns:1fr}.ic{width:44px;height:44px;flex:none}}
-.lab .jl{max-height:min(40vh,380px);overflow-y:auto;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:thin}</style><style id="main-bleue">#hand path{fill:var(--marine,#263c52);stroke:#FFC400;stroke-width:2.6}</style></head>
+.lab .jl{max-height:min(40vh,380px);overflow-y:auto;pointer-events:auto;overscroll-behavior:contain;scrollbar-width:thin}/* présentation de l'étape : le texte à gauche, le dessin entier à droite, plus de superposition (20/11) */@media (min-width:701px){.stage.cv8r .cv6{flex:0 1 auto;height:100%;width:52%;align-self:flex-end;background:#eef0f4}.stage.cv8r .cv6 img{object-fit:contain}}</style><style id="main-bleue">#hand path{fill:var(--marine,#263c52);stroke:#FFC400;stroke-width:2.6}</style></head>
 <body><div id="s3f"></div>
 <div id="load" style="position:fixed;inset:0;z-index:100;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:#e7eaea;color:#263C52;font-family:Barlow,system-ui,sans-serif;text-align:center;padding:24px;transition:opacity .4s"><p style="margin:0;font-weight:700;font-size:clamp(22px,3vw,34px)" id="loadt">Permis T</p><p style="margin:0;font-size:clamp(17px,2vw,21px);color:#5d6b78">Chargement de l'étape, quelques secondes.</p></div>
 <script>document.getElementById('loadt').textContent=document.title.replace(/^Permis T · /,'');addEventListener('DOMContentLoaded',()=>{const l=document.getElementById('load');if(l){l.style.opacity=0;setTimeout(()=>l.remove(),450)}})</script>
@@ -394,7 +394,9 @@ async function cont(L,txt='Continuer'){const id='c'+Math.random().toString(36).s
 let prog=0;const NSTEP=9;function step(){prog++;$('#prog').style.width=(prog/NSTEP*100)+'%'}
 /* ---------------- les visuels ---------------- */
 const VZ=$('#vz'),HD=$('#hd'),VB=$('#vbtn');
-function head(k,t){HD.innerHTML=`<p class="k">${nb(k)}</p><p class="t">${nb(t)}</p>`;HD.classList.add('on')}
+function head(k,t){const h=`<p class="k">${nb(k)}</p><p class="t">${nb(t)}</p>`;clearTimeout(HD._t);
+ if(FAST||HD._h===h||!HD._h){HD.innerHTML=h;HD._h=h;HD.style.opacity='';HD.classList.add('on');return}
+ HD._h=h;HD.classList.add('on');HD.style.transition='opacity .22s ease';HD.style.opacity=0;HD._t=setTimeout(()=>{HD.innerHTML=h;HD.style.opacity=1},230)}
 function headOff(){HD.classList.remove('on')}
 function vz(html){VZ.innerHTML=`<div class="stage">${html}</div>`;VZ.classList.add('on')}
 async function vzOff(){VZ.classList.remove('on');headOff();await wait(FAST?0:500);VZ.innerHTML=''}
@@ -494,7 +496,7 @@ async function runSeq(seq){let start=Math.max(0,Math.min(seq.length-1,+(Q.get('s
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
 document.head.insertAdjacentHTML('beforeend',`<style>
-#vz .stage.fr{opacity:0;transition:opacity .4s ease .08s}#vz .stage.fr.in{opacity:1}
+#vz .stage.fr{opacity:0;transition:opacity .5s ease}#vz .stage.fr.in{opacity:1}
 #vz.clear{background:transparent}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(8px,1.8vh,20px);width:100%;max-width:1100px}
 .hero .cap{font-weight:700;font-size:clamp(26px,2.8vw,44px);line-height:1.12;margin:0;max-width:26ch}
@@ -641,7 +643,10 @@ const K=(id,w,d=.02)=>{const t=LINES[id].t;const i=t.indexOf(w);if(i<0){console.
 const W=(id,w,fn,d)=>[K(id,w,d),fn];
 // un nouveau plan, en fondu enchaîné sur le précédent
 function vue(html){S3set(/hero nph/.test(html)?'L':null);html=html.replace(/([^\s=<>"]) ([?!;:»])/g,'$1\u00a0$2').replace(/« /g,'«\u00a0').replace(/(\d) (h|km|m|€|jours|mois|ans)\b/g,'$1\u00a0$2');const cp=document.getElementById('cap');if(cp)cp.classList.remove('on');const old=[...VZ.querySelectorAll('.stage')];const st=document.createElement('div');st.className='stage fr';st.innerHTML=html;VZ.appendChild(st);VZ.classList.add('on');
- requestAnimationFrame(()=>requestAnimationFrame(()=>st.classList.add('in')));old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .25s';o.style.opacity=0;setTimeout(()=>o.remove(),300)});return st}
+ const go=()=>{if(st._go)return;st._go=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{st.classList.add('in');old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .5s ease';o.style.opacity=0;setTimeout(()=>o.remove(),560)})}))};
+ const ims=[...st.querySelectorAll('img')];if(!ims.length)go();else{Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0)).then(go);setTimeout(go,700)}return st}
+/* une image remplacée en cours d'écran : fondu, et on attend qu'elle soit prête */
+const __sw=(img,u)=>{if(!img||!img.style){return}img.style.transition='opacity .25s ease';img.style.opacity=0;const n=new Image();n.src=u;const f=()=>{img.src=u;img.style.opacity=1};setTimeout(()=>{n.decode?n.decode().then(f,f):f()},260)};
 const cur=()=>VZ.querySelector('.stage:last-child')||VZ;
 const on=(sel,cls='in')=>cur().querySelectorAll(sel).forEach(e=>e.classList.add(cls));
 const $c=sel=>cur().querySelector(sel);
@@ -911,7 +916,7 @@ function makeAirliner(glowTex,o={}){
    blancs et noirs). Voix existantes c36, c37, c38. Vue à la première personne, comme « En panne sur la voie avion ». */
 async function traversee(part='feux'){
  // un seul monde pour tout le trajet de l'étape 5 ; chaque écran est un lieu (part) : zone30, couleurs, chemins, feux
- const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion'],dstop:['6 h 13','Le double stop'],zecdeb:['6 h 14',"Quand la zone d'évolution contrôlée déborde"],man:['7 h 32','La frontière, en trois dimensions']};
+ const HD={zone30:['6 h 07','Zone 30'],ligne:['6 h 09','La ligne de sécurité'],couleurs:['6 h 08','Le marquage au sol : les couleurs'],chemins:['6 h 08','Les cheminements véhicules'],feux:['6 h 12','Traverser une voie avion'],dstop:['6 h 13','Le double stop'],zecdeb:['6 h 14',"Quand la zone d'évolution contrôlée déborde"],man:['7 h 32','La frontière, en trois dimensions'],stop:['7 h 34','Respect du stop : traversée d\'une voie de circulation avion']};
  step();{const TT={couleurs:['Étape 5 · le marquage au sol','Les couleurs'],feux:['Étape 5',HD[part][1]],dstop:['Étape 5',HD[part][1]],zecdeb:['Étape 5',HD[part][1]]}[part];head(TT?TT[0]:H5+' · '+HD[part][0],TT?TT[1]:HD[part][1]);document.getElementById('hd').classList.add('tl')}if(innerWidth<700)headOff();
  const host=document.createElement('div');host.id='trav';host.innerHTML='<canvas></canvas><svg class="ld"></svg><div class="ui"></div>';document.body.appendChild(host);setTimeout(()=>host.classList.add('in'),FAST?0:60);
  const cv=host.querySelector('canvas'),ldv=host.querySelector('.ld'),UI=host.querySelector('.ui');
@@ -955,7 +960,7 @@ async function traversee(part='feux'){
   for(const [x,rz] of [[-48.4,-Math.PI/2],[48.4,Math.PI/2]]){const m=new THREE.Mesh(new THREE.PlaneGeometry(3.6,1.8),sm);m.rotation.x=-Math.PI/2;m.rotation.z=rz;m.position.set(x,.075,0);scene.add(m)}}
  /* les feux de protection de traversée, encastrés dans la chaussée, sur la ligne d'effet */
  const FEUX=[],glowTex=(()=>{const c=document.createElement('canvas');c.width=c.height=64;const g=c.getContext('2d');const r=g.createRadialGradient(32,32,2,32,32,30);r.addColorStop(0,'rgba(255,255,255,1)');r.addColorStop(.35,'rgba(255,255,255,.55)');r.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=r;g.fillRect(0,0,64,64);return new THREE.CanvasTexture(c)})();
- for(const fx of (part==='dstop'||part==='zecdeb'||part==='man'?[]:[-44.5,44.5]))for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
+ for(const fx of (part==='dstop'||part==='zecdeb'||part==='man'||part==='stop'?[]:[-44.5,44.5]))for(const z of [-2.4,-1.2,0,1.2,2.4]){cyl(.2,.2,.02,0x8a9096,fx,.075,z,scene,20);const d=new THREE.Mesh(new THREE.CylinderGeometry(.12,.12,.025,20),new THREE.MeshBasicMaterial({color:0x5b6168}));d.position.set(fx,.085,z);scene.add(d);
   const s=new THREE.Sprite(new THREE.SpriteMaterial({map:glowTex,color:0xff2a1a,transparent:true,depthWrite:false,blending:THREE.AdditiveBlending,opacity:0}));s.scale.set(1,1,1);s.position.set(fx,.25,z);scene.add(s);FEUX.push({d,s})}
  let feu='off',feuT=0;const COUL={rouge:0xff2a1a,orange:0xff8c1a};
  const setFeu=f=>{feu=f;feuT=performance.now()};
@@ -1034,7 +1039,7 @@ async function traversee(part='feux'){
  /* ---- lieu « l'aire de manœuvre » (diapos 227 à 230) : la voie avion, la ligne de sécurité, la bande dégagée d'obstacles, le stop routier ;
     un véhicule jaune arrêté après le stop, dans la bande ; un gros porteur qui roule ---- */
  let jaune=null;
- if(part==='man'){avion.scale.setScalar(1.3);
+ if(part==='man'||part==='stop'){avion.scale.setScalar(1.3);
   // carnet du formateur (ligne 16) : la ligne stop
   strip(-46.8,-3.3,-46.8,3.3,.35,BLANC,.074);strip(46.8,-3.3,46.8,3.3,.35,BLANC,.074);
   jaune=new THREE.Group();scene.add(jaune);box(4.6,1.9,2.0,0xF2C200,0,1.35,0,jaune);box(1.1,.85,1.96,0x2f3a44,1.9,1.75,0,jaune);box(4.7,.3,2.04,0x8a6d00,0,.45,0,jaune);
@@ -1043,8 +1048,51 @@ async function traversee(part='feux'){
   const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#fff';g.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;g.lineTo(128+124*Math.cos(a),128+124*Math.sin(a))}g.fill();
   g.fillStyle='#c4161c';g.beginPath();for(let k=0;k<8;k++){const a=Math.PI/8+k*Math.PI/4;g.lineTo(128+112*Math.cos(a),128+112*Math.sin(a))}g.fill();g.fillStyle='#fff';g.font='bold 78px Arial, sans-serif';g.textAlign='center';g.textBaseline='middle';g.fillText('STOP',128,132);
   const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;const pm=new THREE.Mesh(new THREE.PlaneGeometry(.9,.9),new THREE.MeshBasicMaterial({map:t,transparent:true}));pm.position.set(-48.6,2.3,4.6);pm.rotation.y=-Math.PI/2;scene.add(pm);cyl(.04,.04,2.3,0x8a9096,-48.6,1.15,4.6,scene,8)}
+ /* ---- lieu « respect du stop » : le film du Groupe ADP rejoué dans la scène ; une camionnette blanche, la bande hachurée des servitudes ---- */
+ let cam3=null,serv=null;
+ if(part==='stop'){jaune.visible=false;
+  cam3=new THREE.Group();scene.add(cam3);
+  const blanc=new THREE.MeshStandardMaterial({color:0xf6f7f5,roughness:.42,metalness:.05}),vitre=new THREE.MeshStandardMaterial({color:0x1c2731,roughness:.12,metalness:.3}),
+   noirM=new THREE.MeshStandardMaterial({color:0x22262a,roughness:.8}),gris=new THREE.MeshStandardMaterial({color:0xb9bfc4,roughness:.5,metalness:.4});
+  // la caisse : profil de fourgon, extrudé sur la largeur, arêtes adoucies
+  const pf=new THREE.Shape();pf.moveTo(-2.62,.42);pf.lineTo(-2.66,2.2);pf.quadraticCurveTo(-2.66,2.42,-2.42,2.44);pf.lineTo(.72,2.44);pf.quadraticCurveTo(1.02,2.43,1.2,2.2);pf.lineTo(1.92,1.42);
+  pf.quadraticCurveTo(2.5,1.34,2.62,1.14);pf.lineTo(2.7,.6);pf.quadraticCurveTo(2.7,.42,2.5,.42);pf.closePath();
+  const cg=new THREE.ExtrudeGeometry(pf,{depth:1.82,bevelEnabled:true,bevelSize:.07,bevelThickness:.07,bevelSegments:4,curveSegments:10});cg.translate(0,0,-.91);
+  cam3.add(new THREE.Mesh(cg,blanc));
+  const quad=(pts,m)=>{const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.Float32BufferAttribute([].concat(...pts),3));g.setIndex([0,1,2,0,2,3]);g.computeVertexNormals();const me=new THREE.Mesh(g,m);m.side=THREE.DoubleSide;cam3.add(me);return me};
+  // pare-brise, vitres de porte
+  quad([[1.31,2.14,-.86],[1.31,2.14,.86],[1.9,1.5,.86],[1.9,1.5,-.86]],vitre);
+  for(const z of [-.985,.985]){quad([[.28,2.2,z],[1.12,2.2,z],[1.72,1.52,z],[.28,1.52,z]],vitre);
+   const j=new THREE.Mesh(new THREE.BoxGeometry(.02,1.6,.012),noirM);j.position.set(.14,1.4,z);cam3.add(j);const j2=j.clone();j2.position.x=-1.25;cam3.add(j2);
+   const p=new THREE.Mesh(new THREE.BoxGeometry(.16,.04,.03),noirM);p.position.set(-.02,1.35,z*1.005);cam3.add(p);
+   const r=new THREE.Mesh(new THREE.BoxGeometry(.08,.22,.16),noirM);r.position.set(1.62,1.62,z*1.12);cam3.add(r)}
+  // bas de caisse, pare-chocs, calandre, optiques
+  for(const z of [-.99,.99]){const b=new THREE.Mesh(new THREE.BoxGeometry(3.2,.16,.02),noirM);b.position.set(-.05,.52,z);cam3.add(b)}
+  {const b=new THREE.Mesh(new THREE.BoxGeometry(.14,.3,1.98),noirM);b.position.set(2.68,.58,0);cam3.add(b);const a=new THREE.Mesh(new THREE.BoxGeometry(.12,.26,1.98),noirM);a.position.set(-2.66,.52,0);cam3.add(a);
+   const c=new THREE.Mesh(new THREE.BoxGeometry(.03,.2,.9),noirM);c.position.set(2.72,.98,0);cam3.add(c)}
+  const ph=new THREE.MeshBasicMaterial({color:0xfdfbe8}),fr=new THREE.MeshBasicMaterial({color:0xb81c14});
+  for(const z of [-.74,.74]){const l=new THREE.Mesh(new THREE.BoxGeometry(.05,.18,.36),ph);l.position.set(2.66,1.08,z);cam3.add(l);const t=new THREE.Mesh(new THREE.BoxGeometry(.04,.5,.14),fr);t.position.set(-2.72,1.5,z*1.22);cam3.add(t)}
+  // roues
+  const pneu=new THREE.CylinderGeometry(.37,.37,.26,24),jante=new THREE.CylinderGeometry(.21,.21,.27,16);
+  for(const [x,z] of [[1.75,.86],[1.75,-.86],[-1.6,.86],[-1.6,-.86]]){const w=new THREE.Mesh(pneu,noirM);w.rotation.x=Math.PI/2;w.position.set(x,.37,z);cam3.add(w);const h=new THREE.Mesh(jante,gris);h.rotation.x=Math.PI/2;h.position.set(x,.37,z);cam3.add(h);
+   const ar=new THREE.Mesh(new THREE.TorusGeometry(.46,.05,6,18,Math.PI),noirM);ar.position.set(x,.37,z>0?.985:-.985);cam3.add(ar)}
+  blob(7.4,3.4,cam3);cam3.position.set(-150,0,1.7);
+  // les servitudes : bande hachurée de part et d'autre de la voie, jusqu'aux stops
+  const c=document.createElement('canvas');c.width=c.height=128;const g=c.getContext('2d');g.fillStyle='rgba(233,78,27,.10)';g.fillRect(0,0,128,128);g.strokeStyle='rgba(233,78,27,.78)';g.lineWidth=11;
+  for(let k=-128;k<=256;k+=64){g.beginPath();g.moveTo(k-20,148);g.lineTo(k+148,-20);g.stroke()}
+  const tx=new THREE.CanvasTexture(c);tx.wrapS=tx.wrapT=THREE.RepeatWrapping;tx.repeat.set(35.2/7,700/7);tx.anisotropy=8;tx.colorSpace=THREE.SRGBColorSpace;
+  const sm=new THREE.MeshBasicMaterial({map:tx,transparent:true,opacity:0,depthWrite:false});serv={material:sm};
+  for(const x of [-29.2,29.2]){const m=new THREE.Mesh(new THREE.PlaneGeometry(35.2,700),sm);m.rotation.x=-Math.PI/2;m.position.set(x,.085,0);scene.add(m)}
+  // un peu de matière au sol : herbe, béton et enrobé ne sont plus des aplats
+  const grain=(a,b,n,rep)=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,256,256);
+   for(let k=0;k<n;k++){const v=a+Math.random()*(b-a)|0;g.fillStyle=`rgb(${v},${v},${v})`;const r=1+Math.random()*3;g.fillRect(Math.random()*256,Math.random()*256,r,r*(1+Math.random()*2))}
+   const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rep[0],rep[1]);t.anisotropy=8;return t};
+  mat(HERBE).map=grain(170,255,9000,[160,160]);mat(BETON).map=grain(215,255,5000,[4,160]);mat(VOIE).map=grain(215,255,5000,[3,160]);mat(0x86898c).map=grain(215,255,5000,[160,1]);
+  [HERBE,BETON,VOIE,0x86898c].forEach(c=>mat(c).needsUpdate=true);
+ }
+
  /* notre véhicule : on voit l'intérieur, à la première personne */
- const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128,zecdeb:-205,man:-128}[part],0,0);
+ const veh=new THREE.Group();scene.add(veh);veh.position.set({zone30:-400,couleurs:-190,chemins:-160,ligne:-104,feux:-95,dstop:-128,zecdeb:-205,man:-128,stop:-128}[part],0,0);
  blob(3,6,veh); // on est dans le véhicule : on n'en voit que le tableau de bord
  const BODY=new THREE.Group();veh.add(BODY);BODY.visible=false;
  box(4.7,1.5,1.95,0xf3f4f2,-.2,1.45,0,BODY);box(4.8,.55,2.0,MARINE,-.2,.55,0,BODY);box(.9,.8,1.9,0x2f3a44,1.95,1.75,0,BODY);
@@ -1078,7 +1126,7 @@ async function traversee(part='feux'){
   const hit=()=>{if(!T.d&&el.classList.contains('live')){T.d=1;res(T)}};el.onclick=hit;if(cb)cb.onclick=hit})}
  function layout(){const r=host.getBoundingClientRect(),W=r.width,H=r.height,mob=W<700;let svg='';
   for(const T of tags){const s=proj(T.a);const w=T.el.offsetWidth,h=T.el.offsetHeight;let x,y;
-   if(mob){x=12;y=12}else if(T.dk){x=Math.max(16,W*.05);y=128}else{x=s.x+T.dx;y=s.y+T.dy-h}
+   if(mob){x=12;y=T.bas?9999:12}else if(T.dk){x=Math.max(16,W*.05);y=T.bas?9999:128}else{x=s.x+T.dx;y=s.y+T.dy-h}
    x=Math.max(12,Math.min(x,W-12-w));y=Math.max(mob?12:118,Math.min(y,H-90-h));T.el.style.transform=`translate(${x}px,${y}px)`;
    if(!mob&&!T.dk&&s.ok&&s.x>0&&s.x<W&&s.y>0&&s.y<H){const lx=Math.min(Math.max(s.x,x+8),x+Math.min(w,260)),ly=y+h+6;if(s.y>ly+10)svg+=`<line x1="${lx}" y1="${ly}" x2="${s.x}" y2="${s.y}"/>`;svg+=`<circle cx="${s.x}" cy="${s.y}" r="4"/>`}}
   ldv.innerHTML=svg;
@@ -1166,6 +1214,38 @@ async function traversee(part='feux'){
    await choisir(D,[{t:'50 km/h',p:[-334,2.6,6.5],ok:1},{t:'30 km/h',p:[-334,1.2,9],fb:'La route de la ferme est la seule exception : 50 km/h. Partout ailleurs, zone 30.'},{t:'70 km/h',p:[-334,3.8,4],fb:'Rien n\'est au-dessus de 50 sur la plateforme : la route de la ferme est limitée à 50 km/h.'}],
     'Oui : 50 km/h sur la route de la ferme, 30 partout ailleurs.');
    jlog('6 h 07','Zone 30 : la route de la ferme à 50');await look(ahead(),1200);D.kill();return await fin()}
+  if(part==='stop'){
+   // le film du Groupe ADP, rejoué : cinq messages, mot pour mot ; pas de voix, pas de personnage
+   host.classList.add('st3');headOff();IN.visible=false;veh.visible=false;
+   const P=new THREE.Vector3(-118,34,66),T=new THREE.Vector3(-34,0,0);const place=()=>{const k=host.clientWidth<700?1.5:1;seatOff={x:T.x+(P.x-T.x)*k,y:T.y+(P.y-T.y)*k,z:T.z+(P.z-T.z)*k};camT.copy(T)};place();
+   const vol=(p,t,D)=>{const p0=P.clone(),t0=T.clone(),p1=new THREE.Vector3(...p),t1=new THREE.Vector3(...t);return anim(D,u=>{const e=ease(u);P.lerpVectors(p0,p1,e);T.lerpVectors(t0,t1,e);place()})};
+   const L=tag([0,0,0]).dock();L.bas=true;let tour=0;const dit=(n,txt)=>{L.set('',txt);const c=L.el.querySelector('.tc:not(.out)');if(c)c.insertAdjacentHTML('afterbegin',`<p class="k3">Respect du stop : traversée d'une voie de circulation avion · ${n} sur 5</p>`)};
+   avion.visible=true;avion.position.z=-262;
+   const jouer=async()=>{
+    cam3.position.x=-125;serv.material.opacity=0;avion.position.z=-262;const moi=++tour;anim(70000,u=>{if(moi===tour)avion.position.z=-262+700*u});
+    P.set(-118,34,66);T.set(-34,0,0);place();
+    dit(1,'Exemple d\'un non-respect d\'un stop lors de la traversée d\'une voie de circulation avion.');
+    // la camionnette arrive, au pas de la zone 30, et ne marque pas l'arrêt
+    const route=anim(12720,u=>{const t=u*12.72;cam3.position.x=t<9.12?-125+8.33*t:-49.03+8.33*(t-9.12)-8.33*(t-9.12)*(t-9.12)/7.2});
+    await wait(6200);await vol([-67,5.2,12.5],[-46,1,1.4],2600);
+    await wait(900);dit(2,'La camionnette blanche ne s\'est pas arrêtée au stop.');
+    await route;await wait(1800);
+    await vol([-70,15,34],[-16,2,-12],2600);dit(3,'Le conducteur cède néanmoins la priorité à l\'avion.');
+    await wait(5200);
+    await vol([-52,44,30],[-24,0,-2],2800);await anim(900,u=>{serv.material.opacity=u});
+    dit(4,'La camionnette se trouve cependant dans les servitudes de la voie de circulation avion et constitue donc un obstacle.');
+    await wait(8800);
+    await vol([-80,38,30],[-34,0,0],2800);tour++;avion.position.z=500;
+    dit(5,'Respectez les stops. Ils délimitent les servitudes des voies de circulation avion.')};
+   await jouer();if(host.clientWidth<700)L.bas=false;jlog('7 h 34','Film : Respect du stop : traversée d\'une voie de circulation avion');
+   // à la fin : revoir la scène, voir le film d'origine, ou continuer
+   for(;;){VB.classList.add('v3');VB.innerHTML='<button class="act alt" data-k="r">Revoir la scène</button><button class="act" data-k="c">Continuer</button>';
+    VB.querySelectorAll('button').forEach(b=>b.style.pointerEvents='auto');
+    const k=await new Promise(r=>VB.querySelectorAll('button').forEach(b=>b.onclick=()=>r(b.dataset.k)));VB.innerHTML='';
+    if(k==='c')break;
+    if(k==='r'){L.bas=true;await jouer();if(host.clientWidth<700)L.bas=false;continue}}
+   VB.classList.remove('v3');L.kill();live=false;host.classList.remove('in');setTimeout(()=>{host.remove();R.dispose()},FAST?0:480);removeEventListener('resize',fit);return null}
+
   if(part==='man'){
    // vue d'en haut, la caméra tourne autour du croisement quand on fait glisser
    IN.visible=false;veh.visible=false;const C=new THREE.Vector3(-26,0,0);let az=-2.3,dragX=null;const R0=58,HY=30;
@@ -1284,6 +1364,11 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 #trav .ttg span{position:absolute;left:58px;top:12px;white-space:nowrap;font-weight:700;font-size:17px;color:#fff;background:var(--orangeV,#E94E1B);padding:8px 14px;border-radius:999px;box-shadow:0 4px 14px rgba(38,60,82,.2)}
 #trav .ttg b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:var(--orangeV,#E94E1B)}
 #trav .ttg.ok b,#trav .ttg.ko b{color:#fff}
+#trav.st3 .s{font-size:clamp(17px,1.6vw,23px);font-weight:600;line-height:1.36;margin:0}
+#trav.st3 .tlab{width:min(560px,calc(100vw - 24px))}
+#trav.st3 .k3{margin:0 0 4px;font-size:13px;font-weight:700;color:#5d6f80}
+#trav.st3 .tc{padding:10px 16px}
+@media (max-width:700px){#vbtn.v3{flex-direction:column;align-items:flex-end;gap:8px;padding-right:12px}#vbtn.v3 .act.alt{margin-right:0}}
 #trav .tchs{position:absolute;left:12px;right:12px;bottom:14px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
 #trav .tch{pointer-events:auto;display:flex;align-items:center;gap:12px;text-align:left;border:2px solid var(--orangeV,#E94E1B);background:#fff;color:var(--marine);border-radius:14px;padding:10px 14px;font:600 16px/1.3 Barlow,system-ui,sans-serif;cursor:pointer;opacity:0;transition:opacity .3s}
 #trav .tch.live{opacity:1}
@@ -1312,7 +1397,7 @@ async function infoPills(d,kick){step();headOff();
  const paint=i=>{seen.add(i);sc.forEach((b,k)=>{b.classList.toggle('cur',k===i)});R.querySelector('.skn').textContent=`${seen.size} sur ${N} vus`};
  paint(0);R.querySelector('.skn').textContent=`0 sur ${N} vus`;seen.clear();
  const idx=(d.cards||[]).map((c,i)=>[c,i]);const SW=d.swaps||(d.swap?[d.swap]:[]);
- for(const lid of d.lines){const hk=SW.filter(x=>x[0]===lid).map(x=>at(lid,x[1],()=>{img.src=IMG[x[2]]}));
+ for(const lid of d.lines){const hk=SW.filter(x=>x[0]===lid).map(x=>at(lid,x[1],()=>{__sw(img,IMG[x[2]])}));
   await sayS(lid,[...hk,...idx.filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>paint(x[1])))])}
  for(let i=0;i<nv;i++)if(!seen.has(i))paint(i);
  sc.forEach((b,i)=>{b.onclick=()=>paint(i)});
@@ -1324,7 +1409,7 @@ const S=(ph,cap,lines,cards,head,o={})=>()=>infoS({ph,cap,lines,cards,head,...o}
 async function goTop(){const b=document.createElement('button');b.className='act';b.id='cvgo';b.textContent="C'est parti";b.style.cssText='position:fixed;top:clamp(12px,2.6vh,26px);right:clamp(16px,3vw,40px);z-index:9;pointer-events:auto;cursor:pointer';document.body.appendChild(b);await new Promise(r=>b.onclick=r);b.remove()}
 async function cover(){window.__cvx&&window.__cvx();step();headOff();head('Étape 8 · 7 h 30',"L'aire de manœuvre : elle vous est interdite");
  vue(`<div class="flx f6 fq"><figure class="cv6"><img src="${IMG.c8}" alt=""></figure></div>`);
- await goTop();
+ await goTop();headOff();cur().classList.add('cv8r');
  {const _p=photo('c8',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 8 · 7 h 30').card('L\'aire de manœuvre','Elle vous est interdite.');
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
@@ -1339,7 +1424,7 @@ async function film(src,poster,title,credit,tm){step();head(H8+' · '+HH(tm),tit
  const v=$c('#fv');try{await v.play()}catch(e){}
  if(!FAST)await new Promise(r=>{v.onended=r;if(Q.has('pass'))setTimeout(r,2500)});
  jlog(tm,'Film : '+title);await contV();return null}
-const servitudes=()=>film('film-servitudes','film-servitudes','Le film : les servitudes de la voie avion','Film du support de formation','7 h 34');
+const servitudes=()=>{const c=document.getElementById('cap');if(c)c.classList.remove('on');return traversee('stop')};
 const balisage=()=>film('film-balisage','film-balisage','Voie avion ou cheminement véhicule ?','Film du support de formation','7 h 37');
 
 /* 4 à 6. les écrans sur photo */
@@ -1395,7 +1480,7 @@ document.head.insertAdjacentHTML('beforeend',`<style>
 .qimg .fig img{display:block;width:100%}
 @media (max-width:700px){.qimg{grid-template-columns:1fr;gap:12px}.qimg .fig img{max-height:22vh;width:auto;max-width:100%;margin:0 auto}}
 </style>`);
-runSeq([['Couverture',cover],['La frontière, en trois dimensions',()=>{const c=document.getElementById('cap');if(c)c.classList.remove('on');return traversee('man')}],['Le film : les servitudes',servitudes],['Prévenir les incursions',prevenir],
+runSeq([['Couverture',cover],['La frontière, en trois dimensions',()=>{const c=document.getElementById('cap');if(c)c.classList.remove('on');return traversee('man')}],['Le film : le respect du stop',servitudes],['Prévenir les incursions',prevenir],
  ['Rappel : la ligne de sécurité',ligne],['Les bandes dégagées d\'obstacles',bandes],['Voie avion ou cheminement véhicule ?',balisage],["Questions d'entraînement",questions],['Fin de l\'étape 8',fin]]);
 
 window.V2={get here(){return CUR&&CUR.k},tgts};

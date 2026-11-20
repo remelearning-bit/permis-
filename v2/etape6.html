@@ -394,7 +394,9 @@ async function cont(L,txt='Continuer'){const id='c'+Math.random().toString(36).s
 let prog=0;const NSTEP=10;function step(){prog++;$('#prog').style.width=(prog/NSTEP*100)+'%'}
 /* ---------------- les visuels ---------------- */
 const VZ=$('#vz'),HD=$('#hd'),VB=$('#vbtn');
-function head(k,t){HD.innerHTML=`<p class="k">${nb(k)}</p><p class="t">${nb(t)}</p>`;HD.classList.add('on')}
+function head(k,t){const h=`<p class="k">${nb(k)}</p><p class="t">${nb(t)}</p>`;clearTimeout(HD._t);
+ if(FAST||HD._h===h||!HD._h){HD.innerHTML=h;HD._h=h;HD.style.opacity='';HD.classList.add('on');return}
+ HD._h=h;HD.classList.add('on');HD.style.transition='opacity .22s ease';HD.style.opacity=0;HD._t=setTimeout(()=>{HD.innerHTML=h;HD.style.opacity=1},230)}
 function headOff(){HD.classList.remove('on')}
 function vz(html){VZ.innerHTML=`<div class="stage">${html}</div>`;VZ.classList.add('on')}
 async function vzOff(){VZ.classList.remove('on');headOff();await wait(FAST?0:500);VZ.innerHTML=''}
@@ -494,7 +496,7 @@ async function runSeq(seq){let start=Math.max(0,Math.min(seq.length-1,+(Q.get('s
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
 document.head.insertAdjacentHTML('beforeend',`<style>
-#vz .stage.fr{opacity:0;transition:opacity .4s ease .08s}#vz .stage.fr.in{opacity:1}
+#vz .stage.fr{opacity:0;transition:opacity .5s ease}#vz .stage.fr.in{opacity:1}
 #vz.clear{background:transparent}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(8px,1.8vh,20px);width:100%;max-width:1100px}
 .hero .cap{font-weight:700;font-size:clamp(26px,2.8vw,44px);line-height:1.12;margin:0;max-width:26ch}
@@ -641,7 +643,10 @@ const K=(id,w,d=.02)=>{const t=LINES[id].t;const i=t.indexOf(w);if(i<0){console.
 const W=(id,w,fn,d)=>[K(id,w,d),fn];
 // un nouveau plan, en fondu enchaîné sur le précédent
 function vue(html){S3set(/hero nph/.test(html)?'L':null);html=html.replace(/([^\s=<>"]) ([?!;:»])/g,'$1\u00a0$2').replace(/« /g,'«\u00a0').replace(/(\d) (h|km|m|€|jours|mois|ans)\b/g,'$1\u00a0$2');const cp=document.getElementById('cap');if(cp)cp.classList.remove('on');const old=[...VZ.querySelectorAll('.stage')];const st=document.createElement('div');st.className='stage fr';st.innerHTML=html;VZ.appendChild(st);VZ.classList.add('on');
- requestAnimationFrame(()=>requestAnimationFrame(()=>st.classList.add('in')));old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .25s';o.style.opacity=0;setTimeout(()=>o.remove(),300)});return st}
+ const go=()=>{if(st._go)return;st._go=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{st.classList.add('in');old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .5s ease';o.style.opacity=0;setTimeout(()=>o.remove(),560)})}))};
+ const ims=[...st.querySelectorAll('img')];if(!ims.length)go();else{Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0)).then(go);setTimeout(go,700)}return st}
+/* une image remplacée en cours d'écran : fondu, et on attend qu'elle soit prête */
+const __sw=(img,u)=>{if(!img||!img.style){return}img.style.transition='opacity .25s ease';img.style.opacity=0;const n=new Image();n.src=u;const f=()=>{img.src=u;img.style.opacity=1};setTimeout(()=>{n.decode?n.decode().then(f,f):f()},260)};
 const cur=()=>VZ.querySelector('.stage:last-child')||VZ;
 const on=(sel,cls='in')=>cur().querySelectorAll(sel).forEach(e=>e.classList.add(cls));
 const $c=sel=>cur().querySelector(sel);
@@ -825,7 +830,7 @@ async function infoPills(d,kick){step();headOff();
  const paint=i=>{seen.add(i);sc.forEach((b,k)=>{b.classList.toggle('cur',k===i)});R.querySelector('.skn').textContent=`${seen.size} sur ${N} vus`};
  paint(0);R.querySelector('.skn').textContent=`0 sur ${N} vus`;seen.clear();
  const idx=(d.cards||[]).map((c,i)=>[c,i]);const SW=d.swaps||(d.swap?[d.swap]:[]);
- for(const lid of d.lines){const hk=SW.filter(x=>x[0]===lid).map(x=>at(lid,x[1],()=>{img.src=IMG[x[2]]}));
+ for(const lid of d.lines){const hk=SW.filter(x=>x[0]===lid).map(x=>at(lid,x[1],()=>{__sw(img,IMG[x[2]])}));
   await sayS(lid,[...hk,...idx.filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>paint(x[1])))])}
  for(let i=0;i<nv;i++)if(!seen.has(i))paint(i);
  sc.forEach((b,i)=>{b.onclick=()=>paint(i)});
