@@ -1350,6 +1350,7 @@ async function traversee(part='feux'){
  await drive(30);
  L.dock().set('Traversée faite','Feu rouge : on attend. Orange clignotant : stop, puis traversée avec prudence. Feux éteints, en panne : stop, puis traversée avec vigilance.');
  jlog('6 h 13','Traversée à l\'orange clignotant, entre les tiretets');
+ await contV();L.dock().set('Nouveaux feux sur la voie Alpha','Installés en septembre 2026 entre les postes U06, U07, U08 et les postes Sierra est. Ils protègent la traversée de la voie avion, et avertissent du mouvement des avions sur ces postes.');
  await contV();live=false;L.kill();host.classList.remove('in');setTimeout(()=>{host.remove();R.dispose()},FAST?0:480);removeEventListener('resize',fit);return null
  async function fin(){await contV();live=false;host.classList.remove('in');setTimeout(()=>{host.remove();R.dispose()},FAST?0:480);removeEventListener('resize',fit);return null}
  async function lieu5(part){
