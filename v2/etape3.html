@@ -860,7 +860,7 @@ async function film(src,cred){const vv=$('#vv'),vid=$('#vid');const c=$('#vcred'
 var CAPS={aerien3:'Plan ADP · Où rouler avec le permis T'};
 async function cover(){window.__cvx&&window.__cvx();step();headOff();
  vue(`<div class="cv3" style="background-image:linear-gradient(rgba(255,255,255,.72),rgba(255,255,255,.72)),url(${IMG.aerien3})"><div class="cv3t"><p class="k">Étape 3 · 5 h 30</p><h1>L'accès au côté piste</h1><span class="ul"></span><p class="s">Pour entrer côté piste, il faut des titres spéciaux et passer par un point de contrôle.</p></div><div class="cv3c">${p3dHTML('width:100%;height:100%')}</div><p class="sbn">Plan ADP : où rouler avec le permis T</p></div>`);setTimeout(()=>p3dMount(),0);
- await contV("C'est parti");
+ await contV("C'est parti");vzOff();
  {const _p=photo('aerien3',FAST?10:900);setCam({zoom:1.1});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 3 · 5 h 30').card("L'accès au côté piste","Pour entrer côté piste, il faut des titres spéciaux et passer par un point de contrôle.");
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}

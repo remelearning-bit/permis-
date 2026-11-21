@@ -856,7 +856,7 @@ Object.assign(IC,{
 /* 1. la couverture */
 async function cover(){window.__cvx&&window.__cvx();step();headOff();
  vue(`<div class="cv3" style="background:#f4f6fa"><div class="cv3t"><p class="k">Étape 4 · 5 h 45</p><h1>L'inspection du véhicule avant utilisation</h1><span class="ul" style="width:100%"></span><p class="s" style="max-width:34ch">Le véhicule est devant vous. Avant de monter, on en fait le tour.</p></div><div class="cv3c" style="height:92%;display:flex;justify-content:center"><img src="${IMG.voiture}" alt="" style="height:100%;width:auto;border-radius:18px;box-shadow:0 14px 30px rgba(15,30,70,.3)"></div><p class="sbn">Photo REM Formation</p></div>`);
- await contV("C'est parti");
+ await contV("C'est parti");vzOff();
  {const _p=photo('voiture',FAST?10:900);setCam(PORT()?{zoom:1}:{mode:'contain'});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 4 · 5 h 45').card("L'inspection du véhicule avant utilisation","Le véhicule est devant vous. Avant de monter, on en fait le tour.");
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
