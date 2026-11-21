@@ -932,7 +932,7 @@ const badge=S('badge','Le badge',['g07'],[['g07',.25,'Le titre de circulation a�
 
 /* 5. la stérilité de la cabine (diapo 192) : à vous de rendre la cabine silencieuse */
 async function cabine(){step();headOff();head('Étape 6 · 6 h 56','La stérilité de la cabine');
- const cs=[['radio','La radio, la musique',''],['storno','Le talkie-walkie','Pour ne pas être distrait par un appel de la régulation.'],['tel','Le téléphone portable','Pour ne pas être distrait par un appel.']];
+ const cs=[['radio','La radio, la musique, les écouteurs',''],['storno','Le talkie-walkie','Pour ne pas être distrait par un appel de la régulation.'],['tel','Le téléphone portable','Pour ne pas être distrait par un appel.']];
  const id='cb'+rnd();
  vue(`<div class="flx f6 fq" id="${id}"><div class="ikc cabc" style="--n:3">${cs.map(([k,t,s],i)=>`<div class="sc cb on" data-i="${i}"><i class="art">${ART[k]}</i><b>${nb(t)}</b>${s?`<span class="tx">${nb(s)}</span>`:''}<button class="act off">Éteindre</button></div>`).join('')}</div><div class="cbl"><p class="cbm"></p><span class="skn">0 sur 3 éteints</span></div><div class="skb"><span class="gb">Continuer</span></div></div>`);
  const R=document.getElementById(id),cb=[...R.querySelectorAll('.cb')],bs=cb.map(c=>c.querySelector('.act')),setCur=i=>cb.forEach((c,k)=>c.classList.toggle('cur',k===i));
