@@ -1136,7 +1136,9 @@ async function traversee(part='feux'){
  const blob=(w,d,p,x=0,z=0)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),blobM);m.rotation.x=-Math.PI/2;m.position.set(x,.035,z);p.add(m);return m};
  const BETON=0xb4b6b2,VOIE=0x9a9ea0,BLANC=0xffffff,JAUNE=0xf2b200,MARINE=0x263C52,NOIR=0x16191d,HERBE=0x6e9443,ROUGE=0xd3241a;
  /* la voie de circulation avion, du nord au sud ; le cheminement véhicule qui la traverse, d'ouest en est */
- {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600,80,80),mat(HERBE));g.rotation.x=-Math.PI/2;g.position.y=-.15;scene.add(g)}
+ {const g=new THREE.Mesh(new THREE.PlaneGeometry(1600,1600,80,80),(()=>{const c=document.createElement('canvas');c.width=c.height=256;const g=c.getContext('2d');g.fillStyle='#9fae8b';g.fillRect(0,0,256,256);let sd=11;const r=()=>{sd=(sd*16807)%2147483647;return sd/2147483647};
+const cols=['#8fa07a','#b2bf9a','#a8a37d','#8a9b74','#b9b58f','#96a882'];for(let i=0;i<5200;i++){g.fillStyle=cols[(r()*cols.length)|0];const x=r()*256,y=r()*256;g.fillRect(x,y,1+r()*2.5,2+r()*5)}
+const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(260,260);t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return new THREE.MeshBasicMaterial({map:t})})());g.rotation.x=-Math.PI/2;g.position.y=-.15;scene.add(g)}
  {const t=new THREE.Mesh(new THREE.PlaneGeometry(38,1600,1,80),mat(BETON));t.rotation.x=-Math.PI/2;t.position.y=0;scene.add(t);
   const v=new THREE.Mesh(new THREE.PlaneGeometry(23,1600,1,80),mat(VOIE));v.rotation.x=-Math.PI/2;v.position.y=.02;scene.add(v)}
  for(const [lx,lw] of [[0,.45],[-11.6,.25],[11.6,.25]]){strip(lx,-800,lx,-3.8,lw,JAUNE,.06);strip(lx,3.8,lx,800,lw,JAUNE,.06)}
