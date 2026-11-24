@@ -131,13 +131,13 @@ const BETON=0xc3c6c2,VOIE=0xaeb1ad,BLANC=0xf7f7f4,JAUNE=0xe0b419,ROUGE=0xc9361d,
 /* sol en dalles de béton, avec joints et taches, d'après les planches validées */
 const solTex=(()=>{const c=document.createElement('canvas');c.width=c.height=1024;const g=c.getContext('2d');g.fillStyle='#c0c2bc';g.fillRect(0,0,1024,1024);
  let seed=7;const rnd=()=>{seed=(seed*16807)%2147483647;return seed/2147483647};
- for(let i=0;i<260;i++){const x=rnd()*1024,y=rnd()*1024,r=30+rnd()*110;const gr=g.createRadialGradient(x,y,2,x,y,r);const d=rnd()<.55;gr.addColorStop(0,d?'rgba(90,92,86,.09)':'rgba(215,217,211,.10)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}
- g.strokeStyle='rgba(70,72,68,.26)';g.lineWidth=2;for(let k=0;k<=4;k++){const q=k*256;g.beginPath();g.moveTo(q,0);g.lineTo(q,1024);g.stroke();g.beginPath();g.moveTo(0,q);g.lineTo(1024,q);g.stroke()}
+ for(let i=0;i<260;i++){const x=rnd()*1024,y=rnd()*1024,r=30+rnd()*110;const gr=g.createRadialGradient(x,y,2,x,y,r);const d=rnd()<.55;gr.addColorStop(0,d?'rgba(90,92,86,.025)':'rgba(215,217,211,.03)');gr.addColorStop(1,'rgba(0,0,0,0)');g.fillStyle=gr;g.fillRect(x-r,y-r,2*r,2*r)}
+ g.strokeStyle='rgba(70,72,68,.14)';g.lineWidth=2;for(let k=0;k<=4;k++){const q=k*256;g.beginPath();g.moveTo(q,0);g.lineTo(q,1024);g.stroke();g.beginPath();g.moveTo(0,q);g.lineTo(1024,q);g.stroke()}
  const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=8;return t})();
 const solM=(w,h)=>{const t=solTex.clone();t.needsUpdate=true;t.repeat.set(w/24,h/24);return new THREE.MeshLambertMaterial({map:t})};
 {const g=new THREE.Mesh(new THREE.PlaneGeometry(900,520),solM(900,520));g.rotation.x=-Math.PI/2;g.position.z=190;scene.add(g);
  const v=new THREE.Mesh(new THREE.PlaneGeometry(900,34),solM(900,34));v.rotation.x=-Math.PI/2;v.position.set(0,.015,-52);scene.add(v);
- const herbe=new THREE.Mesh(new THREE.PlaneGeometry(900,380),mat(0xa9b59a));herbe.rotation.x=-Math.PI/2;herbe.position.set(0,0,-260);scene.add(herbe)}
+ const herbe=new THREE.Mesh(new THREE.PlaneGeometry(900,380),mat(0xbcbfba));herbe.rotation.x=-Math.PI/2;herbe.position.set(0,0,-260);scene.add(herbe)}
 strip(-450,-52,450,-52,.5,JAUNE,.03);              // axe de la voie avion
 strip(-450,-34,450,-34,.6,BLANC,.03);              // ligne de sécurité
 strip(0,-52,0,16,.35,JAUNE,.03);                   // ligne d'entrée du poste, raccordée à l'axe de la voie avion (carnet du formateur, ligne 13)
