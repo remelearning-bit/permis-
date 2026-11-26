@@ -51,6 +51,13 @@ function buildVan(){
  // trappe de recharge, arrière droit
  const tr=new THREE.Mesh(new THREE.BoxGeometry(.18,.14,.01),new THREE.MeshStandardMaterial({color:0x0f1720,roughness:.4}));tr.position.set(-1.80,.98,-W2-.008);g.add(tr);
  return g}
+
+/* le véhicule de REM Formation : modèle 3D fourni (vehicule_REM_1), allégé ; la longueur passe sur l'axe x, l'avant vers +x */
+async function loadVan(){
+ const gl=await new GLTFLoader().loadAsync(VANGLB);const m=gl.scene;
+ const g=new THREE.Group();m.rotation.y=-Math.PI/2;g.add(m);
+ g.traverse(o=>{if(o.isMesh){o.castShadow=true;o.receiveShadow=false;if(o.material){o.material.envMapIntensity=.6}}});
+ return g}
 async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap');if(cp0)cp0.classList.remove('on');if(innerWidth<700)headOff();
  const host=document.createElement('div');host.id='van3d';document.body.appendChild(host);
  const rd=new THREE.WebGLRenderer({antialias:true});rd.setPixelRatio(Math.min(2,devicePixelRatio));rd.shadowMap.enabled=true;rd.shadowMap.type=THREE.PCFSoftShadowMap;rd.outputColorSpace=THREE.SRGBColorSpace;host.appendChild(rd.domElement);
@@ -59,10 +66,14 @@ async function tour(){step();head(H4,'Le tour du véhicule');const cp0=$('#cap')
  sc.add(new THREE.HemisphereLight(0xffffff,0x9aa3ab,1.15));const sun=new THREE.DirectionalLight(0xffffff,1.6);sun.position.set(6,10,5);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);
  Object.assign(sun.shadow.camera,{left:-6,right:6,top:6,bottom:-6});sun.shadow.bias=-.0006;sun.shadow.normalBias=.03;sc.add(sun);
  // l'aire : enrobé clair, une ligne de cheminement
- const gr=new THREE.Mesh(new THREE.PlaneGeometry(140,140),new THREE.MeshStandardMaterial({color:0xb9c0c6,roughness:.95}));gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;sc.add(gr);
+ const gr=new THREE.Mesh(new THREE.PlaneGeometry(140,140),new THREE.MeshStandardMaterial({color:0xb9c0c6,roughness:.95}));gr.material.envMapIntensity=.25;gr.rotation.x=-Math.PI/2;gr.receiveShadow=true;sc.add(gr);
  const line=(x,z,w,d,col)=>{const m=new THREE.Mesh(new THREE.PlaneGeometry(w,d),new THREE.MeshStandardMaterial({color:col,roughness:.9}));m.rotation.x=-Math.PI/2;m.position.set(x,.005,z);sc.add(m)};
  line(0,2.6,60,.15,0xffffff);line(0,-2.6,60,.15,0xffffff);
- const van=buildVan();sc.add(van);
+ {const es=new THREE.Scene();es.background=new THREE.Color(0xdfe8ef);const bx=new THREE.Mesh(new THREE.BoxGeometry(30,30,30),new THREE.MeshBasicMaterial({color:0xcfd8e0,side:THREE.BackSide}));es.add(bx);
+  const lp=(w,h,x,y,z,c)=>{const q=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:c,side:THREE.DoubleSide}));q.position.set(x,y,z);q.lookAt(0,0,0);es.add(q)};
+  lp(14,6,0,14,0,0xffffff);lp(8,5,12,6,6,0xffffff);lp(8,5,-12,6,-6,0xf4f7fa);lp(30,2,0,-14,0,0x6b747c);
+  const pm=new THREE.PMREMGenerator(rd);sc.environment=pm.fromScene(es,.02).texture;pm.dispose()}
+ const van=await loadVan();sc.add(van);
  const T=new THREE.Vector3(0,.95,0);let yaw=.75,pitch=.22,R=8.2,goal=null;
  const fit=()=>{const w=host.clientWidth,h=host.clientHeight;rd.setSize(w,h,false);cm.aspect=w/h;R=Math.max(8.2,2.9/(Math.tan(20*Math.PI/180)*cm.aspect));cm.updateProjectionMatrix()};fit();addEventListener('resize',fit);
  // on tourne autour en faisant glisser
