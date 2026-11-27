@@ -565,7 +565,7 @@ async function runSeq(seq){let start=Math.max(0,Math.min(seq.length-1,+(Q.get('s
    Une idée par plan, en plein cadre ; le plan suivant arrive en fondu quand la voix passe à l'idée suivante.
    Les questions se posent sur le visuel lui-même : les frises du candidat, le film des aérogares. */
 document.head.insertAdjacentHTML('beforeend',`<style>
-#vz .stage.fr{opacity:0;transition:opacity .5s ease}#vz .stage.fr.in{opacity:1}
+#vz .stage.fr{opacity:0;transition:opacity .45s ease .18s}#vz .stage.fr.in{opacity:1}
 #vz.clear{background:transparent}
 .hero{display:flex;flex-direction:column;align-items:center;text-align:center;gap:clamp(8px,1.8vh,20px);width:100%;max-width:1100px}
 .hero .cap{font-weight:700;font-size:clamp(26px,2.8vw,44px);line-height:1.12;margin:0;max-width:26ch}
@@ -712,7 +712,7 @@ const K=(id,w,d=.02)=>{const t=LINES[id].t;const i=t.indexOf(w);if(i<0){console.
 const W=(id,w,fn,d)=>[K(id,w,d),fn];
 // un nouveau plan, en fondu enchaîné sur le précédent
 function vue(html){S3set(/hero nph/.test(html)?'L':null);html=html.replace(/([^\s=<>"]) ([?!;:»])/g,'$1\u00a0$2').replace(/« /g,'«\u00a0').replace(/(\d) (h|km|m|€|jours|mois|ans)\b/g,'$1\u00a0$2');const cp=document.getElementById('cap');if(cp)cp.classList.remove('on');const old=[...VZ.querySelectorAll('.stage')];const st=document.createElement('div');st.className='stage fr';st.innerHTML=html;VZ.appendChild(st);VZ.classList.add('on');
- const go=()=>{if(st._go)return;st._go=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{st.classList.add('in');old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .5s ease';o.style.opacity=0;setTimeout(()=>o.remove(),560)})}))};
+ const go=()=>{if(st._go)return;st._go=1;requestAnimationFrame(()=>requestAnimationFrame(()=>{st.classList.add('in');old.forEach(o=>{o.classList.remove('in');o.style.transition='opacity .25s ease';o.style.opacity=0;setTimeout(()=>o.remove(),300)})}))};
  const ims=[...st.querySelectorAll('img')];if(!ims.length)go();else{Promise.all(ims.map(i=>i.decode?i.decode().catch(()=>{}):0)).then(go);setTimeout(go,700)}return st}
 /* une image remplacée en cours d'écran : fondu, et on attend qu'elle soit prête */
 const __sw=(img,u)=>{if(!img||!img.style){return}img.style.transition='opacity .25s ease';img.style.opacity=0;const n=new Image();n.src=u;const f=()=>{img.src=u;img.style.opacity=1};setTimeout(()=>{n.decode?n.decode().then(f,f):f()},260)};
