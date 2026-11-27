@@ -745,7 +745,7 @@ async function candidat(){step();head('Préambule','Le candidat');
 async function attestation(){step();await goPh('annexe',{mode:'contain'},400);
  if(S3on())head('Préambule',"L'attestation de réussite");
  const items=[['Annexe 8',"Le document « Demande d'autorisation de conduite, permis T ». Ici, un exemple fictif."],['Partie 2 · Formation théorique','Remplie par le centre de formation agréé : il atteste que vous avez réussi la théorie.'],['Elle vaut autorisation de conduite','Avec un référent.'],['40 jours','La partie pratique doit être réalisée dans les 40 jours suivant la réussite de la formation théorique.']],N=items.length;
- const VW=[null,null,null,null]; // la page entière du document reste affichée (décision de Cat, 20/11)
+ const VW=[null,[.5,.38,1.5],[.62,.4,1.5],[.62,.38,1.5]]; // 27/11 : Cat demande plus grand — la page entière au départ, puis on s'approche de chaque partie
  const L=label([0,0,0],{lead:false}).title("L'attestation de réussite");const id='stp'+Math.random().toString(36).slice(2,6);
  L.html(`<div class="stp" id="${id}"><div class="pls">${items.map((x,i)=>`<button class="opt pl off" data-i="${i}">${i+1}</button>`).join('')}</div><div class="cd"><p class="t"></p><p class="s"></p></div><p class="nv"></p></div>`);
  const R=document.getElementById(id),pl=[...R.querySelectorAll('.pl')],seen=new Set();
