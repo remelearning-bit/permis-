@@ -1093,8 +1093,8 @@ async function recap(){step();head(H4,'On récapitule');
 
 /* 4. la consigne n°12 : la vérification quotidienne, au minimum */
 const N12=["Les indications de dysfonctionnement et d'avertissement","Le volant","Le système d'éclairage","Le système de freinage","Les systèmes de communication, transpondeur compris le cas échéant","L'état des pneus","Les rétroviseurs extérieurs","Les essuie-glaces, le cas échéant","Les objets à sécuriser sur le véhicule","Les fuites","Les nouveaux dommages extérieurs","Le plan de l'aire de mouvement, à bord","Le gilet haute visibilité, à bord"];
-async function quotidien(){step();head(H4,'Chaque jour, avant de partir');
- vue(`<div class="flx"><div class="hero"><p class="huge" style="font-size:clamp(60px,9vw,130px);text-shadow:0 6px 0 var(--jaune)">13</p><p class="cap">points à vérifier chaque jour, avant d'utiliser le véhicule</p><p class="sub">${nb("Au minimum : c'est la consigne d'exploitation n°12, sur l'entretien des véhicules, § 4.2. Votre employeur l'intègre à son programme de vérification.")}</p></div><p class="sbn">Consigne d'exploitation n°12</p></div>`);
+async function quotidien(){step();head(H4,"L'entretien : la vérification quotidienne");
+ vue(`<div class="flx"><div class="hero"><p class="huge" style="font-size:clamp(60px,9vw,130px);text-shadow:0 6px 0 var(--jaune)">13</p><p class="cap">points d'entretien à vérifier chaque jour, au minimum</p><p class="sub">${nb("C'est la consigne d'exploitation n°12, sur l'entretien des véhicules, § 4.2. Votre employeur l'intègre à son programme de vérification.")}</p></div><p class="sbn">Consigne d'exploitation n°12</p></div>`);
  await contV('Voir la liste');
  vue(`<div class="n12"><ol>${N12.map((t,i)=>`<li class="it" id="q${i}"><b>${i+1}</b><span>${nb(t)}</span></li>`).join('')}</ol>
   <p class="sub it" id="q13" style="text-align:center;margin:clamp(10px,2vh,18px) auto 0">${nb("Le plan est disponible sur l'extranet opérationnel du Groupe ADP. Le gilet porte le logo de l'employeur, en classe 2 ou 3.")}</p></div>`);
