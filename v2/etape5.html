@@ -1408,7 +1408,7 @@ async function traversee(part='feux'){
   const hit=()=>{if(!T.d&&el.classList.contains('live')){T.d=1;res(T)}};el.onclick=hit;if(cb)cb.onclick=hit})}
  function layout(){const r=host.getBoundingClientRect(),W=r.width,H=r.height,mob=W<700;let svg='';
   for(const T of tags){const s=proj(T.a);const w=T.el.offsetWidth,h=T.el.offsetHeight;let x,y;
-   if(mob){x=12;y=12}else if(T.dk){x=Math.max(16,W*.05);y=128}else{x=s.x+T.dx;y=s.y+T.dy-h}
+   if(mob){x=12;y=12}else if(T.dk){x=Math.max(16,W*.05);const _h=document.getElementById('hd');y=Math.max(128,_h?Math.round(_h.getBoundingClientRect().bottom)+14:0)}else{x=s.x+T.dx;y=s.y+T.dy-h}
    x=Math.max(12,Math.min(x,W-12-w));y=Math.max(mob?12:118,Math.min(y,H-90-h));T.el.style.transform=`translate(${x}px,${y}px)`;
    if(!mob&&!T.dk&&s.ok&&s.x>0&&s.x<W&&s.y>0&&s.y<H){const lx=Math.min(Math.max(s.x,x+8),x+Math.min(w,260)),ly=y+h+6;if(s.y>ly+10)svg+=`<line x1="${lx}" y1="${ly}" x2="${s.x}" y2="${s.y}"/>`;svg+=`<circle cx="${s.x}" cy="${s.y}" r="4"/>`}}
   ldv.innerHTML=svg;
@@ -1571,7 +1571,9 @@ async function traversee(part='feux'){
    jlog('6 h 09','Ligne de sécurité : jamais franchie');D.kill();return await fin()}
   if(part==='couleurs'){
    /* on part directement de l'extérieur : l'ID. Buzz et les trois lignes d'un coup d'œil */
-   const CA=new THREE.Vector3(-146,0,9);IN.visible=false;BODY.visible=true;seatOff={x:-172,y:8.5,z:-9};camT.copy(CA);
+   const CA=new THREE.Vector3(-138,0,8);IN.visible=false;BODY.visible=true;camT.copy(CA);
+   /* caméra basse juste derrière l'ID. Buzz : elle le suit, on a l'impression de rouler */
+   const FOL={t0:performance.now(),D:1e12,fn:()=>{seatOff={x:veh.position.x-10,y:3.1,z:-3.2}},r(){}};seatOff={x:veh.position.x-10,y:3.1,z:-3.2};anims.add(FOL);
    const L=tag([-148,.1,20],{dx:-40,dy:-70});L.set('Le marquage au sol','Trois couleurs.');
    await contV('Rouler');await drive(-160);
    await sayS('c20',[at('c20',.46,()=>{L.a.set(-150,.1,3.4);L.set('Blanc','La sécurité de la circulation des véhicules.')}),
@@ -1581,7 +1583,7 @@ async function traversee(part='feux'){
    await choisir(D,[{t:'La ligne blanche',p:[-152,.2,3.4],fb:'Le blanc, c\'est la sécurité de la circulation des véhicules.'},{t:'La ligne rouge',p:[-136,.2,16],fb:'Le rouge, c\'est le danger.'},{t:'La ligne jaune',p:[-148,.2,11],ok:1}],
     'Oui : le jaune concerne la circulation des aéronefs.');
    jlog('6 h 08','Marquage : le jaune pour les avions');
-   {const A={...seatOff},E0={x:veh.position.x-.01,y:1.45,z:-.45};await anim(1400,t=>{const e=ease(t);seatOff={x:A.x+(E0.x-A.x)*e,y:A.y+(E0.y-A.y)*e,z:A.z+(E0.z-A.z)*e};camT.lerpVectors(CA,new THREE.Vector3(...ahead()),e);if(t>.8){BODY.visible=false;IN.visible=true}});seatOff=null;camT.set(...ahead())}
+   {anims.delete(FOL);const A={...seatOff},E0={x:veh.position.x-.01,y:1.45,z:-.45},C1=camT.clone();await anim(1400,t=>{const e=ease(t);seatOff={x:A.x+(E0.x-A.x)*e,y:A.y+(E0.y-A.y)*e,z:A.z+(E0.z-A.z)*e};camT.lerpVectors(C1,new THREE.Vector3(...ahead()),e);if(t>.8){BODY.visible=false;IN.visible=true}});seatOff=null;camT.set(...ahead())}
    D.kill();return await fin()}
   if(part==='chemins'){
    const L=tag([-150,.1,3.4],{dx:-40,dy:-70});
