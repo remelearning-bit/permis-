@@ -896,9 +896,10 @@ var CAPS={};
 async function cover(){window.__cvx&&window.__cvx();step();headOff();
  vue(`<div class="cv3 cv5" style="--vi:url(${IMG.van5})"><div class="cv3t"><p class="k">Étape 5 · 6 h 00</p><h1>Je prends le volant</h1><span class="ul" style="width:100%"></span><p class="s" style="max-width:30ch">La circulation des véhicules côté piste. Le chapitre le plus long de la formation.</p></div><p class="sbn">Étape 5 · La circulation des véhicules</p></div>`);
  await contV("C'est parti");await vzOff();
- {const _p=photo('c5a',FAST?10:900);setCam({zoom:1.08});await _p;await wait(350)}
+ {const _p=photo('c5a',FAST?10:900);setCam(S3on()?{zoom:1.08}:{mode:'contain'});await _p;await wait(350)}
  const L=label([0,0,0],{big:1,lead:false}).title('Étape 5 · 6 h 00').card('Je prends le volant','La circulation des véhicules côté piste. Le chapitre le plus long de la formation.');
  try{const a=jload();delete a[ETAPE];localStorage.setItem(JK,JSON.stringify(a))}catch(e){}
+ if(S3on())V.d*=1.22;/* l'illustration entière dans son cadre, sans couper les textes */
  await sayS('c01');
  await sayS('c02',[at('c02',.02,()=>L.card('« Le code de la route, je le connais déjà. »','Xavier'))]);
  await sayS('c03',[at('c03',.02,()=>L.card("Il s'applique ici aussi","Et l'arrêté préfectoral ajoute ses règles : chapitre 3, article 27, adapter sa conduite aux risques et aux points sensibles.")),
