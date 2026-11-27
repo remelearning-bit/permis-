@@ -1127,6 +1127,7 @@ async function bls(){step();head("4 · L'autorisation de conduite",'Le Bureau Lo
  await sayS('e39',[at('e39',.02,()=>show('#b0')),...BLS.map((m,i)=>W('e39',m[2],()=>on('#b'+(i+1)),.005))]);
  await pause(2200);return null}
 async function annexes(){step();await goPh('annexe8',{mode:'contain'},400);
+ camTo({mode:'contain',x:pt(.5,.36)[0],z:pt(.5,.36)[2],zoom:PORT()?1:1.4},600); // 27/11 : le document de l'annexe 8 plus grand dès l'ouverture
  const L=label([0,0,0],{lead:false}).title('Les demandes à déposer');L.el.classList.add('pn21','pn23');
  const z=(fy,zoom)=>camTo({mode:'contain',x:pt(.45,fy)[0],z:pt(.45,fy)[2],zoom},1600);
  L.card("L'annexe 8 : la demande d'autorisation","La demande d'autorisation de conduite, permis T. Version 8 du 6 novembre 2025.",{a:null});await cont(L,'Suivant');
