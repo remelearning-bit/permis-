@@ -915,13 +915,12 @@ async function quelTerminal(L){L.title('Quel terminal ?');
 
 /* 12. un mot sur l'avenir */
 async function terminal4(){step();head('Introduction',"Un mot sur l'avenir");
- const D=duo(`<div class="platc"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><image href="${IMG.platA}" width="1600" height="900"/><g transform="translate(800,560)"><circle r="46" fill="#FFC400" opacity=".35"/><circle r="26" fill="#FFC400" stroke="#0F1E46" stroke-width="9"/></g><g transform="translate(870,520)"><rect width="330" height="66" rx="33" fill="#0F1E46"/><text x="165" y="46" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">Roissy-CDG</text></g></svg></div>`,[
+ const D=duo(`<div class="platc"><svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice"><image href="${IMG.platA}" width="1600" height="900"/><g transform="translate(800,560)"><circle r="46" fill="#FFC400" opacity=".35"/><circle r="26" fill="#FFC400" stroke="#0F1E46" stroke-width="9"/></g><g transform="translate(870,520)"><rect width="330" height="66" rx="33" fill="#0F1E46"/><text x="165" y="46" font-size="38" font-weight="900" fill="#fff" text-anchor="middle">Roissy-CDG</text></g><g transform="translate(90,770)"><rect width="1420" height="90" rx="45" fill="#0F1E46"/><text x="710" y="60" font-size="42" font-weight="900" fill="#fff" text-anchor="middle">Mars 2027 : les terminaux 2B et 2D deviennent le Terminal 4</text></g></svg></div>`,[
   ['Un projet de transformation de la plateforme',"Le Groupe ADP s'y engage. Ce projet favorise la transition écologique."],
   ["11 février 2021 : un nouveau projet d'aménagement","Demandé par le Gouvernement au Groupe ADP après l'arrêt du projet de Terminal 4. Cette demande est l'une des conséquences de la crise du Covid-19."],
-  ['Mars 2027 : les terminaux 2B et 2D deviennent le Terminal 4',"Ce nom reprend celui de l'ancien projet de Terminal 4, abandonné. Le plan du Groupe ADP représente environ 8 milliards d'euros."],
   ['Pour vous','Un chantier modifie les cheminements, donc les habitudes.']]);
- await sayS('i09',[at('i09',.02,()=>D.paint(0)),W('i09','Le onze',()=>D.paint(1)),W('i09','Ce qui compte',()=>D.paint(3))]);
- D.end();D.paint(3);await contV();return null}
+ await sayS('i09',[at('i09',.02,()=>D.paint(0)),W('i09','Le onze',()=>D.paint(1)),W('i09','Ce qui compte',()=>D.paint(2))]);
+ D.end();await contV();return null}
 
 /* 13. les pistes : la photo du support, zoom sur chaque doublet ; puis le permis et sa première case */
 async function pistes(){step();await vzOff();head('Introduction','La configuration des pistes');
