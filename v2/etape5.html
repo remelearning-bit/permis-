@@ -97,6 +97,8 @@ body.subs #cap{bottom:auto;top:16px}
 #vid .act{margin-top:0}
 #vid.roul video{width:auto!important;max-width:100%;max-height:calc(100% - 330px);aspect-ratio:16/9}
 #vid.phc{padding-bottom:84px}#vid.phc video{max-height:calc(100% - 200px)}body:has(#vid.phc) #vbtn{z-index:25}
+@keyframes pzp{0%{box-shadow:0 0 0 0 rgba(233,78,27,.55)}70%,100%{box-shadow:0 0 0 12px rgba(233,78,27,0)}}
+.sk .sc.pz{border-color:var(--orangeV,#E94E1B)!important;border-width:4px!important;animation:pzp 1.4s ease-out infinite}
 #vchips{width:min(760px,100%);display:flex;flex-direction:column;gap:8px}
 #vchips .vch{display:flex;align-items:center;gap:12px;background:#fff;border-radius:12px;padding:8px 12px;box-shadow:0 2px 10px rgba(38,60,82,.12);opacity:0;transform:translateY(6px);transition:opacity .5s,transform .5s}
 #vchips .vch.in{opacity:1;transform:none}
@@ -441,7 +443,7 @@ const hand=()=>{};
 // la main se pose sur ce qu'il faut cliquer, seulement quand il n'y a qu'une seule chose à cliquer :
 // devant un choix, elle ne montre rien, pour ne pas souffler la réponse
 const HAND=document.getElementById('hand');
-const CLICK='#navgo .act,.tlab .act,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
+const CLICK='#navgo .act,.tlab .act,#navl.on .act,.tgt.live:not(.ok):not(.ko),#vbtn .act,#vz .qc .act,#vz .qc .ans:not(.off),.lab .act,.lab a.act,.sk .sc.pz,.qz .act,.qz .opt:not(.off),.lab .opt:not(.off),.lab .ans:not(.off),#vid .act,#jrn.on .act';
 function placeHand(){if(document.getElementById('jrn').classList.contains('on')){const r=document.getElementById('jclose').getBoundingClientRect();HAND.style.transform=`translate(${r.right-16}px,${r.bottom-14}px)`;HAND.classList.add('on');return}
  const W=innerWidth,H=innerHeight;const els=[...document.querySelectorAll(CLICK)].filter(e=>{const r=e.getBoundingClientRect();return r.width>0&&r.bottom>0&&r.top<H&&r.right>0&&r.left<W&&+getComputedStyle(e).opacity>.5&&(!e.closest('#vid')||e.closest('#vid.on'))});
  if(els.length!==1){HAND.classList.remove('on');return}
@@ -944,7 +946,7 @@ async function infoPills(d,kick){step();headOff();document.body.classList.toggle
   await sayS(lid,[...hk,...idx.filter(x=>x[0][0]===lid).map(x=>at(lid,x[0][1],()=>paint(x[1])))])}
  for(let i=0;i<nv;i++)if(!seen.has(i))paint(i);
  sc.forEach((b,i)=>{b.onclick=()=>paint(i)});
- while(seen.size<N){sc.forEach((b,i)=>b.classList.toggle('pz',!seen.has(i)));await new Promise(r=>sc.forEach((b,i)=>b.onclick=()=>{paint(i);r()}))}
+ while(seen.size<N){sc.forEach((b,i)=>b.classList.toggle('pz',!seen.has(i)));R.querySelector('.skn').textContent=`${seen.size} sur ${N} vus · cliquez sur la carte entourée en orange`;await new Promise(r=>sc.forEach((b,i)=>b.onclick=()=>{paint(i);r()}))}
  sc.forEach((b,i)=>{b.classList.remove('pz');b.onclick=()=>paint(i)});
  R.querySelector('.gb').style.display='none';if(d.end)d.end(null);await contV('Continuer');return null}
 const infoS=d=>infoPills(d,'Étape 5 · '+d.head);
